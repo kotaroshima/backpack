@@ -1,8 +1,10 @@
 define(
   ['jQuery', 'Underscore', 'Backbone', 'backpack/plugins/Subscribable'],
   ($, _, Backbone, Subscribable) ->
-    setup =(self)->
+    setup =(self, options={})->
       self.cleanups = []
+      for own key, value of options
+        self[key] = value
       plugins = [Subscribable]
       plugins = plugins.concat self.options.plugins if self.options?.plugins
       _.each plugins, (pi)->
@@ -25,7 +27,7 @@ define(
     Model: Backbone.Model.extend
       initialize:(attributes, options)->
         Backbone.Model::initialize.apply @, arguments
-        setup @
+        setup @, options
         return
       destroy:(options)->
         cleanup @
@@ -34,7 +36,7 @@ define(
     Collection: Backbone.Collection.extend
       initialize:(models, options)->
         Backbone.Collection::initialize.apply @, arguments
-        setup @
+        setup @, options
         return
       destroy:->
         cleanup @
@@ -42,7 +44,7 @@ define(
     View: Backbone.View.extend
       initialize:(options)->
         Backbone.View::initialize.apply @, arguments
-        setup @
+        setup @, options
         return
       remove:->
         cleanup @

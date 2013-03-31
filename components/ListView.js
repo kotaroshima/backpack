@@ -23,6 +23,9 @@
         }
         return this;
       },
+      getChild: function(index) {
+        return this._views[index];
+      },
       addChild: function(model) {
         var view;
         view = new this.itemClass({

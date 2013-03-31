@@ -21,6 +21,9 @@ define(
           @$el.html "No Items" # TODO : i18n
         @
 
+      getChild:(index)->
+        @_views[index]
+
       addChild:(model)->
         view = new @itemClass model: model
         @$el.append view.render().$el

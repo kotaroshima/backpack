@@ -4,15 +4,23 @@
 
   define(['jQuery', 'Underscore', 'Backbone', 'backpack/plugins/Subscribable'], function($, _, Backbone, Subscribable) {
     var cleanup, setup;
-    setup = function(self) {
-      var plugins, _ref;
+    setup = function(self, options) {
+      var key, plugins, value, _ref;
+      if (options == null) {
+        options = {};
+      }
       self.cleanups = [];
+      for (key in options) {
+        if (!__hasProp.call(options, key)) continue;
+        value = options[key];
+        self[key] = value;
+      }
       plugins = [Subscribable];
       if ((_ref = self.options) != null ? _ref.plugins : void 0) {
         plugins = plugins.concat(self.options.plugins);
       }
       _.each(plugins, function(pi) {
-        var key, su, td, value;
+        var su, td;
         su = pi.setup;
         td = pi.cleanup;
         for (key in pi) {
@@ -39,7 +47,7 @@
       Model: Backbone.Model.extend({
         initialize: function(attributes, options) {
           Backbone.Model.prototype.initialize.apply(this, arguments);
-          setup(this);
+          setup(this, options);
         },
         destroy: function(options) {
           cleanup(this);
@@ -49,7 +57,7 @@
       Collection: Backbone.Collection.extend({
         initialize: function(models, options) {
           Backbone.Collection.prototype.initialize.apply(this, arguments);
-          setup(this);
+          setup(this, options);
         },
         destroy: function() {
           cleanup(this);
@@ -58,7 +66,7 @@
       View: Backbone.View.extend({
         initialize: function(options) {
           Backbone.View.prototype.initialize.apply(this, arguments);
-          setup(this);
+          setup(this, options);
         },
         remove: function() {
           cleanup(this);
