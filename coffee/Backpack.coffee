@@ -1,26 +1,35 @@
 define(
-  ['jQuery', 'Underscore', 'Backbone', 'backpack/plugins/Subscribable'],
-  ($, _, Backbone, Subscribable) ->
+  ['jQuery','Underscore','Backbone','backpack/plugins/Subscribable','backpack/plugins/Publishable'],
+  ($, _, Backbone, Subscribable, Publishable) ->
     setup =(self, options={})->
-      self.cleanups = []
+      # first mixin all the properties/methods of initialization parameters
       for own key, value of options
-        self[key] = value
-      plugins = [Subscribable]
-      plugins = plugins.concat self.options.plugins if self.options?.plugins
+        self[key] = if _.isFunction(value) then _.bind(value, self) else value
+
+      # then mixin all the properties/methods of plugins
+      self.cleanups = []
+      setups = []
+      plugins = [Subscribable,Publishable] # default plugins
+      plugins = plugins.concat options.plugins if options?.plugins
       _.each plugins, (pi)->
         su = pi.setup
-        td = pi.cleanup
+        cu = pi.cleanup
         for own key, value of pi
           if key isnt 'setup' and key isnt 'cleanup'
-            self[key] = value
-        su.apply self if su
-        self.cleanups.push td if td
+            self[key] = if _.isFunction(value) then _.bind(value, self) else value
+        setups.push su if su
+        self.cleanups.push cu if cu
+        return
+
+      # finally apply all the setups
+      _.each setups, (su)->
+        su.apply self
         return
       return
 
     cleanup=(self)->
-      _.each self.cleanups, (td)->
-        td.apply self
+      _.each self.cleanups, (cu)->
+        cu.apply self
         return
       return
 

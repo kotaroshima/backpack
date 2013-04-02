@@ -4,8 +4,7 @@
   define(['jQueryUITouchPunch'], function($) {
     return {
       setup: function() {
-        var _ref;
-        if (((_ref = this.options) != null ? _ref.sortable : void 0) !== false) {
+        if (this.sortable !== false) {
           this.setSortable(true);
         }
       },

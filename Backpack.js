@@ -2,45 +2,49 @@
 (function() {
   var __hasProp = {}.hasOwnProperty;
 
-  define(['jQuery', 'Underscore', 'Backbone', 'backpack/plugins/Subscribable'], function($, _, Backbone, Subscribable) {
+  define(['jQuery', 'Underscore', 'Backbone', 'backpack/plugins/Subscribable', 'backpack/plugins/Publishable'], function($, _, Backbone, Subscribable, Publishable) {
     var cleanup, setup;
     setup = function(self, options) {
-      var key, plugins, value, _ref;
+      var key, plugins, setups, value;
       if (options == null) {
         options = {};
       }
-      self.cleanups = [];
       for (key in options) {
         if (!__hasProp.call(options, key)) continue;
         value = options[key];
-        self[key] = value;
+        self[key] = _.isFunction(value) ? _.bind(value, self) : value;
       }
-      plugins = [Subscribable];
-      if ((_ref = self.options) != null ? _ref.plugins : void 0) {
-        plugins = plugins.concat(self.options.plugins);
+      self.cleanups = [];
+      setups = [];
+      plugins = [Subscribable, Publishable];
+      if (options != null ? options.plugins : void 0) {
+        plugins = plugins.concat(options.plugins);
       }
       _.each(plugins, function(pi) {
-        var su, td;
+        var cu, su;
         su = pi.setup;
-        td = pi.cleanup;
+        cu = pi.cleanup;
         for (key in pi) {
           if (!__hasProp.call(pi, key)) continue;
           value = pi[key];
           if (key !== 'setup' && key !== 'cleanup') {
-            self[key] = value;
+            self[key] = _.isFunction(value) ? _.bind(value, self) : value;
           }
         }
         if (su) {
-          su.apply(self);
+          setups.push(su);
         }
-        if (td) {
-          self.cleanups.push(td);
+        if (cu) {
+          self.cleanups.push(cu);
         }
+      });
+      _.each(setups, function(su) {
+        su.apply(self);
       });
     };
     cleanup = function(self) {
-      _.each(self.cleanups, function(td) {
-        td.apply(self);
+      _.each(self.cleanups, function(cu) {
+        cu.apply(self);
       });
     };
     return {

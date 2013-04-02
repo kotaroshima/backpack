@@ -4,7 +4,7 @@ define(
   ['jQueryUITouchPunch'],
   ($)->
     setup:->
-      if @options?.sortable isnt false
+      if @sortable isnt false
         @setSortable true
       return
 

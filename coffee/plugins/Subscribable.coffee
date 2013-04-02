@@ -12,15 +12,15 @@ define(
   ['Underscore', 'Backbone'],
   (_, Backbone)->
     setup:->
-      if @options?.subscribers
-        for own key, value of @options.subscribers
+      if @subscribers
+        for own key, value of @subscribers
           cb = if _.isString(value) then @[value] else value
           Backbone.on key, cb, @
       return
 
     cleanup:->
-      if @options?.subscribers
-        for own key, value of @options.subscribers
+      if @subscribers
+        for own key, value of @subscribers
           cb = if _.isString(value) then @[value] else value
           Backbone.off key, cb, @
       return

@@ -5,24 +5,24 @@
   define(['Underscore', 'Backbone'], function(_, Backbone) {
     return {
       setup: function() {
-        var cb, key, value, _ref, _ref1;
-        if ((_ref = this.options) != null ? _ref.subscribers : void 0) {
-          _ref1 = this.options.subscribers;
-          for (key in _ref1) {
-            if (!__hasProp.call(_ref1, key)) continue;
-            value = _ref1[key];
+        var cb, key, value, _ref;
+        if (this.subscribers) {
+          _ref = this.subscribers;
+          for (key in _ref) {
+            if (!__hasProp.call(_ref, key)) continue;
+            value = _ref[key];
             cb = _.isString(value) ? this[value] : value;
             Backbone.on(key, cb, this);
           }
         }
       },
       cleanup: function() {
-        var cb, key, value, _ref, _ref1;
-        if ((_ref = this.options) != null ? _ref.subscribers : void 0) {
-          _ref1 = this.options.subscribers;
-          for (key in _ref1) {
-            if (!__hasProp.call(_ref1, key)) continue;
-            value = _ref1[key];
+        var cb, key, value, _ref;
+        if (this.subscribers) {
+          _ref = this.subscribers;
+          for (key in _ref) {
+            if (!__hasProp.call(_ref, key)) continue;
+            value = _ref[key];
             cb = _.isString(value) ? this[value] : value;
             Backbone.off(key, cb, this);
           }
