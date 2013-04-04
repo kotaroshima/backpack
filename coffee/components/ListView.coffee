@@ -8,7 +8,7 @@ Backpack.ListView = Backpack.View.extend
     @_views = []
     return
 
-  render:(options)->
+  render:->
     models = @collection.models
     @clearChildren()
     if models.length > 0
