@@ -10,6 +10,7 @@
       }
       this.collection.on("add remove reset", this.render, this);
       this._views = [];
+      this.render();
     },
     render: function() {
       var models;
