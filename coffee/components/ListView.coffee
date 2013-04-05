@@ -6,9 +6,10 @@ Backpack.ListView = Backpack.View.extend
     @itemClass = options.itemClass if options.itemClass
     @collection.on "add remove reset", @render, @
     @_views = []
+    @render()
     return
 
-  render:(options)->
+  render:->
     models = @collection.models
     @clearChildren()
     if models.length > 0
