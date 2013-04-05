@@ -93,3 +93,18 @@ Backpack.View = Backbone.View.extend
     cleanup @
     Backbone.View::remove.apply @, arguments
     return
+
+Backpack.Class =->
+  @initialize.apply @, arguments
+  return
+
+_.extend Backpack.Class::, Backbone.Events,
+  initialize:->
+    options = if arguments.length > 0 then arguments[arguments.length-1] else {}
+    setup @, options
+    return
+  destroy:->
+    cleanup @
+    return
+
+Backpack.Class.extend = Backbone.Model.extend

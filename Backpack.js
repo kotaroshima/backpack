@@ -140,4 +140,21 @@
     }
   });
 
+  Backpack.Class = function() {
+    this.initialize.apply(this, arguments);
+  };
+
+  _.extend(Backpack.Class.prototype, Backbone.Events, {
+    initialize: function() {
+      var options;
+      options = arguments.length > 0 ? arguments[arguments.length - 1] : {};
+      setup(this, options);
+    },
+    destroy: function() {
+      cleanup(this);
+    }
+  });
+
+  Backpack.Class.extend = Backbone.Model.extend;
+
 }).call(this);
