@@ -1,0 +1,40 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Singleton Example</title>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+<script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.3.3/underscore-min.js"></script>
+<script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/backbone.js/0.9.9/backbone-min.js"></script>
+<script type="text/javascript" src="../Backpack.js"></script>
+<script type="text/javascript">
+$(function(){
+  var SingletonClass1 = Backpack.Class.extend({
+    plugins: [Backpack.Singleton]
+  });
+
+  $('#newButton').on('click', function(e){
+    try{
+      var instance = new SingletonClass1();
+      alert('Instance : '+instance.cid);
+    }catch(e){
+      alert(e);
+    }
+  });
+
+  var SingletonClass2 = Backpack.Class.extend({
+    plugins: [Backpack.Singleton]
+  });
+
+  $('#getInstanceButton').on('click', function(e){
+    var instance = SingletonClass2.getInstance();
+    alert('Instance : '+instance.cid);
+  });
+});
+</script>
+</head>
+<body>
+<div><label for="newButton">Create instance by 'new' :</label> <button id="newButton">Click</button></div>
+<div><label for="getInstanceButton">Get instance : </label> <button id="getInstanceButton">Click</button></div>
+</body>
+</html>

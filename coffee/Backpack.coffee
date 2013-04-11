@@ -1,6 +1,7 @@
-Backpack = window.Backpack = {} unless window.Backpack?
+root = this
+Backpack = root.Backpack = {}
 
-Subscribable =
+Subscribable = Backpack.Subscribable =
   setup:->
     if @subscribers
       for own key, value of @subscribers
@@ -26,31 +27,32 @@ insertTrigger =(self, key, value)->
     self[key] = _.bind newFunc, self
   return
 
-Publishable =
+Publishable = Backpack.Publishable =
   setup:->
     if @publishers
       for own key, value of @publishers
         insertTrigger @, key, value
     return
 
+defaultPlugins = [Subscribable,Publishable]
+
 setup =(self, options={})->
   # first mixin all the properties/methods of initialization parameters
   for own key, value of options
-    self[key] = if _.isFunction(value) then _.bind(value, self) else value
+    if key == 'plugins'
+      self[key] = _.clone(defaultPlugins).concat options.plugins
+    else
+      self[key] = value
 
-  # then mixin all the properties/methods of plugins
-  self.cleanups = []
   setups = []
-  plugins = [Subscribable,Publishable] # default plugins
-  plugins = plugins.concat options.plugins if options?.plugins
-  _.each plugins, (pi)->
-    su = pi.setup
-    cu = pi.cleanup
+  _.each self.plugins, (pi)->
     for own key, value of pi
-      if key isnt 'setup' and key isnt 'cleanup'
-        self[key] = if _.isFunction(value) then _.bind(value, self) else value
-    setups.push su if su
-    self.cleanups.push cu if cu
+      if key != 'setup' && key != 'cleanup' && key != 'staticProps'
+        self[key] = value
+    setups.push pi.setup if pi.setup
+    if pi.cleanup
+      self.cleanups = [] if !self.cleanups
+      self.cleanups.push pi.cleanup
     return
 
   # finally apply all the setups
@@ -65,6 +67,49 @@ cleanup=(self)->
     return
   return
 
+extend =(protoProps, staticProps)->
+  child = Backbone.Model.extend.call @, protoProps, staticProps
+  child::plugins = _.clone(defaultPlugins).concat(protoProps.plugins || [])
+
+  # apply static props
+  _.each protoProps.plugins, (pi)->
+    _.extend child, pi.staticProps if pi.staticProps
+    return
+  child
+
+Clazz = Backpack.Class =->
+  @cid = _.uniqueId 'obj'
+  @initialize.apply @, arguments
+  return
+_.extend Clazz::, Backbone.Events,
+  initialize:->
+    options = if arguments.length > 0 then arguments[arguments.length-1] else {}
+    setup @, options
+    return
+  destroy:->
+    cleanup @
+    return
+Clazz.extend = extend
+
+Backpack.Singleton =
+  setup:->
+    singleton = _.find Backpack._singletons, (s)=>
+      s.constructor is @constructor
+    if singleton
+      throw new Error 'Only single instance can be initialized'
+    else
+      if !Backpack._singletons
+        Backpack._singletons = []
+      Backpack._singletons.push @
+    return
+  staticProps:
+    getInstance:->
+      singleton = _.find Backpack._singletons, (s)=>
+        s.constructor is @
+      if !singleton
+        singleton = new @()
+      singleton
+
 Backpack.Model = Backbone.Model.extend
   initialize:(attributes, options)->
     Backbone.Model::initialize.apply @, arguments
@@ -74,6 +119,7 @@ Backpack.Model = Backbone.Model.extend
     cleanup @
     Backbone.Model::destroy.apply @, arguments
     return
+Backpack.Model.extend = extend
 
 Backpack.Collection = Backbone.Collection.extend
   initialize:(models, options)->
@@ -83,6 +129,7 @@ Backpack.Collection = Backbone.Collection.extend
   destroy:->
     cleanup @
     return
+Backpack.Collection.extend = extend
 
 Backpack.View = Backbone.View.extend
   initialize:(options)->
@@ -93,18 +140,4 @@ Backpack.View = Backbone.View.extend
     cleanup @
     Backbone.View::remove.apply @, arguments
     return
-
-Backpack.Class =->
-  @initialize.apply @, arguments
-  return
-
-_.extend Backpack.Class::, Backbone.Events,
-  initialize:->
-    options = if arguments.length > 0 then arguments[arguments.length-1] else {}
-    setup @, options
-    return
-  destroy:->
-    cleanup @
-    return
-
-Backpack.Class.extend = Backbone.Model.extend
+Backpack.View.extend = extend
