@@ -121,9 +121,13 @@ Backpack.Publishable =
   setup:->
     if @publishers
       for own key, value of @publishers
-        Backpack.attach @, key, ->
-          args = Array.splice @, 0, 0, value
-          Backbone.trigger.apply @, args
-          return
+        @attachTrigger key, value
+    return
+  attachTrigger:(method, topic)->
+    Backpack.attach @, method, ->
+      args = [].slice.call arguments, 0
+      args.unshift topic
+      Backbone.trigger.apply Backbone, args
+      return
     return
 Backpack.defaultPlugins.push Backpack.Publishable

@@ -176,13 +176,17 @@
         for (key in _ref) {
           if (!__hasProp.call(_ref, key)) continue;
           value = _ref[key];
-          Backpack.attach(this, key, function() {
-            var args;
-            args = Array.splice(this, 0, 0, value);
-            Backbone.trigger.apply(this, args);
-          });
+          this.attachTrigger(key, value);
         }
       }
+    },
+    attachTrigger: function(method, topic) {
+      Backpack.attach(this, method, function() {
+        var args;
+        args = [].slice.call(arguments, 0);
+        args.unshift(topic);
+        Backbone.trigger.apply(Backbone, args);
+      });
     }
   };
 
