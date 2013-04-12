@@ -192,4 +192,21 @@
 
   Backpack.defaultPlugins.push(Backpack.Publishable);
 
+  Backpack.Attachable = {
+    setup: function() {
+      this._attached = [];
+    },
+    attach: function(method, callback) {
+      var handler;
+      handler = Backpack.attach(this, method, callback);
+      this._attached.push(handler);
+      return handler;
+    },
+    cleanup: function() {
+      _.invoke(this._attached, 'detach');
+    }
+  };
+
+  Backpack.defaultPlugins.push(Backpack.Attachable);
+
 }).call(this);
