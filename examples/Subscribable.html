@@ -1,0 +1,36 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Subscribable Example</title>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+<script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.3.3/underscore-min.js"></script>
+<script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/backbone.js/0.9.9/backbone-min.js"></script>
+<script type="text/javascript" src="../Backpack.js"></script>
+<script type="text/javascript">
+$(function(){
+  // Override so that it doesn't try to save to server
+  Backbone.sync = function(){};
+
+  var MyModel = Backpack.Model.extend({
+    subscribers: {
+      MY_EVENT: 'sayHello'
+    },
+
+    sayHello: function(firstName, lastName) {
+      alert('Hello, '+firstName+' '+lastName);
+    }
+  });
+  new MyModel();
+
+  $('#myButton').on('click', function(){
+    Backbone.trigger('MY_EVENT', 'Michael', 'Jackson');
+  });
+});
+</script>
+</head>
+<body>
+<h1>Subscribable Example</h1>
+<button id="myButton">Click Me!</button>
+</body>
+</html>
