@@ -1,16 +1,17 @@
 root = this
 Backpack = root.Backpack = {}
 
-insertTrigger =(self, key, value)->
-  if _.isFunction self[key]
-    origFunc = self[key]
-    newFunc =->
-      ret = origFunc.apply @, arguments
-      args = Array.splice.call arguments, 0, 0, value
-      Backbone.trigger.apply @, args
-      ret
-    self[key] = _.bind newFunc, self
-  return
+Backpack.attach = (context, method, callback)->
+  origFunc = context[method]
+  context[method] =->
+    ret = origFunc.apply context, arguments
+    callback.apply @, arguments if callback
+    ret
+  {
+    detach:->
+      context[method] = origFunc
+      return
+  }
 
 Backpack.defaultPlugins = []
 
@@ -127,7 +128,6 @@ Backpack.Subscribable =
         cb = if _.isString(value) then @[value] else value
         Backbone.on key, cb, @
     return
-
   cleanup:->
     if @subscribers
       for own key, value of @subscribers
@@ -140,6 +140,9 @@ Backpack.Publishable =
   setup:->
     if @publishers
       for own key, value of @publishers
-        insertTrigger @, key, value
+        Backpack.attach @, key, ->
+          args = Array.splice @, 0, 0, value
+          Backbone.trigger.apply @, args
+          return
     return
 Backpack.defaultPlugins.push Backpack.Publishable
