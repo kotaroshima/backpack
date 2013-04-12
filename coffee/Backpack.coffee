@@ -1,21 +1,6 @@
 root = this
 Backpack = root.Backpack = {}
 
-Subscribable = Backpack.Subscribable =
-  setup:->
-    if @subscribers
-      for own key, value of @subscribers
-        cb = if _.isString(value) then @[value] else value
-        Backbone.on key, cb, @
-    return
-
-  cleanup:->
-    if @subscribers
-      for own key, value of @subscribers
-        cb = if _.isString(value) then @[value] else value
-        Backbone.off key, cb, @
-    return
-
 insertTrigger =(self, key, value)->
   if _.isFunction self[key]
     origFunc = self[key]
@@ -27,20 +12,13 @@ insertTrigger =(self, key, value)->
     self[key] = _.bind newFunc, self
   return
 
-Publishable = Backpack.Publishable =
-  setup:->
-    if @publishers
-      for own key, value of @publishers
-        insertTrigger @, key, value
-    return
-
-defaultPlugins = [Subscribable,Publishable]
+Backpack.defaultPlugins = []
 
 setup =(self, options={})->
   # first mixin all the properties/methods of initialization parameters
   for own key, value of options
     if key == 'plugins'
-      self[key] = _.clone(defaultPlugins).concat options.plugins
+      self[key] = _.clone(Backpack.defaultPlugins).concat options.plugins
     else
       self[key] = value
 
@@ -69,7 +47,7 @@ cleanup=(self)->
 
 extend =(protoProps, staticProps)->
   child = Backbone.Model.extend.call @, protoProps, staticProps
-  child::plugins = _.clone(defaultPlugins).concat(protoProps.plugins || [])
+  child::plugins = _.clone(Backpack.defaultPlugins).concat(protoProps.plugins || [])
 
   # apply static props
   _.each protoProps.plugins, (pi)->
@@ -141,3 +119,27 @@ Backpack.View = Backbone.View.extend
     Backbone.View::remove.apply @, arguments
     return
 Backpack.View.extend = extend
+
+Backpack.Subscribable =
+  setup:->
+    if @subscribers
+      for own key, value of @subscribers
+        cb = if _.isString(value) then @[value] else value
+        Backbone.on key, cb, @
+    return
+
+  cleanup:->
+    if @subscribers
+      for own key, value of @subscribers
+        cb = if _.isString(value) then @[value] else value
+        Backbone.off key, cb, @
+    return
+Backpack.defaultPlugins.push Backpack.Subscribable
+
+Backpack.Publishable =
+  setup:->
+    if @publishers
+      for own key, value of @publishers
+        insertTrigger @, key, value
+    return
+Backpack.defaultPlugins.push Backpack.Publishable
