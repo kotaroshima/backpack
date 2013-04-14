@@ -100,6 +100,9 @@ Backpack.View = Backbone.View.extend
     cleanup @
     Backbone.View::remove.apply @, arguments
     return
+  destroy:->
+    @remove()
+    return
 Backpack.View.extend = extend
 
 Backpack.Subscribable =

@@ -78,115 +78,78 @@
   module('Backpack.Model');
 
   test('extend with plugins', function() {
-    var TestModel, model, testPlugin;
-    testPlugin = {
-      setup: function() {
-        this.name = 'hello';
-      },
-      cleanup: function() {
-        this.name = 'bye';
-      }
-    };
-    TestModel = Backpack.Model.extend({
-      plugins: [testPlugin]
-    });
-    model = new TestModel();
-    equal(model.name, 'hello', 'setup called');
-    model.destroy();
-    return equal(model.name, 'bye', 'cleanup called');
-  });
-
-  test('extend with multiple plugins', function() {
     var TestModel, model, testPlugin1, testPlugin2;
     testPlugin1 = {
       setup: function() {
-        this.name1 = 'hello';
+        this.prop1 = 'hello';
       },
       cleanup: function() {
-        this.name1 = 'bye';
+        this.prop1 = 'bye';
       }
     };
     testPlugin2 = {
       setup: function() {
-        this.name2 = 'konichiwa';
+        this.prop2 = 'konichiwa';
       },
       cleanup: function() {
-        this.name2 = 'sayonara';
+        this.prop2 = 'sayonara';
       }
     };
     TestModel = Backpack.Model.extend({
       plugins: [testPlugin1, testPlugin2]
     });
     model = new TestModel();
-    equal(model.name1, 'hello', 'setup called for first plugin');
-    equal(model.name2, 'konichiwa', 'setup called for second plugin');
+    equal(model.prop1, 'hello', 'setup called for first plugin');
+    equal(model.prop2, 'konichiwa', 'setup called for second plugin');
     model.destroy();
-    equal(model.name1, 'bye', 'cleanup called for first plugin');
-    return equal(model.name2, 'sayonara', 'cleanup called for second plugin');
+    equal(model.prop1, 'bye', 'cleanup called for first plugin');
+    return equal(model.prop2, 'sayonara', 'cleanup called for second plugin');
   });
 
   test('initialize with plugins', function() {
-    var model, testPlugin;
-    testPlugin = {
-      setup: function() {
-        this.name = 'hello';
-      },
-      cleanup: function() {
-        this.name = 'bye';
-      }
-    };
-    model = new Backpack.Model(null, {
-      plugins: [testPlugin]
-    });
-    equal(model.name, 'hello', 'setup called');
-    model.destroy();
-    return equal(model.name, 'bye', 'cleanup called');
-  });
-
-  test('initialize with multiple plugins', function() {
     var model, testPlugin1, testPlugin2;
     testPlugin1 = {
       setup: function() {
-        this.name1 = 'hello';
+        this.prop1 = 'hello';
       },
       cleanup: function() {
-        this.name1 = 'bye';
+        this.prop1 = 'bye';
       }
     };
     testPlugin2 = {
       setup: function() {
-        this.name2 = 'konichiwa';
+        this.prop2 = 'konichiwa';
       },
       cleanup: function() {
-        this.name2 = 'sayonara';
+        this.prop2 = 'sayonara';
       }
     };
     model = new Backpack.Model(null, {
       plugins: [testPlugin1, testPlugin2]
     });
-    equal(model.name1, 'hello', 'setup called for first plugin');
-    equal(model.name2, 'konichiwa', 'setup called for second plugin');
+    equal(model.prop1, 'hello', 'setup called for first plugin');
+    equal(model.prop2, 'konichiwa', 'setup called for second plugin');
     model.destroy();
-    equal(model.name1, 'bye', 'cleanup called for first plugin');
-    return equal(model.name2, 'sayonara', 'cleanup called for second plugin');
+    equal(model.prop1, 'bye', 'cleanup called for first plugin');
+    return equal(model.prop2, 'sayonara', 'cleanup called for second plugin');
   });
 
   test('override extend plugins with initialize plugins', function() {
     var TestModel, model, testPlugin1, testPlugin2;
     testPlugin1 = {
       setup: function() {
-        this.name1 = 'hello';
+        this.prop1 = 'hello';
       },
       cleanup: function() {
-        this.name1 = 'bye';
+        this.prop1 = 'bye';
       }
     };
     testPlugin2 = {
       setup: function() {
-        this.name2 = 'konichiwa';
+        this.prop2 = 'konichiwa';
       },
       cleanup: function() {
-        this.name2 = 'sayonara';
+        this.prop2 = 'sayonara';
       }
     };
     TestModel = Backpack.Model.extend({
@@ -195,11 +158,191 @@
     model = new TestModel(null, {
       plugins: [testPlugin2]
     });
-    notEqual(model.name1, 'hello', 'setup not called for extend plugin');
-    equal(model.name2, 'konichiwa', 'setup called for initialize plugin');
+    notEqual(model.prop1, 'hello', 'setup not called for extend plugin');
+    equal(model.prop2, 'konichiwa', 'setup called for initialize plugin');
     model.destroy();
-    notEqual(model.name1, 'bye', 'cleanup not called for extend plugin');
-    return equal(model.name2, 'sayonara', 'cleanup called for initialize plugin');
+    notEqual(model.prop1, 'bye', 'cleanup not called for extend plugin');
+    return equal(model.prop2, 'sayonara', 'cleanup called for initialize plugin');
+  });
+
+  module('Backpack.Collection');
+
+  test('extend with plugins', function() {
+    var TestCollection, collection, testPlugin1, testPlugin2;
+    testPlugin1 = {
+      setup: function() {
+        this.prop1 = 'hello';
+      },
+      cleanup: function() {
+        this.prop1 = 'bye';
+      }
+    };
+    testPlugin2 = {
+      setup: function() {
+        this.prop2 = 'konichiwa';
+      },
+      cleanup: function() {
+        this.prop2 = 'sayonara';
+      }
+    };
+    TestCollection = Backpack.Collection.extend({
+      plugins: [testPlugin1, testPlugin2]
+    });
+    collection = new TestCollection();
+    equal(collection.prop1, 'hello', 'setup called for first plugin');
+    equal(collection.prop2, 'konichiwa', 'setup called for second plugin');
+    collection.destroy();
+    equal(collection.prop1, 'bye', 'cleanup called for first plugin');
+    return equal(collection.prop2, 'sayonara', 'cleanup called for second plugin');
+  });
+
+  test('initialize with plugins', function() {
+    var collection, testPlugin1, testPlugin2;
+    testPlugin1 = {
+      setup: function() {
+        this.prop1 = 'hello';
+      },
+      cleanup: function() {
+        this.prop1 = 'bye';
+      }
+    };
+    testPlugin2 = {
+      setup: function() {
+        this.prop2 = 'konichiwa';
+      },
+      cleanup: function() {
+        this.prop2 = 'sayonara';
+      }
+    };
+    collection = new Backpack.Collection(null, {
+      plugins: [testPlugin1, testPlugin2]
+    });
+    equal(collection.prop1, 'hello', 'setup called for first plugin');
+    equal(collection.prop2, 'konichiwa', 'setup called for second plugin');
+    collection.destroy();
+    equal(collection.prop1, 'bye', 'cleanup called for first plugin');
+    return equal(collection.prop2, 'sayonara', 'cleanup called for second plugin');
+  });
+
+  test('override extend plugins with initialize plugins', function() {
+    var TestCollection, collection, testPlugin1, testPlugin2;
+    testPlugin1 = {
+      setup: function() {
+        this.prop1 = 'hello';
+      },
+      cleanup: function() {
+        this.prop1 = 'bye';
+      }
+    };
+    testPlugin2 = {
+      setup: function() {
+        this.prop2 = 'konichiwa';
+      },
+      cleanup: function() {
+        this.prop2 = 'sayonara';
+      }
+    };
+    TestCollection = Backpack.Collection.extend({
+      plugins: [testPlugin1]
+    });
+    collection = new TestCollection(null, {
+      plugins: [testPlugin2]
+    });
+    notEqual(collection.prop1, 'hello', 'setup not called for extend plugin');
+    equal(collection.prop2, 'konichiwa', 'setup called for initialize plugin');
+    collection.destroy();
+    notEqual(collection.prop1, 'bye', 'cleanup not called for extend plugin');
+    return equal(collection.prop2, 'sayonara', 'cleanup called for initialize plugin');
+  });
+
+  module('Backpack.View');
+
+  test('extend with plugins', function() {
+    var TestView, testPlugin1, testPlugin2, view;
+    testPlugin1 = {
+      setup: function() {
+        this.prop1 = 'hello';
+      },
+      cleanup: function() {
+        this.prop1 = 'bye';
+      }
+    };
+    testPlugin2 = {
+      setup: function() {
+        this.prop2 = 'konichiwa';
+      },
+      cleanup: function() {
+        this.prop2 = 'sayonara';
+      }
+    };
+    TestView = Backpack.View.extend({
+      plugins: [testPlugin1, testPlugin2]
+    });
+    view = new TestView();
+    equal(view.prop1, 'hello', 'setup called for first plugin');
+    equal(view.prop2, 'konichiwa', 'setup called for second plugin');
+    view.destroy();
+    equal(view.prop1, 'bye', 'cleanup called for first plugin');
+    return equal(view.prop2, 'sayonara', 'cleanup called for second plugin');
+  });
+
+  test('initialize with plugins', function() {
+    var testPlugin1, testPlugin2, view;
+    testPlugin1 = {
+      setup: function() {
+        this.prop1 = 'hello';
+      },
+      cleanup: function() {
+        this.prop1 = 'bye';
+      }
+    };
+    testPlugin2 = {
+      setup: function() {
+        this.prop2 = 'konichiwa';
+      },
+      cleanup: function() {
+        this.prop2 = 'sayonara';
+      }
+    };
+    view = new Backpack.View({
+      plugins: [testPlugin1, testPlugin2]
+    });
+    equal(view.prop1, 'hello', 'setup called for first plugin');
+    equal(view.prop2, 'konichiwa', 'setup called for second plugin');
+    view.destroy();
+    equal(view.prop1, 'bye', 'cleanup called for first plugin');
+    return equal(view.prop2, 'sayonara', 'cleanup called for second plugin');
+  });
+
+  test('override extend plugins with initialize plugins', function() {
+    var TestView, testPlugin1, testPlugin2, view;
+    testPlugin1 = {
+      setup: function() {
+        this.prop1 = 'hello';
+      },
+      cleanup: function() {
+        this.prop1 = 'bye';
+      }
+    };
+    testPlugin2 = {
+      setup: function() {
+        this.prop2 = 'konichiwa';
+      },
+      cleanup: function() {
+        this.prop2 = 'sayonara';
+      }
+    };
+    TestView = Backpack.View.extend({
+      plugins: [testPlugin1]
+    });
+    view = new TestView({
+      plugins: [testPlugin2]
+    });
+    notEqual(view.prop1, 'hello', 'setup not called for extend plugin');
+    equal(view.prop2, 'konichiwa', 'setup called for initialize plugin');
+    view.destroy();
+    notEqual(view.prop1, 'bye', 'cleanup not called for extend plugin');
+    return equal(view.prop2, 'sayonara', 'cleanup called for initialize plugin');
   });
 
 }).call(this);

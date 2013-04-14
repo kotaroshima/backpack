@@ -134,6 +134,9 @@
     remove: function() {
       cleanup(this);
       Backbone.View.prototype.remove.apply(this, arguments);
+    },
+    destroy: function() {
+      this.remove();
     }
   });
 
