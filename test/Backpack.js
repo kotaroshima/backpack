@@ -347,6 +347,17 @@
 
   module('Backpack.Class');
 
+  test('initialize', function() {
+    var TestClass, instance;
+    TestClass = Backpack.Class.extend({
+      initialize: function() {
+        this.one = 1;
+      }
+    });
+    instance = new TestClass();
+    equal(instance.one, 1);
+  });
+
   test('extend with plugins', function() {
     var TestClass, instance, testPlugin1, testPlugin2;
     testPlugin1 = {

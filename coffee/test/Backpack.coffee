@@ -300,6 +300,15 @@ test 'override extend plugins with initialize plugins', ->
 
 module 'Backpack.Class'
 
+test 'initialize', ->
+  TestClass = Backpack.Class.extend
+    initialize:->
+      @one = 1
+      return
+  instance = new TestClass()
+  equal instance.one, 1
+  return
+
 test 'extend with plugins', ->
   testPlugin1 =
     setup:->
