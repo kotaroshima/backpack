@@ -13,7 +13,6 @@ test 'only one instance can be initialized', ->
     new TestSingleton()
     return
   , Error, 'throws an error when trying to initialize 2nd instance'
-  console.log 'Backpack._singletons2='+Backpack._singletons
   return
 
 test 'get the same instance', ->

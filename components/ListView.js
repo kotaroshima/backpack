@@ -2,6 +2,7 @@
 (function() {
 
   Backpack.ListView = Backpack.View.extend({
+    plugins: [Backpack.Container],
     itemClass: Backbone.View,
     initialize: function(options) {
       Backpack.View.prototype.initialize.apply(this, arguments);
@@ -9,49 +10,30 @@
         this.itemClass = options.itemClass;
       }
       this.collection.on("add remove reset", this.render, this);
-      this._views = [];
       this.render();
     },
     render: function() {
-      var models;
+      var models,
+        _this = this;
       models = this.collection.models;
       this.clearChildren();
       if (models.length > 0) {
-        _.each(models, this.addChild, this);
+        _.each(models, function(model) {
+          var child;
+          child = _this.createChild(model);
+          _this.addChild(child);
+        });
       } else {
         this.$el.html("No Items");
       }
       return this;
     },
-    getChild: function(index) {
-      return this._views[index];
-    },
-    addChild: function(model) {
+    createChild: function(model) {
       var view;
       view = new this.itemClass({
         model: model
       });
-      this.$el.append(view.render().$el);
-      this._views.push(view);
-    },
-    clearChildren: function() {
-      var i, _i, _ref;
-      for (i = _i = _ref = this._views.length - 1; _i >= 0; i = _i += -1) {
-        this.removeChild(i);
-      }
-    },
-    removeChild: function(index) {
-      this._views[index].remove();
-      this._views.splice(index, 1);
-    },
-    filterChildren: function(options) {
-      _.filter(this._views, function(view) {
-        if (view.model.filter(options)) {
-          view.$el.show();
-        } else {
-          view.$el.hide();
-        }
-      });
+      return view.render();
     },
     remove: function() {
       this.collection.off("add remove reset", this.render);

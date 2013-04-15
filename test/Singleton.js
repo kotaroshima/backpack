@@ -17,7 +17,6 @@
     raises(function() {
       new TestSingleton();
     }, Error, 'throws an error when trying to initialize 2nd instance');
-    console.log('Backpack._singletons2=' + Backpack._singletons);
   });
 
   test('get the same instance', function() {

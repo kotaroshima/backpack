@@ -51,9 +51,10 @@ extend =(protoProps, staticProps)->
   child::plugins = _.clone(Backpack.defaultPlugins).concat(protoProps.plugins || [])
 
   # apply static props
-  _.each protoProps.plugins, (pi)->
-    _.extend child, pi.staticProps if pi.staticProps
-    return
+  if protoProps.plugins
+    _.each protoProps.plugins, (pi)->
+      _.extend child, pi.staticProps if pi.staticProps
+      return
   child
 
 Clazz = Backpack.Class =->
@@ -104,46 +105,3 @@ Backpack.View = Backbone.View.extend
     @remove()
     return
 Backpack.View.extend = extend
-
-Backpack.Subscribable =
-  setup:->
-    if @subscribers
-      for own key, value of @subscribers
-        cb = if _.isString(value) then @[value] else value
-        Backbone.on key, cb, @
-    return
-  cleanup:->
-    if @subscribers
-      for own key, value of @subscribers
-        cb = if _.isString(value) then @[value] else value
-        Backbone.off key, cb, @
-    return
-Backpack.defaultPlugins.push Backpack.Subscribable
-
-Backpack.Publishable =
-  setup:->
-    if @publishers
-      for own key, value of @publishers
-        @attachTrigger key, value
-    return
-  attachTrigger:(method, topic)->
-    Backpack.attach @, method, ->
-      args = [].slice.call arguments, 0
-      args.unshift topic
-      Backbone.trigger.apply Backbone, args
-      return
-    return
-Backpack.defaultPlugins.push Backpack.Publishable
-
-Backpack.Attachable =
-  setup:->
-    @_attached = []
-    return
-  attach:(method, callback)->
-    handler = Backpack.attach @, method, callback
-    @_attached.push handler
-    handler
-  cleanup:->
-    _.invoke @_attached, 'detach'
-    return
-Backpack.defaultPlugins.push Backpack.Attachable

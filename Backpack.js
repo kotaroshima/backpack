@@ -75,11 +75,13 @@
     var child;
     child = Backbone.Model.extend.call(this, protoProps, staticProps);
     child.prototype.plugins = _.clone(Backpack.defaultPlugins).concat(protoProps.plugins || []);
-    _.each(protoProps.plugins, function(pi) {
-      if (pi.staticProps) {
-        _.extend(child, pi.staticProps);
-      }
-    });
+    if (protoProps.plugins) {
+      _.each(protoProps.plugins, function(pi) {
+        if (pi.staticProps) {
+          _.extend(child, pi.staticProps);
+        }
+      });
+    }
     return child;
   };
 
@@ -141,75 +143,5 @@
   });
 
   Backpack.View.extend = extend;
-
-  Backpack.Subscribable = {
-    setup: function() {
-      var cb, key, value, _ref;
-      if (this.subscribers) {
-        _ref = this.subscribers;
-        for (key in _ref) {
-          if (!__hasProp.call(_ref, key)) continue;
-          value = _ref[key];
-          cb = _.isString(value) ? this[value] : value;
-          Backbone.on(key, cb, this);
-        }
-      }
-    },
-    cleanup: function() {
-      var cb, key, value, _ref;
-      if (this.subscribers) {
-        _ref = this.subscribers;
-        for (key in _ref) {
-          if (!__hasProp.call(_ref, key)) continue;
-          value = _ref[key];
-          cb = _.isString(value) ? this[value] : value;
-          Backbone.off(key, cb, this);
-        }
-      }
-    }
-  };
-
-  Backpack.defaultPlugins.push(Backpack.Subscribable);
-
-  Backpack.Publishable = {
-    setup: function() {
-      var key, value, _ref;
-      if (this.publishers) {
-        _ref = this.publishers;
-        for (key in _ref) {
-          if (!__hasProp.call(_ref, key)) continue;
-          value = _ref[key];
-          this.attachTrigger(key, value);
-        }
-      }
-    },
-    attachTrigger: function(method, topic) {
-      Backpack.attach(this, method, function() {
-        var args;
-        args = [].slice.call(arguments, 0);
-        args.unshift(topic);
-        Backbone.trigger.apply(Backbone, args);
-      });
-    }
-  };
-
-  Backpack.defaultPlugins.push(Backpack.Publishable);
-
-  Backpack.Attachable = {
-    setup: function() {
-      this._attached = [];
-    },
-    attach: function(method, callback) {
-      var handler;
-      handler = Backpack.attach(this, method, callback);
-      this._attached.push(handler);
-      return handler;
-    },
-    cleanup: function() {
-      _.invoke(this._attached, 'detach');
-    }
-  };
-
-  Backpack.defaultPlugins.push(Backpack.Attachable);
 
 }).call(this);
