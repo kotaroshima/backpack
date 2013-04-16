@@ -5,22 +5,14 @@ Backpack.ListView = Backpack.View.extend
   itemClass: Backpack.View
 
   initialize:(options)->
-    Backpack.View::initialize.apply @, arguments
     @itemClass = options.itemClass if options.itemClass
-    @collection.on "add remove reset", @render, @
     @$el.html @template
+    @containerNode = @$ '.containerNode'
+    @noItemsNode = @$ '.noItemsNode'
+    Backpack.View::initialize.apply @, arguments
+    @collection.on "add remove reset", @render, @
     @render()
     return
-
-  getContainerNode:->
-    if !@_containerRoot
-      @_containerRoot = @$ '.containerNode'
-    @_containerRoot
-
-  getNoItemsNode:->
-    if !@_noItemsNode
-      @_noItemsNode = @$ '.noItemsNode'
-    @_noItemsNode
 
   render:->
     models = @collection.models
@@ -36,11 +28,11 @@ Backpack.ListView = Backpack.View.extend
 
   _showContainerNode:(bShow)->
     if bShow
-      @getNoItemsNode().hide()
-      @getContainerNode().show()
+      @noItemsNode.hide()
+      @containerNode.show()
     else
-      @getNoItemsNode().show()
-      @getContainerNode().hide()
+      @noItemsNode.show()
+      @containerNode.hide()
     return
 
   createChild:(model)->

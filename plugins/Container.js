@@ -4,15 +4,13 @@
   Backpack.Container = {
     setup: function() {
       this.children = [];
-    },
-    getContainerNode: function() {
-      return this.$el;
+      this.containerNode = this.$el;
     },
     getChild: function(index) {
       return this.children[index];
     },
     addChild: function(view) {
-      this.getContainerNode().append(view.$el);
+      this.containerNode.append(view.$el);
       this.children.push(view);
     },
     clearChildren: function() {

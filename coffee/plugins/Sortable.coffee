@@ -6,13 +6,17 @@ Backpack.Sortable =
       @setSortable true
     return
 
+  _getSortableContainer:->
+    @containerNode || @$el
+
   setSortable:(isSortable)->
+    containerNode = @_getSortableContainer()
     if isSortable
       if @_sortableInit
-        @$el.sortable "enable"
+        containerNode.sortable "enable"
       else
         # make the list sortable
-        @$el.sortable
+        containerNode.sortable
           start:(event, ui)->
             ui.item.startIndex = ui.item.index()
             return
@@ -26,10 +30,10 @@ Backpack.Sortable =
         @_sortableInit = true
     else
       if @_sortableInit
-        @$el.sortable "disable"
+        containerNode.sortable "disable"
     return
 
   cleanup:->
     if @_sortableInit
-      @$el.sortable "destroy"
+      @_getSortableContainer().sortable "destroy"
     return

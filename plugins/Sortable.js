@@ -7,13 +7,18 @@
         this.setSortable(true);
       }
     },
+    _getSortableContainer: function() {
+      return this.containerNode || this.$el;
+    },
     setSortable: function(isSortable) {
-      var _this = this;
+      var containerNode,
+        _this = this;
+      containerNode = this._getSortableContainer();
       if (isSortable) {
         if (this._sortableInit) {
-          this.$el.sortable("enable");
+          containerNode.sortable("enable");
         } else {
-          this.$el.sortable({
+          containerNode.sortable({
             start: function(event, ui) {
               ui.item.startIndex = ui.item.index();
             },
@@ -32,13 +37,13 @@
         }
       } else {
         if (this._sortableInit) {
-          this.$el.sortable("disable");
+          containerNode.sortable("disable");
         }
       }
     },
     cleanup: function() {
       if (this._sortableInit) {
-        this.$el.sortable("destroy");
+        this._getSortableContainer().sortable("destroy");
       }
     }
   };

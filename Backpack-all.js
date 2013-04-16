@@ -165,15 +165,13 @@
   Backpack.Container = {
     setup: function() {
       this.children = [];
-    },
-    getContainerNode: function() {
-      return this.$el;
+      this.containerNode = this.$el;
     },
     getChild: function(index) {
       return this.children[index];
     },
     addChild: function(view) {
-      this.getContainerNode().append(view.$el);
+      this.containerNode.append(view.$el);
       this.children.push(view);
     },
     clearChildren: function() {
@@ -261,13 +259,18 @@
         this.setSortable(true);
       }
     },
+    _getSortableContainer: function() {
+      return this.containerNode || this.$el;
+    },
     setSortable: function(isSortable) {
-      var _this = this;
+      var containerNode,
+        _this = this;
+      containerNode = this._getSortableContainer();
       if (isSortable) {
         if (this._sortableInit) {
-          this.$el.sortable("enable");
+          containerNode.sortable("enable");
         } else {
-          this.$el.sortable({
+          containerNode.sortable({
             start: function(event, ui) {
               ui.item.startIndex = ui.item.index();
             },
@@ -286,13 +289,13 @@
         }
       } else {
         if (this._sortableInit) {
-          this.$el.sortable("disable");
+          containerNode.sortable("disable");
         }
       }
     },
     cleanup: function() {
       if (this._sortableInit) {
-        this.$el.sortable("destroy");
+        this._getSortableContainer().sortable("destroy");
       }
     }
   };
@@ -331,25 +334,15 @@
     template: '<div class="noItemsNode">No Items</div><div class="containerNode"></div>',
     itemClass: Backpack.View,
     initialize: function(options) {
-      Backpack.View.prototype.initialize.apply(this, arguments);
       if (options.itemClass) {
         this.itemClass = options.itemClass;
       }
-      this.collection.on("add remove reset", this.render, this);
       this.$el.html(this.template);
+      this.containerNode = this.$('.containerNode');
+      this.noItemsNode = this.$('.noItemsNode');
+      Backpack.View.prototype.initialize.apply(this, arguments);
+      this.collection.on("add remove reset", this.render, this);
       this.render();
-    },
-    getContainerNode: function() {
-      if (!this._containerRoot) {
-        this._containerRoot = this.$('.containerNode');
-      }
-      return this._containerRoot;
-    },
-    getNoItemsNode: function() {
-      if (!this._noItemsNode) {
-        this._noItemsNode = this.$('.noItemsNode');
-      }
-      return this._noItemsNode;
     },
     render: function() {
       var len, models,
@@ -369,11 +362,11 @@
     },
     _showContainerNode: function(bShow) {
       if (bShow) {
-        this.getNoItemsNode().hide();
-        this.getContainerNode().show();
+        this.noItemsNode.hide();
+        this.containerNode.show();
       } else {
-        this.getNoItemsNode().show();
-        this.getContainerNode().hide();
+        this.noItemsNode.show();
+        this.containerNode.hide();
       }
     },
     createChild: function(model) {

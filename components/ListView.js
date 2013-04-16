@@ -6,25 +6,15 @@
     template: '<div class="noItemsNode">No Items</div><div class="containerNode"></div>',
     itemClass: Backpack.View,
     initialize: function(options) {
-      Backpack.View.prototype.initialize.apply(this, arguments);
       if (options.itemClass) {
         this.itemClass = options.itemClass;
       }
-      this.collection.on("add remove reset", this.render, this);
       this.$el.html(this.template);
+      this.containerNode = this.$('.containerNode');
+      this.noItemsNode = this.$('.noItemsNode');
+      Backpack.View.prototype.initialize.apply(this, arguments);
+      this.collection.on("add remove reset", this.render, this);
       this.render();
-    },
-    getContainerNode: function() {
-      if (!this._containerRoot) {
-        this._containerRoot = this.$('.containerNode');
-      }
-      return this._containerRoot;
-    },
-    getNoItemsNode: function() {
-      if (!this._noItemsNode) {
-        this._noItemsNode = this.$('.noItemsNode');
-      }
-      return this._noItemsNode;
     },
     render: function() {
       var len, models,
@@ -44,11 +34,11 @@
     },
     _showContainerNode: function(bShow) {
       if (bShow) {
-        this.getNoItemsNode().hide();
-        this.getContainerNode().show();
+        this.noItemsNode.hide();
+        this.containerNode.show();
       } else {
-        this.getNoItemsNode().show();
-        this.getContainerNode().hide();
+        this.noItemsNode.show();
+        this.containerNode.hide();
       }
     },
     createChild: function(model) {

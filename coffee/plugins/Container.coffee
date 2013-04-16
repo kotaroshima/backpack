@@ -1,16 +1,14 @@
 Backpack.Container =
   setup:->
     @children = []
+    @containerNode = @$el
     return
-
-  getContainerNode:->
-    @$el
 
   getChild:(index)->
     @children[index]
 
   addChild:(view)->
-    @getContainerNode().append view.$el
+    @containerNode.append view.$el
     @children.push view
     return
 
