@@ -18,14 +18,7 @@ test 'only one instance can be initialized', ->
 test 'get the same instance', ->
   TestSingleton = Backpack.Class.extend
     plugins: [Backpack.Singleton]
-    count: 0
-    initialize:->
-      Backpack.Class::initialize.apply @, arguments
-      @count++
-      return
   instance1 = TestSingleton.getInstance()
-  equal instance1.count, 1
   instance2 = TestSingleton.getInstance()
-  equal instance1.count, 1
-  equal instance2.count, 1
+  equal instance1, instance2
   return

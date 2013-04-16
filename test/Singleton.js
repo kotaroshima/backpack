@@ -22,18 +22,11 @@
   test('get the same instance', function() {
     var TestSingleton, instance1, instance2;
     TestSingleton = Backpack.Class.extend({
-      plugins: [Backpack.Singleton],
-      count: 0,
-      initialize: function() {
-        Backpack.Class.prototype.initialize.apply(this, arguments);
-        this.count++;
-      }
+      plugins: [Backpack.Singleton]
     });
     instance1 = TestSingleton.getInstance();
-    equal(instance1.count, 1);
     instance2 = TestSingleton.getInstance();
-    equal(instance1.count, 1);
-    equal(instance2.count, 1);
+    equal(instance1, instance2);
   });
 
 }).call(this);
