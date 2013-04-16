@@ -18,11 +18,9 @@ Backpack.defaultPlugins = []
 setup =(self, options={})->
   # first mixin all the properties/methods of initialization parameters
   for own key, value of options
-    if key == 'plugins'
-      self[key] = _.clone(Backpack.defaultPlugins).concat options.plugins
-    else
-      self[key] = value
+    self[key] = value
 
+  self.plugins = _.clone(Backpack.defaultPlugins).concat self.plugins || []
   setups = []
   _.each self.plugins, (pi)->
     for own key, value of pi
@@ -48,7 +46,7 @@ cleanup=(self)->
 
 extend =(protoProps, staticProps)->
   child = Backbone.Model.extend.call @, protoProps, staticProps
-  child::plugins = _.clone(Backpack.defaultPlugins).concat(protoProps.plugins || [])
+  child::plugins = protoProps.plugins || []
 
   # apply static props
   if protoProps.plugins

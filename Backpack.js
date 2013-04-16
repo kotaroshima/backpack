@@ -35,12 +35,9 @@
     for (key in options) {
       if (!__hasProp.call(options, key)) continue;
       value = options[key];
-      if (key === 'plugins') {
-        self[key] = _.clone(Backpack.defaultPlugins).concat(options.plugins);
-      } else {
-        self[key] = value;
-      }
+      self[key] = value;
     }
+    self.plugins = _.clone(Backpack.defaultPlugins).concat(self.plugins || []);
     setups = [];
     _.each(self.plugins, function(pi) {
       for (key in pi) {
@@ -74,7 +71,7 @@
   extend = function(protoProps, staticProps) {
     var child;
     child = Backbone.Model.extend.call(this, protoProps, staticProps);
-    child.prototype.plugins = _.clone(Backpack.defaultPlugins).concat(protoProps.plugins || []);
+    child.prototype.plugins = protoProps.plugins || [];
     if (protoProps.plugins) {
       _.each(protoProps.plugins, function(pi) {
         if (pi.staticProps) {
@@ -143,5 +140,75 @@
   });
 
   Backpack.View.extend = extend;
+
+  Backpack.Attachable = {
+    setup: function() {
+      this._attached = [];
+    },
+    attach: function(method, callback) {
+      var handler;
+      handler = Backpack.attach(this, method, callback);
+      this._attached.push(handler);
+      return handler;
+    },
+    cleanup: function() {
+      _.invoke(this._attached, 'detach');
+    }
+  };
+
+  Backpack.defaultPlugins.push(Backpack.Attachable);
+
+  Backpack.Subscribable = {
+    setup: function() {
+      var cb, key, value, _ref;
+      if (this.subscribers) {
+        _ref = this.subscribers;
+        for (key in _ref) {
+          if (!__hasProp.call(_ref, key)) continue;
+          value = _ref[key];
+          cb = _.isString(value) ? this[value] : value;
+          Backbone.on(key, cb, this);
+        }
+      }
+    },
+    cleanup: function() {
+      var cb, key, value, _ref;
+      if (this.subscribers) {
+        _ref = this.subscribers;
+        for (key in _ref) {
+          if (!__hasProp.call(_ref, key)) continue;
+          value = _ref[key];
+          cb = _.isString(value) ? this[value] : value;
+          Backbone.off(key, cb, this);
+        }
+      }
+    }
+  };
+
+  Backpack.defaultPlugins.push(Backpack.Subscribable);
+
+  Backpack.Publishable = {
+    setup: function() {
+      var key, value, _ref;
+      if (this.publishers) {
+        _ref = this.publishers;
+        for (key in _ref) {
+          if (!__hasProp.call(_ref, key)) continue;
+          value = _ref[key];
+          this.attachTrigger(key, value);
+        }
+      }
+    },
+    attachTrigger: function(method, topic) {
+      Backpack.attach(this, method, function() {
+        var args;
+        args = [].slice.call(arguments, 0);
+        args.unshift(topic);
+        Backbone.trigger.apply(Backbone, args);
+      });
+    }
+  };
+
+  Backpack.defaultPlugins.push(Backpack.Publishable);
 
 }).call(this);
