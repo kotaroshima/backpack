@@ -28,22 +28,19 @@
   Backpack.defaultPlugins = [];
 
   setup = function(self, options) {
-    var key, setups, value;
+    var key, plugins, setups, value;
     if (options == null) {
       options = {};
     }
-    for (key in options) {
-      if (!__hasProp.call(options, key)) continue;
-      value = options[key];
-      self[key] = value;
-    }
-    self.plugins = _.clone(Backpack.defaultPlugins).concat(self.plugins || []);
+    self.plugins = options.plugins || self.plugins;
+    plugins = _.clone(Backpack.defaultPlugins).concat(self.plugins || []);
     setups = [];
-    _.each(self.plugins, function(pi) {
+    _.each(plugins, function(pi) {
+      var key, value;
       for (key in pi) {
         if (!__hasProp.call(pi, key)) continue;
         value = pi[key];
-        if (key !== 'setup' && key !== 'cleanup' && key !== 'staticProps') {
+        if (key !== 'setup' && key !== 'cleanup' && key !== 'staticProps' && !self[key]) {
           self[key] = value;
         }
       }
@@ -57,6 +54,13 @@
         self.cleanups.push(pi.cleanup);
       }
     });
+    for (key in options) {
+      if (!__hasProp.call(options, key)) continue;
+      value = options[key];
+      if (key !== 'plugins') {
+        self[key] = value;
+      }
+    }
     _.each(setups, function(su) {
       su.apply(self);
     });
@@ -162,11 +166,14 @@
     setup: function() {
       this.children = [];
     },
+    getContainerNode: function() {
+      return this.$el;
+    },
     getChild: function(index) {
       return this.children[index];
     },
     addChild: function(view) {
-      this.$el.append(view.$el);
+      this.getContainerNode().append(view.$el);
       this.children.push(view);
     },
     clearChildren: function() {
@@ -321,30 +328,53 @@
 
   Backpack.ListView = Backpack.View.extend({
     plugins: [Backpack.Container],
-    itemClass: Backbone.View,
+    template: '<div class="noItemsNode">No Items</div><div class="containerNode"></div>',
+    itemClass: Backpack.View,
     initialize: function(options) {
       Backpack.View.prototype.initialize.apply(this, arguments);
       if (options.itemClass) {
         this.itemClass = options.itemClass;
       }
       this.collection.on("add remove reset", this.render, this);
+      this.$el.html(this.template);
       this.render();
     },
+    getContainerNode: function() {
+      if (!this._containerRoot) {
+        this._containerRoot = this.$('.containerNode');
+      }
+      return this._containerRoot;
+    },
+    getNoItemsNode: function() {
+      if (!this._noItemsNode) {
+        this._noItemsNode = this.$('.noItemsNode');
+      }
+      return this._noItemsNode;
+    },
     render: function() {
-      var models,
+      var len, models,
         _this = this;
       models = this.collection.models;
+      len = models.length;
+      this._showContainerNode(len > 0);
       this.clearChildren();
-      if (models.length > 0) {
+      if (len > 0) {
         _.each(models, function(model) {
           var child;
           child = _this.createChild(model);
           _this.addChild(child);
         });
-      } else {
-        this.$el.html("No Items");
       }
       return this;
+    },
+    _showContainerNode: function(bShow) {
+      if (bShow) {
+        this.getNoItemsNode().hide();
+        this.getContainerNode().show();
+      } else {
+        this.getNoItemsNode().show();
+        this.getContainerNode().hide();
+      }
     },
     createChild: function(model) {
       var view;

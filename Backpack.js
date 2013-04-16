@@ -28,22 +28,19 @@
   Backpack.defaultPlugins = [];
 
   setup = function(self, options) {
-    var key, setups, value;
+    var key, plugins, setups, value;
     if (options == null) {
       options = {};
     }
-    for (key in options) {
-      if (!__hasProp.call(options, key)) continue;
-      value = options[key];
-      self[key] = value;
-    }
-    self.plugins = _.clone(Backpack.defaultPlugins).concat(self.plugins || []);
+    self.plugins = options.plugins || self.plugins;
+    plugins = _.clone(Backpack.defaultPlugins).concat(self.plugins || []);
     setups = [];
-    _.each(self.plugins, function(pi) {
+    _.each(plugins, function(pi) {
+      var key, value;
       for (key in pi) {
         if (!__hasProp.call(pi, key)) continue;
         value = pi[key];
-        if (key !== 'setup' && key !== 'cleanup' && key !== 'staticProps') {
+        if (key !== 'setup' && key !== 'cleanup' && key !== 'staticProps' && !self[key]) {
           self[key] = value;
         }
       }
@@ -57,6 +54,13 @@
         self.cleanups.push(pi.cleanup);
       }
     });
+    for (key in options) {
+      if (!__hasProp.call(options, key)) continue;
+      value = options[key];
+      if (key !== 'plugins') {
+        self[key] = value;
+      }
+    }
     _.each(setups, function(su) {
       su.apply(self);
     });

@@ -5,11 +5,14 @@
     setup: function() {
       this.children = [];
     },
+    getContainerNode: function() {
+      return this.$el;
+    },
     getChild: function(index) {
       return this.children[index];
     },
     addChild: function(view) {
-      this.$el.append(view.$el);
+      this.getContainerNode().append(view.$el);
       this.children.push(view);
     },
     clearChildren: function() {

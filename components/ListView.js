@@ -3,30 +3,53 @@
 
   Backpack.ListView = Backpack.View.extend({
     plugins: [Backpack.Container],
-    itemClass: Backbone.View,
+    template: '<div class="noItemsNode">No Items</div><div class="containerNode"></div>',
+    itemClass: Backpack.View,
     initialize: function(options) {
       Backpack.View.prototype.initialize.apply(this, arguments);
       if (options.itemClass) {
         this.itemClass = options.itemClass;
       }
       this.collection.on("add remove reset", this.render, this);
+      this.$el.html(this.template);
       this.render();
     },
+    getContainerNode: function() {
+      if (!this._containerRoot) {
+        this._containerRoot = this.$('.containerNode');
+      }
+      return this._containerRoot;
+    },
+    getNoItemsNode: function() {
+      if (!this._noItemsNode) {
+        this._noItemsNode = this.$('.noItemsNode');
+      }
+      return this._noItemsNode;
+    },
     render: function() {
-      var models,
+      var len, models,
         _this = this;
       models = this.collection.models;
+      len = models.length;
+      this._showContainerNode(len > 0);
       this.clearChildren();
-      if (models.length > 0) {
+      if (len > 0) {
         _.each(models, function(model) {
           var child;
           child = _this.createChild(model);
           _this.addChild(child);
         });
-      } else {
-        this.$el.html("No Items");
       }
       return this;
+    },
+    _showContainerNode: function(bShow) {
+      if (bShow) {
+        this.getNoItemsNode().hide();
+        this.getContainerNode().show();
+      } else {
+        this.getNoItemsNode().show();
+        this.getContainerNode().hide();
+      }
     },
     createChild: function(model) {
       var view;

@@ -16,21 +16,27 @@ Backpack.attach = (context, method, callback)->
 Backpack.defaultPlugins = []
 
 setup =(self, options={})->
-  # first mixin all the properties/methods of initialization parameters
-  for own key, value of options
-    self[key] = value
+  # use initialization options plugins if specified
+  # otherwise use plugins specified in extend
+  self.plugins = options.plugins || self.plugins
+  plugins = _.clone(Backpack.defaultPlugins).concat self.plugins || []
 
-  self.plugins = _.clone(Backpack.defaultPlugins).concat self.plugins || []
   setups = []
-  _.each self.plugins, (pi)->
+  _.each plugins, (pi)->
+    # mixin methods specified in plugins
     for own key, value of pi
-      if key != 'setup' && key != 'cleanup' && key != 'staticProps'
+      if key != 'setup' && key != 'cleanup' && key != 'staticProps' && !self[key]
         self[key] = value
     setups.push pi.setup if pi.setup
     if pi.cleanup
       self.cleanups = [] if !self.cleanups
       self.cleanups.push pi.cleanup
     return
+
+  # mixin all the properties/methods of initialization parameters
+  for own key, value of options
+    if key != 'plugins'
+      self[key] = value
 
   # finally apply all the setups
   _.each setups, (su)->
