@@ -19,7 +19,7 @@
     model.onTestEvent('x', 2);
   });
 
-  test('Model subscribes with initialization parameter', function() {
+  test('Model publishes with initialization parameter', function() {
     var model;
     model = new Backpack.Model(null, {
       publishers: {
@@ -50,7 +50,7 @@
     collection.onTestEvent('x', 2);
   });
 
-  test('Collection subscribes with initialization parameter', function() {
+  test('Collection publishes with initialization parameter', function() {
     var collection;
     collection = new Backpack.Collection(null, {
       publishers: {
@@ -81,7 +81,7 @@
     view.onTestEvent('x', 2);
   });
 
-  test('View subscribes with initialization parameter', function() {
+  test('View publishes with initialization parameter', function() {
     var view;
     view = new Backpack.View({
       publishers: {
@@ -112,7 +112,7 @@
     instance.onTestEvent('x', 2);
   });
 
-  test('Class subscribes with initialization parameter', function() {
+  test('Class publishes with initialization parameter', function() {
     var instance;
     instance = new Backpack.Class({
       publishers: {

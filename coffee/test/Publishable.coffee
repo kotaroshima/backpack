@@ -13,7 +13,7 @@ test 'Model publishes with inheritance', ->
   model.onTestEvent 'x', 2
   return
 
-test 'Model subscribes with initialization parameter', ->
+test 'Model publishes with initialization parameter', ->
   model = new Backpack.Model null,
     publishers:
       onTestEvent: 'TEST_EVENT'
@@ -38,7 +38,7 @@ test 'Collection publishes with inheritance', ->
   collection.onTestEvent 'x', 2
   return
 
-test 'Collection subscribes with initialization parameter', ->
+test 'Collection publishes with initialization parameter', ->
   collection = new Backpack.Collection null,
     publishers:
       onTestEvent: 'TEST_EVENT'
@@ -63,7 +63,7 @@ test 'View publishes with inheritance', ->
   view.onTestEvent 'x', 2
   return
 
-test 'View subscribes with initialization parameter', ->
+test 'View publishes with initialization parameter', ->
   view = new Backpack.View
     publishers:
       onTestEvent: 'TEST_EVENT'
@@ -88,7 +88,7 @@ test 'Class publishes with inheritance', ->
   instance.onTestEvent 'x', 2
   return
 
-test 'Class subscribes with initialization parameter', ->
+test 'Class publishes with initialization parameter', ->
   instance = new Backpack.Class
     publishers:
       onTestEvent: 'TEST_EVENT'

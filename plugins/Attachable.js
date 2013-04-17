@@ -11,8 +11,20 @@
       this._attached.push(handler);
       return handler;
     },
+    detach: function(handler) {
+      var index, ret;
+      index = _.indexOf(this._attached, handler);
+      ret = false;
+      if (index !== -1) {
+        this._attached.splice(index, 1);
+        handler.detach();
+        ret = true;
+      }
+      return ret;
+    },
     cleanup: function() {
       _.invoke(this._attached, 'detach');
+      this._attached = [];
     }
   };
 
