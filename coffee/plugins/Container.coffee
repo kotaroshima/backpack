@@ -1,7 +1,7 @@
 Backpack.Container =
   setup:->
-    @children = []
-    @containerNode = @$el
+    @containerNode = @$el if !@containerNode
+    @children = [] unless @children
     return
 
   getChild:(index)->

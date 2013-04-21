@@ -3,8 +3,12 @@
 
   Backpack.Container = {
     setup: function() {
-      this.children = [];
-      this.containerNode = this.$el;
+      if (!this.containerNode) {
+        this.containerNode = this.$el;
+      }
+      if (!this.children) {
+        this.children = [];
+      }
     },
     getChild: function(index) {
       return this.children[index];

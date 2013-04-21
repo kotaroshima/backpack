@@ -134,6 +134,44 @@
       Backbone.View.prototype.initialize.apply(this, arguments);
       setup(this, options);
     },
+    /*
+      * Override so that event handler works even if method has been dynamically overwritten
+      * TODO : submit a patch to Backbone
+    */
+
+    delegateEvents: function(events) {
+      var bindMethod, eventName, key, match, method, methodName, selector,
+        _this = this;
+      if (!(events || (events = _.result(this, 'events')))) {
+        return this;
+      }
+      this.undelegateEvents();
+      bindMethod = function(methodName) {
+        var method;
+        method = function(e) {
+          return _this[methodName](e);
+        };
+        return _.bind(method, _this);
+      };
+      for (key in events) {
+        if (!__hasProp.call(events, key)) continue;
+        methodName = events[key];
+        if (!this[methodName] || !_.isFunction(this[methodName])) {
+          continue;
+        }
+        match = key.match(/^(\S+)\s*(.*)$/);
+        eventName = match[1];
+        selector = match[2];
+        method = bindMethod(methodName);
+        eventName += '.delegateEvents' + this.cid;
+        if (selector === '') {
+          this.$el.on(eventName, method);
+        } else {
+          this.$el.on(eventName, selector, method);
+        }
+      }
+      return this;
+    },
     remove: function() {
       cleanup(this);
       Backbone.View.prototype.remove.apply(this, arguments);
@@ -149,12 +187,34 @@
     setup: function() {
       this._attached = [];
     },
-    attach: function(method, callback) {
+    /*
+      * Attaches an event handler, which will be detached when this object is destroyed
+      * if 2 arguments:
+      * @param {String} method Name of this object's method to which attach event
+      * @param {Function} cb Callback function
+      * if 3 arguments:
+      * @param {Object} object Object to which attach event
+      * @param {String} method Method name of object to which attach event
+      * @param {Function} cb Callback function
+    */
+
+    attach: function() {
       var handler;
-      handler = Backpack.attach(this, method, callback);
+      switch (arguments.length) {
+        case 2:
+          handler = Backpack.attach(this, arguments[0], arguments[1]);
+          break;
+        case 3:
+          handler = Backpack.attach(arguments[0], arguments[1], arguments[2]);
+      }
       this._attached.push(handler);
       return handler;
     },
+    /*
+      * Detaches an event and it will be removed from event handler list which will be cleaned up on destroy
+      * @param {Object} handler Event handler
+    */
+
     detach: function(handler) {
       var index, ret;
       index = _.indexOf(this._attached, handler);

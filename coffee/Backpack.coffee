@@ -101,6 +101,34 @@ Backpack.View = Backbone.View.extend
     Backbone.View::initialize.apply @, arguments
     setup @, options
     return
+
+  ###
+  * Override so that event handler works even if method has been dynamically overwritten
+  * TODO : submit a patch to Backbone
+  ###
+  delegateEvents: (events)->
+    return @ if !(events || (events = _.result(@, 'events')))
+    @undelegateEvents()
+
+    bindMethod = (methodName)=>
+      method = (e)=>
+        @[methodName](e)
+      _.bind method, @
+
+    for own key of events
+      methodName = events[key]
+      continue if !@[methodName] || !_.isFunction @[methodName]
+      match = key.match /^(\S+)\s*(.*)$/
+      eventName = match[1]
+      selector = match[2]
+      method = bindMethod methodName
+      eventName += '.delegateEvents' + @cid
+      if selector == ''
+        @$el.on eventName, method
+      else
+        @$el.on eventName, selector, method
+    return @
+
   remove:->
     cleanup @
     Backbone.View::remove.apply @, arguments

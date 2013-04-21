@@ -134,6 +134,44 @@
       Backbone.View.prototype.initialize.apply(this, arguments);
       setup(this, options);
     },
+    /*
+      * Override so that event handler works even if method has been dynamically overwritten
+      * TODO : submit a patch to Backbone
+    */
+
+    delegateEvents: function(events) {
+      var bindMethod, eventName, key, match, method, methodName, selector,
+        _this = this;
+      if (!(events || (events = _.result(this, 'events')))) {
+        return this;
+      }
+      this.undelegateEvents();
+      bindMethod = function(methodName) {
+        var method;
+        method = function(e) {
+          return _this[methodName](e);
+        };
+        return _.bind(method, _this);
+      };
+      for (key in events) {
+        if (!__hasProp.call(events, key)) continue;
+        methodName = events[key];
+        if (!this[methodName] || !_.isFunction(this[methodName])) {
+          continue;
+        }
+        match = key.match(/^(\S+)\s*(.*)$/);
+        eventName = match[1];
+        selector = match[2];
+        method = bindMethod(methodName);
+        eventName += '.delegateEvents' + this.cid;
+        if (selector === '') {
+          this.$el.on(eventName, method);
+        } else {
+          this.$el.on(eventName, selector, method);
+        }
+      }
+      return this;
+    },
     remove: function() {
       cleanup(this);
       Backbone.View.prototype.remove.apply(this, arguments);
@@ -149,12 +187,34 @@
     setup: function() {
       this._attached = [];
     },
-    attach: function(method, callback) {
+    /*
+      * Attaches an event handler, which will be detached when this object is destroyed
+      * if 2 arguments:
+      * @param {String} method Name of this object's method to which attach event
+      * @param {Function} cb Callback function
+      * if 3 arguments:
+      * @param {Object} object Object to which attach event
+      * @param {String} method Method name of object to which attach event
+      * @param {Function} cb Callback function
+    */
+
+    attach: function() {
       var handler;
-      handler = Backpack.attach(this, method, callback);
+      switch (arguments.length) {
+        case 2:
+          handler = Backpack.attach(this, arguments[0], arguments[1]);
+          break;
+        case 3:
+          handler = Backpack.attach(arguments[0], arguments[1], arguments[2]);
+      }
       this._attached.push(handler);
       return handler;
     },
+    /*
+      * Detaches an event and it will be removed from event handler list which will be cleaned up on destroy
+      * @param {Object} handler Event handler
+    */
+
     detach: function(handler) {
       var index, ret;
       index = _.indexOf(this._attached, handler);
@@ -176,8 +236,12 @@
 
   Backpack.Container = {
     setup: function() {
-      this.children = [];
-      this.containerNode = this.$el;
+      if (!this.containerNode) {
+        this.containerNode = this.$el;
+      }
+      if (!this.children) {
+        this.children = [];
+      }
     },
     getChild: function(index) {
       return this.children[index];
@@ -391,6 +455,101 @@
     remove: function() {
       this.collection.off("add remove reset", this.render);
       Backpack.View.prototype.remove.call(this);
+    }
+  });
+
+  /*
+  * A view that stacks its children
+  */
+
+
+  Backpack.StackView = Backpack.View.extend({
+    plugins: [Backpack.Container],
+    /*
+      * Constructor
+      * @param {Object} [options] Initialization option
+      * @param {Backpack.View[]} [options.children] Child views
+      * @param {int} [options.selectedIndex=0] Index of child view to be selected
+      * @param {Hash} [options.stackEvents] Map to define event handler to select child.
+      *    key is child view's 'name' property, and value is child view's method name to trigger selection
+    */
+
+    initialize: function(options) {
+      var selectedIndex,
+        _this = this;
+      if (options == null) {
+        options = {};
+      }
+      Backpack.View.prototype.initialize.apply(this, arguments);
+      if (this.children) {
+        _.each(this.children, function(child) {
+          _this.addChild(child);
+        });
+      }
+      selectedIndex = options.selectedIndex;
+      if (!selectedIndex || !(this.children && ((0 < selectedIndex && selectedIndex < this.children.length)))) {
+        this._selectedView = this.children[selectedIndex];
+      }
+      this.render();
+    },
+    /*
+      * Select only one of its children and hide others
+      * @returns {Backpack.View} this instance
+    */
+
+    render: function() {
+      var _this = this;
+      _.each(this.children, function(child) {
+        if (child === _this._selectedView) {
+          _this.selectChild(child);
+        } else {
+          child.$el.hide();
+        }
+      });
+      return this;
+    },
+    /*
+      * Override to attach event
+      * @param {Backpack.View} view View to add to this view
+    */
+
+    addChild: function(view) {
+      var stackEvent, targetView, _ref;
+      Backpack.Container.addChild.apply(this, arguments);
+      stackEvent = (_ref = this.stackEvents) != null ? _ref[view.name] : void 0;
+      if (stackEvent) {
+        targetView = _.find(this.children, function(child) {
+          return child.name === stackEvent.targetView;
+        });
+        this.attachView(view, stackEvent.event, targetView);
+      }
+    },
+    /*
+      * Attach event of child view to select that view
+      * @param {Backpack.View} view Child view
+      * @param {String} method Name of the child view method
+    */
+
+    attachView: function(view, method, targetView) {
+      var _this = this;
+      view.attach(view, method, function() {
+        _this.selectChild(targetView);
+      });
+    },
+    /*
+      * Selects one of its child views
+      * @param {int|Backbone.View} child Child view to select
+    */
+
+    selectChild: function(child) {
+      if (_.isNumber(child)) {
+        child = this.children[child];
+      }
+      if (this._selectedView) {
+        this._selectedView.$el.hide();
+      }
+      child.$el.show();
+      this._selectedView = child;
     }
   });
 
