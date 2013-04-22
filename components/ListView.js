@@ -3,7 +3,7 @@
 
   Backpack.ListView = Backpack.View.extend({
     plugins: [Backpack.Container],
-    template: '<div class="noItemsNode">No Items</div><div class="containerNode"></div>',
+    template: _.template('<div class="mainNode"><div class="containerNode"></div><div class="noItemsNode">No Items</div></div><div class="loadingNode">Loading...</div>', this.messages),
     itemClass: Backpack.View,
     initialize: function(options) {
       if (options.itemClass) {
@@ -11,7 +11,10 @@
       }
       this.$el.html(this.template);
       this.containerNode = this.$('.containerNode');
-      this.noItemsNode = this.$('.noItemsNode');
+      this._noItemsNode = this.$('.noItemsNode');
+      this._mainNode = this.$('.mainNode');
+      this._loadingNode = this.$('.loadingNode');
+      this.setLoading(false);
       Backpack.View.prototype.initialize.apply(this, arguments);
       this.collection.on("add remove reset", this.render, this);
       this.render();
@@ -34,10 +37,10 @@
     },
     _showContainerNode: function(bShow) {
       if (bShow) {
-        this.noItemsNode.hide();
+        this._noItemsNode.hide();
         this.containerNode.show();
       } else {
-        this.noItemsNode.show();
+        this._noItemsNode.show();
         this.containerNode.hide();
       }
     },
@@ -47,6 +50,15 @@
         model: model
       });
       return view.render();
+    },
+    setLoading: function(bLoading) {
+      if (bLoading) {
+        this._loadingNode.show();
+        this._mainNode.hide();
+      } else {
+        this._loadingNode.hide();
+        this._mainNode.show();
+      }
     },
     remove: function() {
       this.collection.off("add remove reset", this.render);

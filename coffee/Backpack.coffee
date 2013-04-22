@@ -127,7 +127,7 @@ Backpack.View = Backbone.View.extend
         @$el.on eventName, method
       else
         @$el.on eventName, selector, method
-    return @
+    @
 
   remove:->
     cleanup @
