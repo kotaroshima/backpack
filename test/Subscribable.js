@@ -3,136 +3,38 @@
 
   module('Backpack.Subscribable');
 
-  test('Model subscribes with inheritance', function() {
-    var TestModel, model;
-    TestModel = Backpack.Model.extend({
-      subscribers: {
-        TEST_EVENT: 'onTestEvent'
-      },
-      onTestEvent: function(arg1, arg2) {
-        this.prop1 = arg1;
-        this.prop2 = arg2;
-      }
+  _.each(Backpack.testDefs, function(def) {
+    test(_.template('<%-name%> subscribes with inheritance', def), function() {
+      var TestClass, instance;
+      TestClass = def["class"].extend({
+        subscribers: {
+          TEST_EVENT: 'onTestEvent'
+        },
+        onTestEvent: function(arg1, arg2) {
+          this.prop1 = arg1;
+          this.prop2 = arg2;
+        }
+      });
+      instance = new TestClass();
+      Backbone.trigger('TEST_EVENT', 'x', 2);
+      equal(instance.prop1, 'x', 'callback function called and 1st argument passed');
+      equal(instance.prop2, 2, 'callback function called and 2nd argument passed');
     });
-    model = new TestModel();
-    Backbone.trigger('TEST_EVENT', 'x', 2);
-    equal(model.prop1, 'x', 'callback function called and 1st argument passed');
-    equal(model.prop2, 2, 'callback function called and 2nd argument passed');
-  });
-
-  test('Model subscribes with initialization parameter', function() {
-    var model;
-    model = new Backpack.Model(null, {
-      subscribers: {
-        TEST_EVENT: 'onTestEvent'
-      },
-      onTestEvent: function(arg1, arg2) {
-        this.prop1 = arg1;
-        this.prop2 = arg2;
-      }
+    test(_.template('<%-name%>, subscribes with initialization parameter', def), function() {
+      var instance;
+      instance = new def.createInstance({
+        subscribers: {
+          TEST_EVENT: 'onTestEvent'
+        },
+        onTestEvent: function(arg1, arg2) {
+          this.prop1 = arg1;
+          this.prop2 = arg2;
+        }
+      });
+      Backbone.trigger('TEST_EVENT', 'x', 2);
+      equal(instance.prop1, 'x', 'callback function called and 1st argument passed');
+      equal(instance.prop2, 2, 'callback function called and 2nd argument passed');
     });
-    Backbone.trigger('TEST_EVENT', 'x', 2);
-    equal(model.prop1, 'x', 'callback function called and 1st argument passed');
-    equal(model.prop2, 2, 'callback function called and 2nd argument passed');
-  });
-
-  test('Collection subscribes with inheritance', function() {
-    var TestCollection, collection;
-    TestCollection = Backpack.Collection.extend({
-      subscribers: {
-        TEST_EVENT: 'onTestEvent'
-      },
-      onTestEvent: function(arg1, arg2) {
-        this.prop1 = arg1;
-        this.prop2 = arg2;
-      }
-    });
-    collection = new TestCollection();
-    Backbone.trigger('TEST_EVENT', 'x', 2);
-    equal(collection.prop1, 'x', 'callback function called and 1st argument passed');
-    equal(collection.prop2, 2, 'callback function called and 2nd argument passed');
-  });
-
-  test('Collection subscribes with initialization parameter', function() {
-    var collection;
-    collection = new Backpack.Collection(null, {
-      subscribers: {
-        TEST_EVENT: 'onTestEvent'
-      },
-      onTestEvent: function(arg1, arg2) {
-        this.prop1 = arg1;
-        this.prop2 = arg2;
-      }
-    });
-    Backbone.trigger('TEST_EVENT', 'x', 2);
-    equal(collection.prop1, 'x', 'callback function called and 1st argument passed');
-    equal(collection.prop2, 2, 'callback function called and 2nd argument passed');
-  });
-
-  test('View subscribes with inheritance', function() {
-    var TestView, view;
-    TestView = Backpack.View.extend({
-      subscribers: {
-        TEST_EVENT: 'onTestEvent'
-      },
-      onTestEvent: function(arg1, arg2) {
-        this.prop1 = arg1;
-        this.prop2 = arg2;
-      }
-    });
-    view = new TestView();
-    Backbone.trigger('TEST_EVENT', 'x', 2);
-    equal(view.prop1, 'x', 'callback function called and 1st argument passed');
-    equal(view.prop2, 2, 'callback function called and 2nd argument passed');
-  });
-
-  test('View subscribes with initialization parameter', function() {
-    var view;
-    view = new Backpack.View({
-      subscribers: {
-        TEST_EVENT: 'onTestEvent'
-      },
-      onTestEvent: function(arg1, arg2) {
-        this.prop1 = arg1;
-        this.prop2 = arg2;
-      }
-    });
-    Backbone.trigger('TEST_EVENT', 'x', 2);
-    equal(view.prop1, 'x', 'callback function called and 1st argument passed');
-    equal(view.prop2, 2, 'callback function called and 2nd argument passed');
-  });
-
-  test('Class subscribes with inheritance', function() {
-    var TestClass, instance;
-    TestClass = Backpack.Class.extend({
-      subscribers: {
-        TEST_EVENT: 'onTestEvent'
-      },
-      onTestEvent: function(arg1, arg2) {
-        this.prop1 = arg1;
-        this.prop2 = arg2;
-      }
-    });
-    instance = new TestClass();
-    Backbone.trigger('TEST_EVENT', 'x', 2);
-    equal(instance.prop1, 'x', 'callback function called and 1st argument passed');
-    equal(instance.prop2, 2, 'callback function called and 2nd argument passed');
-  });
-
-  test('Class subscribes with initialization parameter', function() {
-    var instance;
-    instance = new Backpack.Class({
-      subscribers: {
-        TEST_EVENT: 'onTestEvent'
-      },
-      onTestEvent: function(arg1, arg2) {
-        this.prop1 = arg1;
-        this.prop2 = arg2;
-      }
-    });
-    Backbone.trigger('TEST_EVENT', 'x', 2);
-    equal(instance.prop1, 'x', 'callback function called and 1st argument passed');
-    equal(instance.prop2, 2, 'callback function called and 2nd argument passed');
   });
 
 }).call(this);

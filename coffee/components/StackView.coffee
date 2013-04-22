@@ -47,11 +47,13 @@ Backpack.StackView = Backpack.View.extend
   addChild:(view)->
     Backpack.Container.addChild.apply @, arguments
 
-    stackEvent = @stackEvents?[view.name]
-    if stackEvent
-      targetView = _.find @children, (child)->
-        child.name == stackEvent.targetView
-      @attachView view, stackEvent.event, targetView
+    stackEvents = @stackEvents
+    if stackEvents
+      stackEvent = stackEvents[view.name]
+      if stackEvent
+        targetView = _.find @children, (child)->
+          child.name == stackEvent.target
+        @attachView view, stackEvent.event, targetView
     return
 
   ###

@@ -67,319 +67,81 @@ test 'attach multiple events', ->
   equal obj.counter2, 5, 'counter2 should be incremented five times.'
   return
 
-module 'Backpack.Model'
+_.each Backpack.testDefs, (def)->
 
-test 'extend with plugins', ->
-  testPlugin1 =
-    setup:->
-      @prop1 = 'hello'
-      return
-    cleanup:->
-      @prop1 = 'bye'
-      return
-  testPlugin2 =
-    setup:->
-      @prop2 = 'konichiwa'
-      return
-    cleanup:->
-      @prop2 = 'sayonara'
-      return
-  TestModel = Backpack.Model.extend
-    plugins: [testPlugin1, testPlugin2]
-  model = new TestModel()
-  equal model.prop1, 'hello', 'setup called for first plugin'
-  equal model.prop2, 'konichiwa', 'setup called for second plugin'
-  model.destroy()
-  equal model.prop1, 'bye', 'cleanup called for first plugin'
-  equal model.prop2, 'sayonara', 'cleanup called for second plugin'
-  return
+  module def.name
 
-test 'initialize with plugins', ->
-  testPlugin1 =
-    setup:->
-      @prop1 = 'hello'
-      return
-    cleanup:->
-      @prop1 = 'bye'
-      return
-  testPlugin2 =
-    setup:->
-      @prop2 = 'konichiwa'
-      return
-    cleanup:->
-      @prop2 = 'sayonara'
-      return
-  model = new Backpack.Model null,
-    plugins: [testPlugin1, testPlugin2]
-  equal model.prop1, 'hello', 'setup called for first plugin'
-  equal model.prop2, 'konichiwa', 'setup called for second plugin'
-  model.destroy()
-  equal model.prop1, 'bye', 'cleanup called for first plugin'
-  equal model.prop2, 'sayonara', 'cleanup called for second plugin'
-  return
+  test 'extend with plugins', ->
+    testPlugin1 =
+      setup:->
+        @prop1 = 'hello'
+        return
+      cleanup:->
+        @prop1 = 'bye'
+        return
+    testPlugin2 =
+      setup:->
+        @prop2 = 'konichiwa'
+        return
+      cleanup:->
+        @prop2 = 'sayonara'
+        return
+    TestClass = def.class.extend
+      plugins: [testPlugin1, testPlugin2]
+    instance = new TestClass()
+    equal instance.prop1, 'hello', 'setup called for first plugin'
+    equal instance.prop2, 'konichiwa', 'setup called for second plugin'
+    instance.destroy()
+    equal instance.prop1, 'bye', 'cleanup called for first plugin'
+    equal instance.prop2, 'sayonara', 'cleanup called for second plugin'
+    return
 
-test 'override extend plugins with initialize plugins', ->
-  testPlugin1 =
-    setup:->
-      @prop1 = 'hello'
-      return
-    cleanup:->
-      @prop1 = 'bye'
-      return
-  testPlugin2 =
-    setup:->
-      @prop2 = 'konichiwa'
-      return
-    cleanup:->
-      @prop2 = 'sayonara'
-      return
-  TestModel = Backpack.Model.extend
-    plugins: [testPlugin1]
-  model = new TestModel null,
-    plugins: [testPlugin2]
-  notEqual model.prop1, 'hello', 'setup not called for extend plugin'
-  equal model.prop2, 'konichiwa', 'setup called for initialize plugin'
-  model.destroy()
-  notEqual model.prop1, 'bye', 'cleanup not called for extend plugin'
-  equal model.prop2, 'sayonara', 'cleanup called for initialize plugin'
-  return
+  test 'initialize with plugins', ->
+    testPlugin1 =
+      setup:->
+        @prop1 = 'hello'
+        return
+      cleanup:->
+        @prop1 = 'bye'
+        return
+    testPlugin2 =
+      setup:->
+        @prop2 = 'konichiwa'
+        return
+      cleanup:->
+        @prop2 = 'sayonara'
+        return
+    instance = def.createInstance plugins: [testPlugin1, testPlugin2]
+    equal instance.prop1, 'hello', 'setup called for first plugin'
+    equal instance.prop2, 'konichiwa', 'setup called for second plugin'
+    instance.destroy()
+    equal instance.prop1, 'bye', 'cleanup called for first plugin'
+    equal instance.prop2, 'sayonara', 'cleanup called for second plugin'
+    return
 
-module 'Backpack.Collection'
+  test 'override extend plugins with initialize plugins', ->
+    testPlugin1 =
+      setup:->
+        @prop1 = 'hello'
+        return
+      cleanup:->
+        @prop1 = 'bye'
+        return
+    testPlugin2 =
+      setup:->
+        @prop2 = 'konichiwa'
+        return
+      cleanup:->
+        @prop2 = 'sayonara'
+        return
+    TestClass = def.class.extend
+      plugins: [testPlugin1]
+    instance = def.createInstance plugins: [testPlugin2]
+    notEqual instance.prop1, 'hello', 'setup not called for extend plugin'
+    equal instance.prop2, 'konichiwa', 'setup called for initialize plugin'
+    instance.destroy()
+    notEqual instance.prop1, 'bye', 'cleanup not called for extend plugin'
+    equal instance.prop2, 'sayonara', 'cleanup called for initialize plugin'
+    return
 
-test 'extend with plugins', ->
-  testPlugin1 =
-    setup:->
-      @prop1 = 'hello'
-      return
-    cleanup:->
-      @prop1 = 'bye'
-      return
-  testPlugin2 =
-    setup:->
-      @prop2 = 'konichiwa'
-      return
-    cleanup:->
-      @prop2 = 'sayonara'
-      return
-  TestCollection = Backpack.Collection.extend
-    plugins: [testPlugin1, testPlugin2]
-  collection = new TestCollection()
-  equal collection.prop1, 'hello', 'setup called for first plugin'
-  equal collection.prop2, 'konichiwa', 'setup called for second plugin'
-  collection.destroy()
-  equal collection.prop1, 'bye', 'cleanup called for first plugin'
-  equal collection.prop2, 'sayonara', 'cleanup called for second plugin'
-  return
-
-test 'initialize with plugins', ->
-  testPlugin1 =
-    setup:->
-      @prop1 = 'hello'
-      return
-    cleanup:->
-      @prop1 = 'bye'
-      return
-  testPlugin2 =
-    setup:->
-      @prop2 = 'konichiwa'
-      return
-    cleanup:->
-      @prop2 = 'sayonara'
-      return
-  collection = new Backpack.Collection null,
-    plugins: [testPlugin1, testPlugin2]
-  equal collection.prop1, 'hello', 'setup called for first plugin'
-  equal collection.prop2, 'konichiwa', 'setup called for second plugin'
-  collection.destroy()
-  equal collection.prop1, 'bye', 'cleanup called for first plugin'
-  equal collection.prop2, 'sayonara', 'cleanup called for second plugin'
-  return
-
-test 'override extend plugins with initialize plugins', ->
-  testPlugin1 =
-    setup:->
-      @prop1 = 'hello'
-      return
-    cleanup:->
-      @prop1 = 'bye'
-      return
-  testPlugin2 =
-    setup:->
-      @prop2 = 'konichiwa'
-      return
-    cleanup:->
-      @prop2 = 'sayonara'
-      return
-  TestCollection = Backpack.Collection.extend
-    plugins: [testPlugin1]
-  collection = new TestCollection null,
-    plugins: [testPlugin2]
-  notEqual collection.prop1, 'hello', 'setup not called for extend plugin'
-  equal collection.prop2, 'konichiwa', 'setup called for initialize plugin'
-  collection.destroy()
-  notEqual collection.prop1, 'bye', 'cleanup not called for extend plugin'
-  equal collection.prop2, 'sayonara', 'cleanup called for initialize plugin'
-  return
-
-module 'Backpack.View'
-
-test 'extend with plugins', ->
-  testPlugin1 =
-    setup:->
-      @prop1 = 'hello'
-      return
-    cleanup:->
-      @prop1 = 'bye'
-      return
-  testPlugin2 =
-    setup:->
-      @prop2 = 'konichiwa'
-      return
-    cleanup:->
-      @prop2 = 'sayonara'
-      return
-  TestView = Backpack.View.extend
-    plugins: [testPlugin1, testPlugin2]
-  view = new TestView()
-  equal view.prop1, 'hello', 'setup called for first plugin'
-  equal view.prop2, 'konichiwa', 'setup called for second plugin'
-  view.destroy()
-  equal view.prop1, 'bye', 'cleanup called for first plugin'
-  equal view.prop2, 'sayonara', 'cleanup called for second plugin'
-  return
-
-test 'initialize with plugins', ->
-  testPlugin1 =
-    setup:->
-      @prop1 = 'hello'
-      return
-    cleanup:->
-      @prop1 = 'bye'
-      return
-  testPlugin2 =
-    setup:->
-      @prop2 = 'konichiwa'
-      return
-    cleanup:->
-      @prop2 = 'sayonara'
-      return
-  view = new Backpack.View
-    plugins: [testPlugin1, testPlugin2]
-  equal view.prop1, 'hello', 'setup called for first plugin'
-  equal view.prop2, 'konichiwa', 'setup called for second plugin'
-  view.destroy()
-  equal view.prop1, 'bye', 'cleanup called for first plugin'
-  equal view.prop2, 'sayonara', 'cleanup called for second plugin'
-  return
-
-test 'override extend plugins with initialize plugins', ->
-  testPlugin1 =
-    setup:->
-      @prop1 = 'hello'
-      return
-    cleanup:->
-      @prop1 = 'bye'
-      return
-  testPlugin2 =
-    setup:->
-      @prop2 = 'konichiwa'
-      return
-    cleanup:->
-      @prop2 = 'sayonara'
-      return
-  TestView = Backpack.View.extend
-    plugins: [testPlugin1]
-  view = new TestView
-    plugins: [testPlugin2]
-  notEqual view.prop1, 'hello', 'setup not called for extend plugin'
-  equal view.prop2, 'konichiwa', 'setup called for initialize plugin'
-  view.destroy()
-  notEqual view.prop1, 'bye', 'cleanup not called for extend plugin'
-  equal view.prop2, 'sayonara', 'cleanup called for initialize plugin'
-  return
-
-module 'Backpack.Class'
-
-test 'initialize', ->
-  TestClass = Backpack.Class.extend
-    initialize:->
-      @one = 1
-      return
-  instance = new TestClass()
-  equal instance.one, 1
-  return
-
-test 'extend with plugins', ->
-  testPlugin1 =
-    setup:->
-      @prop1 = 'hello'
-      return
-    cleanup:->
-      @prop1 = 'bye'
-      return
-  testPlugin2 =
-    setup:->
-      @prop2 = 'konichiwa'
-      return
-    cleanup:->
-      @prop2 = 'sayonara'
-      return
-  TestClass = Backpack.Class.extend
-    plugins: [testPlugin1, testPlugin2]
-  instance = new TestClass()
-  equal instance.prop1, 'hello', 'setup called for first plugin'
-  equal instance.prop2, 'konichiwa', 'setup called for second plugin'
-  instance.destroy()
-  equal instance.prop1, 'bye', 'cleanup called for first plugin'
-  equal instance.prop2, 'sayonara', 'cleanup called for second plugin'
-  return
-
-test 'initialize with plugins', ->
-  testPlugin1 =
-    setup:->
-      @prop1 = 'hello'
-      return
-    cleanup:->
-      @prop1 = 'bye'
-      return
-  testPlugin2 =
-    setup:->
-      @prop2 = 'konichiwa'
-      return
-    cleanup:->
-      @prop2 = 'sayonara'
-      return
-  instance = new Backpack.Class
-    plugins: [testPlugin1, testPlugin2]
-  equal instance.prop1, 'hello', 'setup called for first plugin'
-  equal instance.prop2, 'konichiwa', 'setup called for second plugin'
-  instance.destroy()
-  equal instance.prop1, 'bye', 'cleanup called for first plugin'
-  equal instance.prop2, 'sayonara', 'cleanup called for second plugin'
-  return
-
-test 'override extend plugins with initialize plugins', ->
-  testPlugin1 =
-    setup:->
-      @prop1 = 'hello'
-      return
-    cleanup:->
-      @prop1 = 'bye'
-      return
-  testPlugin2 =
-    setup:->
-      @prop2 = 'konichiwa'
-      return
-    cleanup:->
-      @prop2 = 'sayonara'
-      return
-  TestClass = Backpack.Class.extend
-    plugins: [testPlugin1]
-  instance = new TestClass
-    plugins: [testPlugin2]
-  notEqual instance.prop1, 'hello', 'setup not called for extend plugin'
-  equal instance.prop2, 'konichiwa', 'setup called for initialize plugin'
-  instance.destroy()
-  notEqual instance.prop1, 'bye', 'cleanup not called for extend plugin'
-  equal instance.prop2, 'sayonara', 'cleanup called for initialize plugin'
   return

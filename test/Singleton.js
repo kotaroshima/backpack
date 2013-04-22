@@ -3,30 +3,31 @@
 
   module('Backpack.Singleton');
 
-  test('only one instance can be initialized', function() {
-    var TestSingleton, instance;
-    TestSingleton = Backpack.Class.extend({
-      plugins: [Backpack.Singleton],
-      initialize: function() {
-        Backpack.Class.prototype.initialize.apply(this, arguments);
-        this.name = 'testSingleton';
-      }
+  _.each(Backpack.testDefs, function(def) {
+    test(_.template('only one instance of <%-name%> can be initialized', def), function() {
+      var TestSingleton, instance;
+      TestSingleton = def["class"].extend({
+        plugins: [Backpack.Singleton],
+        initialize: function() {
+          def["class"].prototype.initialize.apply(this, arguments);
+          this.name = 'testSingleton';
+        }
+      });
+      instance = new TestSingleton();
+      equal(instance.name, 'testSingleton');
+      raises(function() {
+        new TestSingleton();
+      }, Error, 'throws an error when trying to initialize 2nd instance');
     });
-    instance = new TestSingleton();
-    equal(instance.name, 'testSingleton');
-    raises(function() {
-      new TestSingleton();
-    }, Error, 'throws an error when trying to initialize 2nd instance');
-  });
-
-  test('get the same instance', function() {
-    var TestSingleton, instance1, instance2;
-    TestSingleton = Backpack.Class.extend({
-      plugins: [Backpack.Singleton]
+    test(_.template('get the same instance of <%-name%>', def), function() {
+      var TestSingleton, instance1, instance2;
+      TestSingleton = def["class"].extend({
+        plugins: [Backpack.Singleton]
+      });
+      instance1 = TestSingleton.getInstance();
+      instance2 = TestSingleton.getInstance();
+      equal(instance1, instance2);
     });
-    instance1 = TestSingleton.getInstance();
-    instance2 = TestSingleton.getInstance();
-    equal(instance1, instance2);
   });
 
 }).call(this);

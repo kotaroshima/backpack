@@ -514,14 +514,17 @@
     */
 
     addChild: function(view) {
-      var stackEvent, targetView, _ref;
+      var stackEvent, stackEvents, targetView;
       Backpack.Container.addChild.apply(this, arguments);
-      stackEvent = (_ref = this.stackEvents) != null ? _ref[view.name] : void 0;
-      if (stackEvent) {
-        targetView = _.find(this.children, function(child) {
-          return child.name === stackEvent.targetView;
-        });
-        this.attachView(view, stackEvent.event, targetView);
+      stackEvents = this.stackEvents;
+      if (stackEvents) {
+        stackEvent = stackEvents[view.name];
+        if (stackEvent) {
+          targetView = _.find(this.children, function(child) {
+            return child.name === stackEvent.target;
+          });
+          this.attachView(view, stackEvent.event, targetView);
+        }
       }
     },
     /*
