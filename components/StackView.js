@@ -19,20 +19,21 @@
     */
 
     initialize: function(options) {
-      var selectedIndex,
+      var children, selectedIndex,
         _this = this;
       if (options == null) {
         options = {};
       }
       Backpack.View.prototype.initialize.apply(this, arguments);
-      if (this.children) {
-        _.each(this.children, function(child) {
-          _this.addChild(child);
+      children = options.children;
+      if (children) {
+        _.each(children, function(child) {
+          _this.addView(child);
         });
       }
-      selectedIndex = options.selectedIndex;
-      if (!selectedIndex || !(this.children && ((0 < selectedIndex && selectedIndex < this.children.length)))) {
-        this._selectedView = this.children[selectedIndex];
+      selectedIndex = options.selectedIndex || 0;
+      if (children && ((0 <= selectedIndex && selectedIndex < children.length))) {
+        this._selectedView = children[selectedIndex];
       }
       this.render();
     },
@@ -52,14 +53,9 @@
       });
       return this;
     },
-    /*
-      * Override to attach event
-      * @param {Backpack.View} view View to add to this view
-    */
-
-    addChild: function(view) {
+    addView: function(view) {
       var stackEvent, stackEvents, targetView;
-      Backpack.Container.addChild.apply(this, arguments);
+      Backpack.Container.addView.apply(this, arguments);
       stackEvents = this.stackEvents;
       if (stackEvents) {
         stackEvent = stackEvents[view.name];

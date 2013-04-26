@@ -7,8 +7,12 @@ Backpack.Container =
   getChild:(index)->
     @children[index]
 
-  addChild:(view)->
+  addView:(view)->
     @containerNode.append view.$el
+    return
+
+  addChild:(view)->
+    @addView view
     @children.push view
     return
 

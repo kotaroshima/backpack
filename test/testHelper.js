@@ -29,4 +29,9 @@
     }
   ];
 
+  Backpack.isHidden = function(node) {
+    console.log(node.width() + ", " + node.height());
+    return node.width() === 0 && node.height() === 0;
+  };
+
 }).call(this);

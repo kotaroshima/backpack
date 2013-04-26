@@ -13,8 +13,11 @@
     getChild: function(index) {
       return this.children[index];
     },
-    addChild: function(view) {
+    addView: function(view) {
       this.containerNode.append(view.$el);
+    },
+    addChild: function(view) {
+      this.addView(view);
       this.children.push(view);
     },
     clearChildren: function() {

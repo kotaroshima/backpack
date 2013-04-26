@@ -16,7 +16,7 @@ _.each Backpack.testDefs, (def)->
     equal instance.prop2, 2, 'callback function called and 2nd argument passed'
     return
 
-  test _.template('<%-name%>, subscribes with initialization parameter', def), ->
+  test _.template('<%-name%> subscribes with initialization parameter', def), ->
     instance = new def.createInstance
       subscribers:
         TEST_EVENT: 'onTestEvent'

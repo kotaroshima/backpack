@@ -20,7 +20,7 @@
       equal(instance.prop1, 'x', 'callback function called and 1st argument passed');
       equal(instance.prop2, 2, 'callback function called and 2nd argument passed');
     });
-    test(_.template('<%-name%>, subscribes with initialization parameter', def), function() {
+    test(_.template('<%-name%> subscribes with initialization parameter', def), function() {
       var instance;
       instance = new def.createInstance({
         subscribers: {

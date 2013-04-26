@@ -15,15 +15,16 @@ Backpack.StackView = Backpack.View.extend
   initialize:(options={})->
     Backpack.View::initialize.apply @, arguments
 
-    if @children
-      _.each @children, (child)=>
-        @addChild child
+    children = options.children
+    if children
+      _.each children, (child)=>
+        @addView child
         return
 
     # select one of its child views
-    selectedIndex = options.selectedIndex
-    if !selectedIndex || !(@children && (0 < selectedIndex < @children.length))
-      @_selectedView = @children[selectedIndex]
+    selectedIndex = options.selectedIndex || 0
+    if children && (0 <= selectedIndex < children.length)
+      @_selectedView = children[selectedIndex]
     @render()
     return
 
@@ -40,12 +41,8 @@ Backpack.StackView = Backpack.View.extend
       return
     @
 
-  ###
-  * Override to attach event
-  * @param {Backpack.View} view View to add to this view
-  ###
-  addChild:(view)->
-    Backpack.Container.addChild.apply @, arguments
+  addView:(view)->
+    Backpack.Container.addView.apply @, arguments
 
     stackEvents = @stackEvents
     if stackEvents

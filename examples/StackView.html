@@ -1,0 +1,55 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Backpack.StackView Example</title>
+<script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/jquery/1.9.1/jquery.js"></script>
+<script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.4.4/underscore.js"></script>
+<script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/backbone.js/1.0.0/backbone.js"></script>
+<script type="text/javascript" src="../Backpack-all.js"></script>
+<script type="text/javascript">
+$(function(){
+  var view1 = new Backpack.View({
+    name: 'view1',
+    template: '<div>View1 <button id="nextButton">Next</button></div>',
+    events: {
+      'click #nextButton': 'onNextClicked'
+    },
+    initialize: function(options){
+      this.$el.html(this.template);
+    },
+    onNextClicked: function(e){}
+  });
+  var view2 = new Backpack.View({
+    name: 'view2',
+    template: '<div>View2 <button id="backButton">Back</button></div>',
+    events: {
+      'click #backButton': 'onBackClicked'
+    },
+    initialize: function(options){
+      this.$el.html(this.template);
+    },
+    onBackClicked: function(e){}
+  });
+  var stackView = new Backpack.StackView({
+    el: '#stackView',
+    children: [view1, view2],
+    stackEvents: {
+      view1: {
+        event: 'onNextClicked',
+        target: 'view2'
+      },
+      view2: {
+        event: 'onBackClicked',
+        target: 'view1'
+      }
+    }
+  });
+});
+</script>
+</head>
+<body>
+<h1>Backpack.StackView Example</h1>
+<div id="stackView"></div>
+</body>
+</html>

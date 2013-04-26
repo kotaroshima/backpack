@@ -15,31 +15,31 @@ Backpack.attach = (context, method, callback)->
 
 Backpack.defaultPlugins = []
 
-setup =(self, options={})->
+applyOptions =(self, options={})->
   # use initialization options plugins if specified
   # otherwise use plugins specified in extend
   self.plugins = options.plugins || self.plugins
   plugins = _.clone(Backpack.defaultPlugins).concat self.plugins || []
 
-  setups = []
+  self.setups = []
+  self.cleanups = []
   _.each plugins, (pi)->
     # mixin methods specified in plugins
     for own key, value of pi
       if key != 'setup' && key != 'cleanup' && key != 'staticProps' && !self[key]
         self[key] = value
-    setups.push pi.setup if pi.setup
-    if pi.cleanup
-      self.cleanups = [] if !self.cleanups
-      self.cleanups.push pi.cleanup
+    self.setups.push pi.setup if pi.setup
+    self.cleanups.push pi.cleanup if pi.cleanup
     return
 
   # mixin all the properties/methods of initialization parameters
   for own key, value of options
-    if key != 'plugins'
+    if key != 'plugins' && key != 'initialize'
       self[key] = value
+  return
 
-  # finally apply all the setups
-  _.each setups, (su)->
+setup =(self)->
+  _.each self.setups, (su)->
     su.apply self
     return
   return
@@ -68,7 +68,9 @@ Clazz = Backpack.Class =->
 _.extend Clazz::, Backbone.Events,
   initialize:->
     options = if arguments.length > 0 then arguments[arguments.length-1] else {}
-    setup @, options
+    applyOptions @, options
+    options.initialize.apply @, arguments if options?.initialize
+    setup @
     return
   destroy:->
     cleanup @
@@ -77,8 +79,9 @@ Clazz.extend = extend
 
 Backpack.Model = Backbone.Model.extend
   initialize:(attributes, options)->
-    Backbone.Model::initialize.apply @, arguments
-    setup @, options
+    applyOptions @, options
+    options.initialize.apply @, arguments if options?.initialize
+    setup @
     return
   destroy:(options)->
     cleanup @
@@ -88,8 +91,9 @@ Backpack.Model.extend = extend
 
 Backpack.Collection = Backbone.Collection.extend
   initialize:(models, options)->
-    Backbone.Collection::initialize.apply @, arguments
-    setup @, options
+    applyOptions @, options
+    options.initialize.apply @, arguments if options?.initialize
+    setup @
     return
   destroy:->
     cleanup @
@@ -98,8 +102,9 @@ Backpack.Collection.extend = extend
 
 Backpack.View = Backbone.View.extend
   initialize:(options)->
-    Backbone.View::initialize.apply @, arguments
-    setup @, options
+    applyOptions @, options
+    options.initialize.apply @, arguments if options?.initialize
+    setup @
     return
 
   ###
