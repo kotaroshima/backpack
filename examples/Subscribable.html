@@ -13,15 +13,15 @@ $(function(){
   Backbone.sync = function(){};
 
   var MyModel = Backpack.Model.extend({
-    subscribers: {
-      MY_EVENT: 'sayHello'
-    },
-
     sayHello: function(firstName, lastName) {
       alert('Hello, '+firstName+' '+lastName);
     }
   });
-  new MyModel();
+  new MyModel(null, {
+    subscribers: {
+      MY_EVENT: 'sayHello'
+    }
+  });
 
   $('#myButton').on('click', function(){
     Backbone.trigger('MY_EVENT', 'Michael', 'Jackson');
