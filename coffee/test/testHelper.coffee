@@ -24,6 +24,3 @@ Backpack.testDefs = [
       new Backpack.Class options
   }
 ]
-
-Backpack.isHidden = (node)->
-  node.width() == 0 && node.height() == 0
