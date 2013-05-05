@@ -30,13 +30,15 @@ var MyView = Backpack.View.extend({
 
   render: function(){...}
 })
-view = new MyView();
+var view = new MyView();
 ```
 
 Additionally, plug-in functionalities can be made available to each instances by passing `plugins` property to initialization options:
 ```
 var view = new Backpack.View({
-  plugins: [MyPlugin, AnotherPlugin, ...]
+  plugins: [MyPlugin, AnotherPlugin, ...],
+
+  render: function(){...}
 });
 ```
 
@@ -49,6 +51,10 @@ Development
 * For compiling CoffeeScript files, you need CoffeeScript installed:
 ```
 npm install -g coffee-script
+```
+* To build JS files from `.coffee` files, run:
+```
+cake build
 ```
 
 Libraries Used
