@@ -17,22 +17,15 @@
     */
 
     initialize: function(options) {
-      var children, selectedIndex,
-        _this = this;
+      var selectedIndex;
 
       if (options == null) {
         options = {};
       }
       Backpack.View.prototype.initialize.apply(this, arguments);
-      children = options.children;
-      if (children) {
-        _.each(children, function(child) {
-          _this.addView(child);
-        });
-      }
       selectedIndex = options.selectedIndex || 0;
-      if (children && ((0 <= selectedIndex && selectedIndex < children.length))) {
-        this._selectedView = children[selectedIndex];
+      if (this.children && ((0 <= selectedIndex && selectedIndex < this.children.length))) {
+        this._selectedView = this.children[selectedIndex];
       }
       this.render();
     },

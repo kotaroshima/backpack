@@ -103,10 +103,10 @@
 
       options = arguments.length > 0 ? arguments[arguments.length - 1] : {};
       applyOptions(this, options);
+      setup(this);
       if (options != null ? options.initialize : void 0) {
         options.initialize.apply(this, arguments);
       }
-      setup(this);
     },
     destroy: function() {
       cleanup(this);
@@ -118,10 +118,10 @@
   Backpack.Model = Backbone.Model.extend({
     initialize: function(attributes, options) {
       applyOptions(this, options);
+      setup(this);
       if (options != null ? options.initialize : void 0) {
         options.initialize.apply(this, arguments);
       }
-      setup(this);
     },
     destroy: function(options) {
       cleanup(this);
@@ -134,10 +134,10 @@
   Backpack.Collection = Backbone.Collection.extend({
     initialize: function(models, options) {
       applyOptions(this, options);
+      setup(this);
       if (options != null ? options.initialize : void 0) {
         options.initialize.apply(this, arguments);
       }
-      setup(this);
     },
     destroy: function() {
       cleanup(this);
@@ -149,10 +149,10 @@
   Backpack.View = Backbone.View.extend({
     initialize: function(options) {
       applyOptions(this, options);
+      setup(this);
       if (options != null ? options.initialize : void 0) {
         options.initialize.apply(this, arguments);
       }
-      setup(this);
     },
     /*
     * Override so that event handler works even if method has been dynamically overwritten

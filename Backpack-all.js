@@ -103,10 +103,10 @@
 
       options = arguments.length > 0 ? arguments[arguments.length - 1] : {};
       applyOptions(this, options);
+      setup(this);
       if (options != null ? options.initialize : void 0) {
         options.initialize.apply(this, arguments);
       }
-      setup(this);
     },
     destroy: function() {
       cleanup(this);
@@ -118,10 +118,10 @@
   Backpack.Model = Backbone.Model.extend({
     initialize: function(attributes, options) {
       applyOptions(this, options);
+      setup(this);
       if (options != null ? options.initialize : void 0) {
         options.initialize.apply(this, arguments);
       }
-      setup(this);
     },
     destroy: function(options) {
       cleanup(this);
@@ -134,10 +134,10 @@
   Backpack.Collection = Backbone.Collection.extend({
     initialize: function(models, options) {
       applyOptions(this, options);
+      setup(this);
       if (options != null ? options.initialize : void 0) {
         options.initialize.apply(this, arguments);
       }
-      setup(this);
     },
     destroy: function() {
       cleanup(this);
@@ -149,10 +149,10 @@
   Backpack.View = Backbone.View.extend({
     initialize: function(options) {
       applyOptions(this, options);
+      setup(this);
       if (options != null ? options.initialize : void 0) {
         options.initialize.apply(this, arguments);
       }
-      setup(this);
     },
     /*
     * Override so that event handler works even if method has been dynamically overwritten
@@ -258,35 +258,84 @@
 
   Backpack.defaultPlugins.push(Backpack.Attachable);
 
+  /*
+  * A plugin to make a view container
+  */
+
+
   Backpack.Container = {
+    /*
+    * Setup containerNode and add child views on initialize
+    */
+
     setup: function() {
+      var _this = this;
+
       if (!this.containerNode) {
         this.containerNode = this.$el;
       }
-      if (!this.children) {
+      if (this.children) {
+        _.each(this.children, function(child) {
+          _this.addView(child);
+        });
+      } else {
         this.children = [];
       }
     },
+    /*
+    * Get child view at specified index
+    * @param {Integer} index Child index
+    * @return {Backbone.View}
+    */
+
     getChild: function(index) {
       return this.children[index];
     },
+    /*
+    * Add view to container node
+    * @param {Backbone.View} view A view to add
+    */
+
     addView: function(view) {
       this.containerNode.append(view.$el);
     },
+    /*
+    * Add view as child
+    * @param {Backbone.View} view A view to add
+    */
+
     addChild: function(view) {
       this.addView(view);
       this.children.push(view);
     },
+    /*
+    * Remove child view at specified index
+    * @param {Backbone.View|Integer} view A view to remove or child index
+    */
+
+    removeChild: function(view) {
+      var index;
+
+      if (_.isNumber(view)) {
+        index = view;
+      } else {
+        index = _.indexOf(this.children, view);
+      }
+      if (index >= 0) {
+        this.children[index].remove();
+        this.children.splice(index, 1);
+      }
+    },
+    /*
+    * Clear all children
+    */
+
     clearChildren: function() {
       var i, _i, _ref;
 
       for (i = _i = _ref = this.children.length - 1; _i >= 0; i = _i += -1) {
         this.removeChild(i);
       }
-    },
-    removeChild: function(index) {
-      this.children[index].remove();
-      this.children.splice(index, 1);
     },
     filterChildren: function(options) {
       _.filter(this.children, function(view) {
@@ -297,6 +346,10 @@
         }
       });
     },
+    /*
+    * Clear children on destroy
+    */
+
     cleanup: function() {
       this.clearChildren();
     }
@@ -674,22 +727,15 @@
     */
 
     initialize: function(options) {
-      var children, selectedIndex,
-        _this = this;
+      var selectedIndex;
 
       if (options == null) {
         options = {};
       }
       Backpack.View.prototype.initialize.apply(this, arguments);
-      children = options.children;
-      if (children) {
-        _.each(children, function(child) {
-          _this.addView(child);
-        });
-      }
       selectedIndex = options.selectedIndex || 0;
-      if (children && ((0 <= selectedIndex && selectedIndex < children.length))) {
-        this._selectedView = children[selectedIndex];
+      if (this.children && ((0 <= selectedIndex && selectedIndex < this.children.length))) {
+        this._selectedView = this.children[selectedIndex];
       }
       this.render();
     },

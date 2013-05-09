@@ -69,8 +69,8 @@ _.extend Clazz::, Backbone.Events,
   initialize:->
     options = if arguments.length > 0 then arguments[arguments.length-1] else {}
     applyOptions @, options
-    options.initialize.apply @, arguments if options?.initialize
     setup @
+    options.initialize.apply @, arguments if options?.initialize
     return
   destroy:->
     cleanup @
@@ -80,8 +80,8 @@ Clazz.extend = extend
 Backpack.Model = Backbone.Model.extend
   initialize:(attributes, options)->
     applyOptions @, options
-    options.initialize.apply @, arguments if options?.initialize
     setup @
+    options.initialize.apply @, arguments if options?.initialize
     return
   destroy:(options)->
     cleanup @
@@ -92,8 +92,8 @@ Backpack.Model.extend = extend
 Backpack.Collection = Backbone.Collection.extend
   initialize:(models, options)->
     applyOptions @, options
-    options.initialize.apply @, arguments if options?.initialize
     setup @
+    options.initialize.apply @, arguments if options?.initialize
     return
   destroy:->
     cleanup @
@@ -103,8 +103,8 @@ Backpack.Collection.extend = extend
 Backpack.View = Backbone.View.extend
   initialize:(options)->
     applyOptions @, options
-    options.initialize.apply @, arguments if options?.initialize
     setup @
+    options.initialize.apply @, arguments if options?.initialize
     return
 
   ###

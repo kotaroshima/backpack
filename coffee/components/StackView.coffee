@@ -15,16 +15,10 @@ Backpack.StackView = Backpack.View.extend
   initialize:(options={})->
     Backpack.View::initialize.apply @, arguments
 
-    children = options.children
-    if children
-      _.each children, (child)=>
-        @addView child
-        return
-
     # select one of its child views
     selectedIndex = options.selectedIndex || 0
-    if children && (0 <= selectedIndex < children.length)
-      @_selectedView = children[selectedIndex]
+    if @children && (0 <= selectedIndex < @children.length)
+      @_selectedView = @children[selectedIndex]
     @render()
     return
 
