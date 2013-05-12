@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Backpack.Sortable Example</title>
+<title>Backpack.SortablePlugin Example</title>
 <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/jquery/1.9.1/jquery.js"></script>
 <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.10.2/jquery-ui.js"></script>
 <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/jqueryui-touch-punch/0.2.2/jquery.ui.touch-punch.min.js"></script>
@@ -27,7 +27,7 @@ $(function(){
     el: '#listView',
     collection: collection,
     itemClass: ItemView,
-    plugins: [Backpack.Container, Backpack.Sortable]
+    plugins: [Backpack.ContainerPlugin, Backpack.SortablePlugin]
   });
 
   _.each(['Orange', 'Apple', 'Grape'], function(name) {
@@ -39,7 +39,7 @@ $(function(){
 </script>
 </head>
 <body>
-<h1>Backpack.Sortable Example</h1>
+<h1>Backpack.SortablePlugin Example</h1>
 <div>Drag and Drop list items</div>
 <div id="listView"></div>
 </body>

@@ -1,4 +1,4 @@
-Backpack.Attachable =
+Backpack.AttachPlugin =
   setup:->
     @_attached = []
     return
@@ -40,4 +40,4 @@ Backpack.Attachable =
     @_attached = []
     return
 
-Backpack.defaultPlugins.push Backpack.Attachable
+Backpack.defaultPlugins.push Backpack.AttachPlugin

@@ -4,7 +4,7 @@
 *   sortable {Boolean} pass `false` if you don't want to make it sortable on initialization (default `true`)
 *   sortableOptions {Object} initialization option to pass when initializing sortable
 ###
-Backpack.Sortable =
+Backpack.SortablePlugin =
   ###
   * Set sortable on initialize
   * By default, sets sortable. If `sortable` property is given `false`, it doesn't make it sortable.

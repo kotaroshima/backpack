@@ -1,4 +1,4 @@
-module 'Backpack.Publishable',
+module 'Backpack.PublishPlugin',
   setup:->
     @prop1 = null
     @prop2 = null

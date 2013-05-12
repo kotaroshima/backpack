@@ -205,7 +205,7 @@
 
   Backpack.View.extend = extend;
 
-  Backpack.Attachable = {
+  Backpack.AttachPlugin = {
     setup: function() {
       this._attached = [];
     },
@@ -256,14 +256,14 @@
     }
   };
 
-  Backpack.defaultPlugins.push(Backpack.Attachable);
+  Backpack.defaultPlugins.push(Backpack.AttachPlugin);
 
   /*
   * A plugin to make a view container
   */
 
 
-  Backpack.Container = {
+  Backpack.ContainerPlugin = {
     /*
     * Setup containerNode and add child views on initialize
     */
@@ -355,7 +355,7 @@
     }
   };
 
-  Backpack.Publishable = {
+  Backpack.PublishPlugin = {
     /*
     * Sets up publishers from `publishers` property
     * `publishers` property takes key-value pair of:
@@ -448,7 +448,7 @@
     }
   };
 
-  Backpack.defaultPlugins.push(Backpack.Publishable);
+  Backpack.defaultPlugins.push(Backpack.PublishPlugin);
 
   Backpack.Singleton = {
     setup: function() {
@@ -491,7 +491,7 @@
   */
 
 
-  Backpack.Sortable = {
+  Backpack.SortablePlugin = {
     /*
     * Set sortable on initialize
     * By default, sets sortable. If `sortable` property is given `false`, it doesn't make it sortable.
@@ -558,7 +558,7 @@
     }
   };
 
-  Backpack.Subscribable = {
+  Backpack.SubscribePlugin = {
     /*
     * Sets up subscribers from `subscribers` property
     * `subscribers` property takes key-value pair of:
@@ -640,10 +640,10 @@
     }
   };
 
-  Backpack.defaultPlugins.push(Backpack.Subscribable);
+  Backpack.defaultPlugins.push(Backpack.SubscribePlugin);
 
   Backpack.ListView = Backpack.View.extend({
-    plugins: [Backpack.Container],
+    plugins: [Backpack.ContainerPlugin],
     template: _.template('<div class="mainNode"><div class="containerNode"></div><div class="noItemsNode">No Items</div></div><div class="loadingNode">Loading...</div>', this.messages),
     itemClass: Backpack.View,
     initialize: function(options) {
@@ -716,7 +716,7 @@
 
 
   Backpack.StackView = Backpack.View.extend({
-    plugins: [Backpack.Container],
+    plugins: [Backpack.ContainerPlugin],
     /*
     * Constructor
     * @param {Object} [options] Initialization option
@@ -759,7 +759,7 @@
     addView: function(view) {
       var stackEvent, stackEvents, targetView;
 
-      Backpack.Container.addView.apply(this, arguments);
+      Backpack.ContainerPlugin.addView.apply(this, arguments);
       stackEvents = this.stackEvents;
       if (stackEvents) {
         stackEvent = stackEvents[view.name];

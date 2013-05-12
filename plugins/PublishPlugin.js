@@ -2,7 +2,7 @@
 (function() {
   var __hasProp = {}.hasOwnProperty;
 
-  Backpack.Publishable = {
+  Backpack.PublishPlugin = {
     /*
     * Sets up publishers from `publishers` property
     * `publishers` property takes key-value pair of:
@@ -95,6 +95,6 @@
     }
   };
 
-  Backpack.defaultPlugins.push(Backpack.Publishable);
+  Backpack.defaultPlugins.push(Backpack.PublishPlugin);
 
 }).call(this);

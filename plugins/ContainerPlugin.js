@@ -5,7 +5,7 @@
 
 
 (function() {
-  Backpack.Container = {
+  Backpack.ContainerPlugin = {
     /*
     * Setup containerNode and add child views on initialize
     */

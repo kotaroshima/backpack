@@ -1,7 +1,7 @@
 ###
 * A plugin to make a view container
 ###
-Backpack.Container =
+Backpack.ContainerPlugin =
   ###
   * Setup containerNode and add child views on initialize
   ###

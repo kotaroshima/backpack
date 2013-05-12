@@ -6,7 +6,7 @@
 
 (function() {
   Backpack.StackView = Backpack.View.extend({
-    plugins: [Backpack.Container],
+    plugins: [Backpack.ContainerPlugin],
     /*
     * Constructor
     * @param {Object} [options] Initialization option
@@ -49,7 +49,7 @@
     addView: function(view) {
       var stackEvent, stackEvents, targetView;
 
-      Backpack.Container.addView.apply(this, arguments);
+      Backpack.ContainerPlugin.addView.apply(this, arguments);
       stackEvents = this.stackEvents;
       if (stackEvents) {
         stackEvent = stackEvents[view.name];

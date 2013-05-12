@@ -2,7 +2,7 @@
 * A view that stacks its children
 ###
 Backpack.StackView = Backpack.View.extend
-  plugins: [Backpack.Container]
+  plugins: [Backpack.ContainerPlugin]
 
   ###
   * Constructor
@@ -36,7 +36,7 @@ Backpack.StackView = Backpack.View.extend
     @
 
   addView:(view)->
-    Backpack.Container.addView.apply @, arguments
+    Backpack.ContainerPlugin.addView.apply @, arguments
 
     stackEvents = @stackEvents
     if stackEvents

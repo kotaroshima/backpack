@@ -1,4 +1,4 @@
-Backpack.Subscribable =
+Backpack.SubscribePlugin =
   ###
   * Sets up subscribers from `subscribers` property
   * `subscribers` property takes key-value pair of:
@@ -52,4 +52,4 @@ Backpack.Subscribable =
     @_subscribers = []
     return
 
-Backpack.defaultPlugins.push Backpack.Subscribable
+Backpack.defaultPlugins.push Backpack.SubscribePlugin

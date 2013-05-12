@@ -1,4 +1,4 @@
-module 'Backpack.Singleton'
+module 'Backpack.SingletonPlugin'
 
 _.each Backpack.testDefs, (def)->
 

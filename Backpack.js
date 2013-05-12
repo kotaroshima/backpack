@@ -205,7 +205,7 @@
 
   Backpack.View.extend = extend;
 
-  Backpack.Attachable = {
+  Backpack.AttachPlugin = {
     setup: function() {
       this._attached = [];
     },
@@ -256,9 +256,9 @@
     }
   };
 
-  Backpack.defaultPlugins.push(Backpack.Attachable);
+  Backpack.defaultPlugins.push(Backpack.AttachPlugin);
 
-  Backpack.Subscribable = {
+  Backpack.SubscribePlugin = {
     /*
     * Sets up subscribers from `subscribers` property
     * `subscribers` property takes key-value pair of:
@@ -340,9 +340,9 @@
     }
   };
 
-  Backpack.defaultPlugins.push(Backpack.Subscribable);
+  Backpack.defaultPlugins.push(Backpack.SubscribePlugin);
 
-  Backpack.Publishable = {
+  Backpack.PublishPlugin = {
     /*
     * Sets up publishers from `publishers` property
     * `publishers` property takes key-value pair of:
@@ -435,6 +435,6 @@
     }
   };
 
-  Backpack.defaultPlugins.push(Backpack.Publishable);
+  Backpack.defaultPlugins.push(Backpack.PublishPlugin);
 
 }).call(this);

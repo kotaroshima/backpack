@@ -2,7 +2,7 @@
 (function() {
   Backbone.sync = function() {};
 
-  module('Backpack.Container', {
+  module('Backpack.ContainerPlugin', {
     setup: function() {
       this.ItemView = Backpack.View.extend({
         template: _.template('<div class="childViewNode" style="border:1px solid red"><%- name %></div>'),
@@ -29,7 +29,7 @@
       });
     });
     this.containerView = new Backpack.View({
-      plugins: [Backpack.Container],
+      plugins: [Backpack.ContainerPlugin],
       children: views
     });
     $('#testNode').append(this.containerView.$el);
@@ -47,7 +47,7 @@
 
     data = ['Orange', 'Apple', 'Grape'];
     this.containerView = new Backpack.View({
-      plugins: [Backpack.Container]
+      plugins: [Backpack.ContainerPlugin]
     });
     $('#testNode').append(this.containerView.$el);
     _.each(data, function(item) {
@@ -77,7 +77,7 @@
       });
     });
     this.containerView = new Backpack.View({
-      plugins: [Backpack.Container],
+      plugins: [Backpack.ContainerPlugin],
       children: views
     });
     $('#testNode').append(this.containerView.$el);
@@ -99,7 +99,7 @@
       });
     });
     this.containerView = new Backpack.View({
-      plugins: [Backpack.Container],
+      plugins: [Backpack.ContainerPlugin],
       children: views
     });
     $('#testNode').append(this.containerView.$el);
@@ -119,7 +119,7 @@
       });
     });
     this.containerView = new Backpack.View({
-      plugins: [Backpack.Container],
+      plugins: [Backpack.ContainerPlugin],
       children: views
     });
     $('#testNode').append(this.containerView.$el);
@@ -139,7 +139,7 @@
       });
     });
     this.containerView = new Backpack.View({
-      plugins: [Backpack.Container],
+      plugins: [Backpack.ContainerPlugin],
       children: views
     });
     $('#testNode').append(this.containerView.$el);

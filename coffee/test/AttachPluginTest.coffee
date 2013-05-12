@@ -1,4 +1,4 @@
-module 'Backpack.Attachable'
+module 'Backpack.AttachPlugin'
 
 _.each Backpack.testDefs, (def)->
 

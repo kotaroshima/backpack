@@ -1,4 +1,4 @@
-module 'Backpack.Subscribable'
+module 'Backpack.SubscribePlugin'
 
 _.each Backpack.testDefs, (def)->
 

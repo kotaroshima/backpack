@@ -7,7 +7,7 @@ task 'build', 'Builds CoffeeScript files into JavaScript files', (options)->
     if error
       util.log('Build fail')
     else
-      exec 'coffee -j Backpack.js -c ./coffee/Backpack.coffee ./coffee/plugins/Attachable.coffee ./coffee/plugins/Subscribable.coffee ./coffee/plugins/Publishable.coffee', (error, stdout, stderr)->
+      exec 'coffee -j Backpack.js -c ./coffee/Backpack.coffee ./coffee/plugins/AttachPlugin.coffee ./coffee/plugins/SubscribePlugin.coffee ./coffee/plugins/PublishPlugin.coffee', (error, stdout, stderr)->
         if error
           util.log('Build fail')
         else

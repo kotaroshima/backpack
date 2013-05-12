@@ -1,6 +1,6 @@
 Backbone.sync = ->
 
-module 'Backpack.Container',
+module 'Backpack.ContainerPlugin',
   setup:->
     @ItemView = Backpack.View.extend
       template: _.template '<div class="childViewNode" style="border:1px solid red"><%- name %></div>'
@@ -18,7 +18,7 @@ test 'initialize with child views', ->
     new @ItemView
       name: item
   @containerView = new Backpack.View
-    plugins: [Backpack.Container]
+    plugins: [Backpack.ContainerPlugin]
     children: views
   $('#testNode').append @containerView.$el
   itemNodes = $('#testNode .childViewNode')
@@ -32,7 +32,7 @@ test 'initialize with child views', ->
 test 'add child views after initialize', ->
   data = ['Orange', 'Apple', 'Grape']
   @containerView = new Backpack.View
-    plugins: [Backpack.Container]
+    plugins: [Backpack.ContainerPlugin]
   $('#testNode').append @containerView.$el
   _.each data, (item)=>
     view = new @ItemView
@@ -53,7 +53,7 @@ test 'get child view at specified index', ->
     new @ItemView
       name: item
   @containerView = new Backpack.View
-    plugins: [Backpack.Container]
+    plugins: [Backpack.ContainerPlugin]
     children: views
   $('#testNode').append @containerView.$el
   itemNodes = $('#testNode .childViewNode')
@@ -69,7 +69,7 @@ test 'remove child view', ->
     new @ItemView
       name: item
   @containerView = new Backpack.View
-    plugins: [Backpack.Container]
+    plugins: [Backpack.ContainerPlugin]
     children: views
   $('#testNode').append @containerView.$el
   @containerView.removeChild views[1]
@@ -83,7 +83,7 @@ test 'remove child view at specified index', ->
     new @ItemView
       name: item
   @containerView = new Backpack.View
-    plugins: [Backpack.Container]
+    plugins: [Backpack.ContainerPlugin]
     children: views
   $('#testNode').append @containerView.$el
   @containerView.removeChild 1
@@ -97,7 +97,7 @@ test 'clear child views', ->
     new @ItemView
       name: item
   @containerView = new Backpack.View
-    plugins: [Backpack.Container]
+    plugins: [Backpack.ContainerPlugin]
     children: views
   $('#testNode').append @containerView.$el
   @containerView.clearChildren()

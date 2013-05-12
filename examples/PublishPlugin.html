@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Backpack.Attachable Example</title>
+<title>Backpack.PublishPlugin Example</title>
 <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/jquery/1.9.1/jquery.js"></script>
 <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.3.3/underscore-min.js"></script>
 <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/backbone.js/0.9.9/backbone-min.js"></script>
@@ -12,22 +12,39 @@ $(function(){
   // Override so that it doesn't try to save to server
   Backbone.sync = function(){};
 
-  var MyModel = Backpack.Model.extend({
-    sayHello: function(firstName, lastName) {}
-  });
-  var model = new MyModel();
-  model.attach('sayHello', function(firstName, lastName){
+  Backbone.on('MY_EVENT', function(firstName, lastName) {
     alert('Hello, '+firstName+' '+lastName);
   });
 
-  $('#myButton').on('click', function(){
-    model.sayHello('Michael', 'Jackson');
+  var ButtonView = Backpack.View.extend({
+    el: '#myButtonView',
+    template: _.template('<button>Click Me!</button>'),
+
+    events: {
+      "click BUTTON": "onMyButtonClicked",
+    },
+
+    publishers: {
+      sayHello: 'MY_EVENT'
+    },
+
+    render: function() {
+      this.$el.html(this.template());
+      return this;
+    },
+
+    onMyButtonClicked: function(e) {
+      this.sayHello('Michael', 'Jackson');
+    },
+
+    sayHello: function(firstName, lastName) {}
   });
+  new ButtonView().render();
 });
 </script>
 </head>
 <body>
-<h1>Backpack.Attachable Example</h1>
-<button id="myButton">Click Me!</button>
+<h1>Backpack.PublishPlugin Example</h1>
+<div id="myButtonView"></div>
 </body>
 </html>

@@ -1,5 +1,5 @@
 Backpack.ListView = Backpack.View.extend
-  plugins: [Backpack.Container]
+  plugins: [Backpack.ContainerPlugin]
 
   # TODO : i18n
   template: _.template '<div class="mainNode"><div class="containerNode"></div><div class="noItemsNode">No Items</div></div><div class="loadingNode">Loading...</div>', @messages

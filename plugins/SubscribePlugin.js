@@ -2,7 +2,7 @@
 (function() {
   var __hasProp = {}.hasOwnProperty;
 
-  Backpack.Subscribable = {
+  Backpack.SubscribePlugin = {
     /*
     * Sets up subscribers from `subscribers` property
     * `subscribers` property takes key-value pair of:
@@ -84,6 +84,6 @@
     }
   };
 
-  Backpack.defaultPlugins.push(Backpack.Subscribable);
+  Backpack.defaultPlugins.push(Backpack.SubscribePlugin);
 
 }).call(this);

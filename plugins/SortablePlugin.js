@@ -8,7 +8,7 @@
 
 
 (function() {
-  Backpack.Sortable = {
+  Backpack.SortablePlugin = {
     /*
     * Set sortable on initialize
     * By default, sets sortable. If `sortable` property is given `false`, it doesn't make it sortable.
