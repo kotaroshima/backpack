@@ -174,4 +174,66 @@
     assert_visible_view([view1, view2, view3], 2);
   });
 
+  test('attach navigation event with back', function() {
+    var view1, view2, view3;
+
+    view1 = new Backpack.View({
+      name: 'view1',
+      initialize: function(options) {
+        this.$el.html('<div style="background-color:blue">View1</div>');
+      },
+      showView2: function() {},
+      showView3: function() {}
+    });
+    view2 = new Backpack.View({
+      name: 'view2',
+      initialize: function(options) {
+        this.$el.html('<div style="background-color:yellow">View2</div>');
+      },
+      showView3: function() {}
+    });
+    view3 = new Backpack.View({
+      name: 'view3',
+      initialize: function(options) {
+        this.$el.html('<div style="background-color:red">View3</div>');
+      },
+      showPrevious: function() {}
+    });
+    this.stackView = new Backpack.StackView({
+      children: [view1, view2, view3],
+      selectedIndex: 0,
+      navigationEvents: {
+        view1: [
+          {
+            event: 'showView2',
+            target: 'view2'
+          }, {
+            event: 'showView3',
+            target: 'view3'
+          }
+        ],
+        view2: {
+          event: 'showView3',
+          target: 'view3'
+        },
+        view3: {
+          event: 'showPrevious',
+          back: true
+        }
+      }
+    });
+    $('#testNode').append(this.stackView.$el);
+    assert_visible_view([view1, view2, view3], 0);
+    view1.showView3();
+    assert_visible_view([view1, view2, view3], 2);
+    view3.showPrevious();
+    assert_visible_view([view1, view2, view3], 0);
+    view1.showView2();
+    assert_visible_view([view1, view2, view3], 1);
+    view2.showView3();
+    assert_visible_view([view1, view2, view3], 2);
+    view3.showPrevious();
+    assert_visible_view([view1, view2, view3], 1);
+  });
+
 }).call(this);

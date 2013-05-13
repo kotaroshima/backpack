@@ -11,18 +11,33 @@
 $(function(){
   var view1 = new Backpack.View({
     name: 'view1',
-    template: '<div>View1 <button id="nextButton">Next</button></div>',
+    template: '<div style="background-color:blue;">View1 <button id="view2Button">View2</button><button id="view3Button">View3</button></div>',
     events: {
-      'click #nextButton': 'onNextClicked'
+      'click #view2Button': 'onView2Clicked',
+      'click #view3Button': 'onView3Clicked'
     },
     initialize: function(options){
       this.$el.html(this.template);
     },
-    onNextClicked: function(e){}
+    onView2Clicked: function(e){},
+    onView3Clicked: function(e){}
   });
   var view2 = new Backpack.View({
     name: 'view2',
-    template: '<div>View2 <button id="backButton">Back</button></div>',
+    template: '<div style="background-color:yellow;">View2 <button id="view1Button">View1</button><button id="view3Button">View3</button></div>',
+    events: {
+      'click #view1Button': 'onView1Clicked',
+      'click #view3Button': 'onView3Clicked'
+    },
+    initialize: function(options){
+      this.$el.html(this.template);
+    },
+    onView1Clicked: function(e){},
+    onView3Clicked: function(e){}
+  });
+  var view3 = new Backpack.View({
+    name: 'view3',
+    template: '<div style="background-color:red;">View3 <button id="backButton">Back</button></div>',
     events: {
       'click #backButton': 'onBackClicked'
     },
@@ -33,15 +48,19 @@ $(function(){
   });
   var stackView = new Backpack.StackView({
     el: '#stackView',
-    children: [view1, view2],
-    stackEvents: {
-      view1: {
-        event: 'onNextClicked',
-        target: 'view2'
-      },
-      view2: {
+    children: [view1, view2, view3],
+    navigationEvents: {
+      view1: [
+        { event: 'onView2Clicked', target: 'view2' },
+        { event: 'onView3Clicked', target: 'view3' }
+      ],
+      view2: [
+        { event: 'onView1Clicked', target: 'view1' },
+        { event: 'onView3Clicked', target: 'view3' }
+      ],
+      view3: {
         event: 'onBackClicked',
-        target: 'view1'
+        back: true
       }
     }
   });

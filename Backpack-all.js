@@ -776,12 +776,7 @@
             eventDef = [stackEvent];
           }
           _.each(eventDef, function(def) {
-            var targetView;
-
-            targetView = _.find(_this.children, function(child) {
-              return child.name === def.target;
-            });
-            return _this.attachView(view, def.event, targetView);
+            _this.attachNavigationEvent(view, def);
           });
         }
       }
@@ -789,16 +784,28 @@
     /*
     * Attach event of child view to select that view
     * @param {Backpack.View} view Child view
-    * @param {String} method Name of the child view method
-    * @param {Backpack.View} targetView Child view to navigate to
+    * @param {Object} navigationDef map to define navigation event
+    * @param {String} navigationDef.event Method name to trigger navigation event
+    * @param {String} [navigationDef.target] `name` property of target view
+    * @param {boolean} [navigationDef.back] if true, selects previously selected view
     */
 
-    attachView: function(view, method, targetView) {
-      var _this = this;
+    attachNavigationEvent: function(view, navigationDef) {
+      var targetView,
+        _this = this;
 
-      view.attach(view, method, function() {
-        _this.selectChild(targetView);
-      });
+      if (navigationDef.back === true) {
+        view.attach(view, navigationDef.event, function() {
+          _this.selectPreviousSelected();
+        });
+      } else {
+        targetView = _.find(this.children, function(child) {
+          return child.name === navigationDef.target;
+        });
+        view.attach(view, navigationDef.event, function() {
+          _this.selectChild(targetView);
+        });
+      }
     },
     /*
     * Selects one of its child views
@@ -813,7 +820,17 @@
         this._selectedView.$el.hide();
       }
       child.$el.show();
+      this._previousSelected = this._selectedView;
       this._selectedView = child;
+    },
+    /*
+    * Select previously selected child view
+    */
+
+    selectPreviousSelected: function() {
+      if (this._previousSelected) {
+        this.selectChild(this._previousSelected);
+      }
     }
   });
 

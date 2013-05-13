@@ -51,21 +51,29 @@ Backpack.StackView = Backpack.View.extend
         else
           eventDef = [stackEvent]
         _.each eventDef, (def)=>
-          targetView = _.find @children, (child)->
-            child.name == def.target
-          @attachView view, def.event, targetView
+          @attachNavigationEvent view, def
+          return
     return
 
   ###
   * Attach event of child view to select that view
   * @param {Backpack.View} view Child view
-  * @param {String} method Name of the child view method
-  * @param {Backpack.View} targetView Child view to navigate to
+  * @param {Object} navigationDef map to define navigation event
+  * @param {String} navigationDef.event Method name to trigger navigation event
+  * @param {String} [navigationDef.target] `name` property of target view
+  * @param {boolean} [navigationDef.back] if true, selects previously selected view
   ###
-  attachView:(view, method, targetView)->
-    view.attach view, method, =>
-      @selectChild targetView
-      return
+  attachNavigationEvent:(view, navigationDef)->
+    if navigationDef.back == true
+      view.attach view, navigationDef.event, =>
+        @selectPreviousSelected()
+        return
+    else
+      targetView = _.find @children, (child)->
+        child.name == navigationDef.target
+      view.attach view, navigationDef.event, =>
+        @selectChild targetView
+        return
     return
 
   ###
@@ -78,5 +86,14 @@ Backpack.StackView = Backpack.View.extend
     if @_selectedView
       @_selectedView.$el.hide()
     child.$el.show()
+    @_previousSelected = @_selectedView
     @_selectedView = child
+    return
+
+  ###
+  * Select previously selected child view
+  ###
+  selectPreviousSelected:->
+    if @_previousSelected
+      @selectChild @_previousSelected
     return

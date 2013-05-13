@@ -130,3 +130,52 @@ test 'attach navigation event in array', ->
   view1.showView3()
   assert_visible_view [view1, view2, view3], 2
   return
+
+test 'attach navigation event with back', ->
+  view1 = new Backpack.View
+    name: 'view1'
+    initialize:(options)->
+      @$el.html '<div style="background-color:blue">View1</div>'
+      return
+    showView2:->
+    showView3:->
+  view2 = new Backpack.View
+    name: 'view2'
+    initialize:(options)->
+      @$el.html '<div style="background-color:yellow">View2</div>'
+      return
+    showView3:->
+  view3 = new Backpack.View
+    name: 'view3'
+    initialize:(options)->
+      @$el.html '<div style="background-color:red">View3</div>'
+      return
+    showPrevious:->
+  @stackView = new Backpack.StackView
+    children: [view1, view2, view3]
+    selectedIndex: 0,
+    navigationEvents:
+      view1:
+        [
+          { event: 'showView2', target: 'view2' },
+          { event: 'showView3', target: 'view3' }
+        ]
+      view2:
+        event: 'showView3'
+        target: 'view3'
+      view3:
+        event: 'showPrevious'
+        back: true
+  $('#testNode').append @stackView.$el
+  assert_visible_view [view1, view2, view3], 0
+  view1.showView3()
+  assert_visible_view [view1, view2, view3], 2
+  view3.showPrevious()
+  assert_visible_view [view1, view2, view3], 0
+  view1.showView2()
+  assert_visible_view [view1, view2, view3], 1
+  view2.showView3()
+  assert_visible_view [view1, view2, view3], 2
+  view3.showPrevious()
+  assert_visible_view [view1, view2, view3], 1
+  return
