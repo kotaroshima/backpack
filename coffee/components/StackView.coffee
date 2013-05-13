@@ -6,10 +6,10 @@ Backpack.StackView = Backpack.View.extend
 
   ###
   * Constructor
-  * @param {Object} [options] Initialization option
+  * @param {Object} [options={}] Initialization option
   * @param {Backpack.View[]} [options.children] Child views
-  * @param {int} [options.selectedIndex=0] Index of child view to be selected
-  * @param {Hash} [options.stackEvents] Map to define event handler to select child.
+  * @param {integer} [options.selectedIndex=0] Index of child view to be selected
+  * @param {Object} [options.navigationEvents] Map to define event handler to select child.
   *    key is child view's 'name' property, and value is child view's method name to trigger selection
   ###
   initialize:(options={})->
@@ -35,22 +35,32 @@ Backpack.StackView = Backpack.View.extend
       return
     @
 
+  ###
+  * Override Backpack.ContainerPlugin to attach navigation events
+  * @param {Backbone.View} view A view to add
+  ###
   addView:(view)->
     Backpack.ContainerPlugin.addView.apply @, arguments
 
-    stackEvents = @stackEvents
-    if stackEvents
-      stackEvent = stackEvents[view.name]
+    navigationEvents = @navigationEvents
+    if navigationEvents
+      stackEvent = navigationEvents[view.name]
       if stackEvent
-        targetView = _.find @children, (child)->
-          child.name == stackEvent.target
-        @attachView view, stackEvent.event, targetView
+        if _.isArray stackEvent
+          eventDef = stackEvent
+        else
+          eventDef = [stackEvent]
+        _.each eventDef, (def)=>
+          targetView = _.find @children, (child)->
+            child.name == def.target
+          @attachView view, def.event, targetView
     return
 
   ###
   * Attach event of child view to select that view
   * @param {Backpack.View} view Child view
   * @param {String} method Name of the child view method
+  * @param {Backpack.View} targetView Child view to navigate to
   ###
   attachView:(view, method, targetView)->
     view.attach view, method, =>
@@ -60,7 +70,7 @@ Backpack.StackView = Backpack.View.extend
 
   ###
   * Selects one of its child views
-  * @param {int|Backbone.View} child Child view to select
+  * @param {integer|Backbone.View} child Child view to select
   ###
   selectChild:(child)->
     if _.isNumber child

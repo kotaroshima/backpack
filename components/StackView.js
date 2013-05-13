@@ -9,10 +9,10 @@
     plugins: [Backpack.ContainerPlugin],
     /*
     * Constructor
-    * @param {Object} [options] Initialization option
+    * @param {Object} [options={}] Initialization option
     * @param {Backpack.View[]} [options.children] Child views
-    * @param {int} [options.selectedIndex=0] Index of child view to be selected
-    * @param {Hash} [options.stackEvents] Map to define event handler to select child.
+    * @param {integer} [options.selectedIndex=0] Index of child view to be selected
+    * @param {Object} [options.navigationEvents] Map to define event handler to select child.
     *    key is child view's 'name' property, and value is child view's method name to trigger selection
     */
 
@@ -46,18 +46,33 @@
       });
       return this;
     },
+    /*
+    * Override Backpack.ContainerPlugin to attach navigation events
+    * @param {Backbone.View} view A view to add
+    */
+
     addView: function(view) {
-      var stackEvent, stackEvents, targetView;
+      var eventDef, navigationEvents, stackEvent,
+        _this = this;
 
       Backpack.ContainerPlugin.addView.apply(this, arguments);
-      stackEvents = this.stackEvents;
-      if (stackEvents) {
-        stackEvent = stackEvents[view.name];
+      navigationEvents = this.navigationEvents;
+      if (navigationEvents) {
+        stackEvent = navigationEvents[view.name];
         if (stackEvent) {
-          targetView = _.find(this.children, function(child) {
-            return child.name === stackEvent.target;
+          if (_.isArray(stackEvent)) {
+            eventDef = stackEvent;
+          } else {
+            eventDef = [stackEvent];
+          }
+          _.each(eventDef, function(def) {
+            var targetView;
+
+            targetView = _.find(_this.children, function(child) {
+              return child.name === def.target;
+            });
+            return _this.attachView(view, def.event, targetView);
           });
-          this.attachView(view, stackEvent.event, targetView);
         }
       }
     },
@@ -65,6 +80,7 @@
     * Attach event of child view to select that view
     * @param {Backpack.View} view Child view
     * @param {String} method Name of the child view method
+    * @param {Backpack.View} targetView Child view to navigate to
     */
 
     attachView: function(view, method, targetView) {
@@ -76,7 +92,7 @@
     },
     /*
     * Selects one of its child views
-    * @param {int|Backbone.View} child Child view to select
+    * @param {integer|Backbone.View} child Child view to select
     */
 
     selectChild: function(child) {
