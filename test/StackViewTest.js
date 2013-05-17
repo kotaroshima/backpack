@@ -2,8 +2,8 @@
 (function() {
   var assert_visible_view;
 
-  assert_visible_view = function(views, visibleIndex) {
-    _.each(views, function(view, index) {
+  assert_visible_view = function(stackView, visibleIndex) {
+    _.each(stackView.children, function(view, index) {
       equal(view.$el.is(':hidden'), visibleIndex !== index);
     });
   };
@@ -16,8 +16,8 @@
     }
   });
 
-  test('initialize by passing children', function() {
-    var view1, view2;
+  test('initialize by passing children', 2, function() {
+    var stackView, view1, view2;
 
     view1 = new Backpack.View({
       initialize: function(options) {
@@ -29,16 +29,16 @@
         this.$el.html('<div style="background-color:red">View2</div>');
       }
     });
-    this.stackView = new Backpack.StackView({
+    stackView = this.stackView = new Backpack.StackView({
       children: [view1, view2],
       selectedIndex: 0
     });
-    $('#testNode').append(this.stackView.$el);
-    assert_visible_view([view1, view2], 0);
+    $('#testNode').append(stackView.$el);
+    assert_visible_view(stackView, 0);
   });
 
-  test('no selectedIndex', function() {
-    var view1, view2;
+  test('no selectedIndex', 2, function() {
+    var stackView, view1, view2;
 
     view1 = new Backpack.View({
       initialize: function(options) {
@@ -50,15 +50,15 @@
         this.$el.html('<div style="background-color:red">View2</div>');
       }
     });
-    this.stackView = new Backpack.StackView({
+    stackView = this.stackView = new Backpack.StackView({
       children: [view1, view2]
     });
-    $('#testNode').append(this.stackView.$el);
-    assert_visible_view([view1, view2], 0);
+    $('#testNode').append(stackView.$el);
+    assert_visible_view(stackView, 0);
   });
 
-  test('display view specified by selectedIndex', function() {
-    var view1, view2;
+  test('display view specified by selectedIndex', 2, function() {
+    var stackView, view1, view2;
 
     view1 = new Backpack.View({
       initialize: function(options) {
@@ -70,16 +70,16 @@
         this.$el.html('<div style="background-color:red">View2</div>');
       }
     });
-    this.stackView = new Backpack.StackView({
+    stackView = this.stackView = new Backpack.StackView({
       children: [view1, view2],
       selectedIndex: 1
     });
-    $('#testNode').append(this.stackView.$el);
-    assert_visible_view([view1, view2], 1);
+    $('#testNode').append(stackView.$el);
+    assert_visible_view(stackView, 1);
   });
 
-  test('attach navigation event', function() {
-    var view1, view2;
+  asyncTest('attach navigation event', 4, function() {
+    var stackView, view1, view2;
 
     view1 = new Backpack.View({
       name: 'view1',
@@ -95,7 +95,7 @@
       },
       showPrevious: function() {}
     });
-    this.stackView = new Backpack.StackView({
+    stackView = this.stackView = new Backpack.StackView({
       children: [view1, view2],
       selectedIndex: 0,
       navigationEvents: {
@@ -109,15 +109,20 @@
         }
       }
     });
-    $('#testNode').append(this.stackView.$el);
+    $('#testNode').append(stackView.$el);
     view1.showNext();
-    assert_visible_view([view1, view2], 1);
-    view2.showPrevious();
-    assert_visible_view([view1, view2], 0);
+    view2.$el.promise().done(function() {
+      assert_visible_view(stackView, 1);
+      view2.showPrevious();
+      view1.$el.promise().done(function() {
+        assert_visible_view(stackView, 0);
+        start();
+      });
+    });
   });
 
-  test('attach navigation event in array', function() {
-    var view1, view2, view3;
+  asyncTest('attach navigation event in array', 12, function() {
+    var stackView, view1, view2, view3;
 
     view1 = new Backpack.View({
       name: 'view1',
@@ -141,7 +146,7 @@
       },
       showView1: function() {}
     });
-    this.stackView = new Backpack.StackView({
+    stackView = this.stackView = new Backpack.StackView({
       children: [view1, view2, view3],
       selectedIndex: 0,
       navigationEvents: {
@@ -164,18 +169,25 @@
         }
       }
     });
-    $('#testNode').append(this.stackView.$el);
-    assert_visible_view([view1, view2, view3], 0);
+    $('#testNode').append(stackView.$el);
+    assert_visible_view(stackView, 0);
     view1.showView2();
-    assert_visible_view([view1, view2, view3], 1);
-    view2.showView1();
-    assert_visible_view([view1, view2, view3], 0);
-    view1.showView3();
-    assert_visible_view([view1, view2, view3], 2);
+    view2.$el.promise().done(function() {
+      assert_visible_view(stackView, 1);
+      view2.showView1();
+      view1.$el.promise().done(function() {
+        assert_visible_view(stackView, 0);
+        view1.showView3();
+        view3.$el.promise().done(function() {
+          assert_visible_view(stackView, 2);
+          start();
+        });
+      });
+    });
   });
 
-  test('attach navigation event with back', function() {
-    var view1, view2, view3;
+  asyncTest('attach navigation event with back', 18, function() {
+    var stackView, view1, view2, view3;
 
     view1 = new Backpack.View({
       name: 'view1',
@@ -199,7 +211,7 @@
       },
       showPrevious: function() {}
     });
-    this.stackView = new Backpack.StackView({
+    stackView = this.stackView = new Backpack.StackView({
       children: [view1, view2, view3],
       selectedIndex: 0,
       navigationEvents: {
@@ -222,18 +234,29 @@
         }
       }
     });
-    $('#testNode').append(this.stackView.$el);
-    assert_visible_view([view1, view2, view3], 0);
+    $('#testNode').append(stackView.$el);
+    assert_visible_view(stackView, 0);
     view1.showView3();
-    assert_visible_view([view1, view2, view3], 2);
-    view3.showPrevious();
-    assert_visible_view([view1, view2, view3], 0);
-    view1.showView2();
-    assert_visible_view([view1, view2, view3], 1);
-    view2.showView3();
-    assert_visible_view([view1, view2, view3], 2);
-    view3.showPrevious();
-    assert_visible_view([view1, view2, view3], 1);
+    view3.$el.promise().done(function() {
+      assert_visible_view(stackView, 2);
+      view3.showPrevious();
+      view1.$el.promise().done(function() {
+        assert_visible_view(stackView, 0);
+        view1.showView2();
+        view2.$el.promise().done(function() {
+          assert_visible_view(stackView, 1);
+          view2.showView3();
+          view3.$el.promise().done(function() {
+            assert_visible_view(stackView, 2);
+            view3.showPrevious();
+            view2.$el.promise().done(function() {
+              assert_visible_view(stackView, 1);
+              start();
+            });
+          });
+        });
+      });
+    });
   });
 
 }).call(this);

@@ -1,5 +1,5 @@
-assert_visible_view = (views, visibleIndex)->
-  _.each views, (view, index)->
+assert_visible_view = (stackView, visibleIndex)->
+  _.each stackView.children, (view, index)->
     equal view.$el.is(':hidden'), (visibleIndex != index)
     return
   return
@@ -9,7 +9,7 @@ module 'Backpack.StackView',
     @stackView.destroy() if @stackView
     return
 
-test 'initialize by passing children', ->
+test 'initialize by passing children', 2, ->
   view1 = new Backpack.View
     initialize:(options)->
       @$el.html '<div style="background-color:blue">View1</div>'
@@ -18,14 +18,14 @@ test 'initialize by passing children', ->
     initialize:(options)->
       @$el.html '<div style="background-color:red">View2</div>'
       return
-  @stackView = new Backpack.StackView
+  stackView = @stackView = new Backpack.StackView
     children: [view1, view2]
     selectedIndex: 0
-  $('#testNode').append @stackView.$el
-  assert_visible_view [view1, view2], 0
+  $('#testNode').append stackView.$el
+  assert_visible_view stackView, 0
   return
 
-test 'no selectedIndex', ->
+test 'no selectedIndex', 2, ->
   view1 = new Backpack.View
     initialize:(options)->
       @$el.html '<div style="background-color:blue">View1</div>'
@@ -34,13 +34,13 @@ test 'no selectedIndex', ->
     initialize:(options)->
       @$el.html '<div style="background-color:red">View2</div>'
       return
-  @stackView = new Backpack.StackView
+  stackView = @stackView = new Backpack.StackView
     children: [view1, view2]
-  $('#testNode').append @stackView.$el
-  assert_visible_view [view1, view2], 0
+  $('#testNode').append stackView.$el
+  assert_visible_view stackView, 0
   return
 
-test 'display view specified by selectedIndex', ->
+test 'display view specified by selectedIndex', 2, ->
   view1 = new Backpack.View
     initialize:(options)->
       @$el.html '<div style="background-color:blue">View1</div>'
@@ -49,14 +49,14 @@ test 'display view specified by selectedIndex', ->
     initialize:(options)->
       @$el.html '<div style="background-color:red">View2</div>'
       return
-  @stackView = new Backpack.StackView
+  stackView = @stackView = new Backpack.StackView
     children: [view1, view2]
     selectedIndex: 1
-  $('#testNode').append @stackView.$el
-  assert_visible_view [view1, view2], 1
+  $('#testNode').append stackView.$el
+  assert_visible_view stackView, 1
   return
 
-test 'attach navigation event', ->
+asyncTest 'attach navigation event', 4, ->
   view1 = new Backpack.View
     name: 'view1'
     initialize:(options)->
@@ -69,7 +69,7 @@ test 'attach navigation event', ->
       @$el.html '<div style="background-color:red">View2</div>'
       return
     showPrevious:->
-  @stackView = new Backpack.StackView
+  stackView = @stackView = new Backpack.StackView
     children: [view1, view2]
     selectedIndex: 0,
     navigationEvents:
@@ -79,14 +79,19 @@ test 'attach navigation event', ->
       view2:
         event: 'showPrevious'
         target: 'view1'
-  $('#testNode').append @stackView.$el
+  $('#testNode').append stackView.$el
   view1.showNext()
-  assert_visible_view [view1, view2], 1
-  view2.showPrevious()
-  assert_visible_view [view1, view2], 0
+  view2.$el.promise().done ->
+    assert_visible_view stackView, 1
+    view2.showPrevious()
+    view1.$el.promise().done ->
+      assert_visible_view stackView, 0
+      start()
+      return
+    return
   return
 
-test 'attach navigation event in array', ->
+asyncTest 'attach navigation event in array', 12, ->
   view1 = new Backpack.View
     name: 'view1'
     initialize:(options)->
@@ -106,7 +111,7 @@ test 'attach navigation event in array', ->
       @$el.html '<div style="background-color:red">View3</div>'
       return
     showView1:->
-  @stackView = new Backpack.StackView
+  stackView = @stackView = new Backpack.StackView
     children: [view1, view2, view3]
     selectedIndex: 0,
     navigationEvents:
@@ -121,17 +126,24 @@ test 'attach navigation event in array', ->
       view3:
         event: 'showView1'
         target: 'view1'
-  $('#testNode').append @stackView.$el
-  assert_visible_view [view1, view2, view3], 0
+  $('#testNode').append stackView.$el
+  assert_visible_view stackView, 0
   view1.showView2()
-  assert_visible_view [view1, view2, view3], 1
-  view2.showView1()
-  assert_visible_view [view1, view2, view3], 0
-  view1.showView3()
-  assert_visible_view [view1, view2, view3], 2
+  view2.$el.promise().done ->
+    assert_visible_view stackView, 1
+    view2.showView1()
+    view1.$el.promise().done ->
+      assert_visible_view stackView, 0
+      view1.showView3()
+      view3.$el.promise().done ->
+        assert_visible_view stackView, 2
+        start()
+        return
+      return
+    return
   return
 
-test 'attach navigation event with back', ->
+asyncTest 'attach navigation event with back', 18, ->
   view1 = new Backpack.View
     name: 'view1'
     initialize:(options)->
@@ -151,7 +163,7 @@ test 'attach navigation event with back', ->
       @$el.html '<div style="background-color:red">View3</div>'
       return
     showPrevious:->
-  @stackView = new Backpack.StackView
+  stackView = @stackView = new Backpack.StackView
     children: [view1, view2, view3]
     selectedIndex: 0,
     navigationEvents:
@@ -166,16 +178,27 @@ test 'attach navigation event with back', ->
       view3:
         event: 'showPrevious'
         back: true
-  $('#testNode').append @stackView.$el
-  assert_visible_view [view1, view2, view3], 0
+  $('#testNode').append stackView.$el
+  assert_visible_view stackView, 0
   view1.showView3()
-  assert_visible_view [view1, view2, view3], 2
-  view3.showPrevious()
-  assert_visible_view [view1, view2, view3], 0
-  view1.showView2()
-  assert_visible_view [view1, view2, view3], 1
-  view2.showView3()
-  assert_visible_view [view1, view2, view3], 2
-  view3.showPrevious()
-  assert_visible_view [view1, view2, view3], 1
+  view3.$el.promise().done ->
+    assert_visible_view stackView, 2
+    view3.showPrevious()
+    view1.$el.promise().done ->
+      assert_visible_view stackView, 0
+      view1.showView2()
+      view2.$el.promise().done ->
+        assert_visible_view stackView, 1
+        view2.showView3()
+        view3.$el.promise().done ->
+          assert_visible_view stackView, 2
+          view3.showPrevious()
+          view2.$el.promise().done ->
+            assert_visible_view stackView, 1
+            start()
+            return
+          return
+        return
+      return
+    return
   return

@@ -23,9 +23,14 @@
         options = {};
       }
       Backpack.View.prototype.initialize.apply(this, arguments);
+      this.$el.css({
+        position: "relative",
+        width: "100%"
+      });
       selectedIndex = options.selectedIndex || 0;
       if (this.children && ((0 <= selectedIndex && selectedIndex < this.children.length))) {
         this._selectedView = this.children[selectedIndex];
+        this._previousSelected = this._selectedView;
       }
       this.render();
     },
@@ -39,7 +44,7 @@
 
       _.each(this.children, function(child) {
         if (child === _this._selectedView) {
-          _this.selectChild(child);
+          child.$el.show();
         } else {
           child.$el.hide();
         }
@@ -55,6 +60,10 @@
       var eventDef, navigationEvents, stackEvent,
         _this = this;
 
+      view.$el.css({
+        position: "absolute",
+        width: "100%"
+      });
       Backpack.ContainerPlugin.addView.apply(this, arguments);
       navigationEvents = this.navigationEvents;
       if (navigationEvents) {
@@ -103,13 +112,22 @@
     */
 
     selectChild: function(child) {
+      var bBack, hideDir, showDir;
+
       if (_.isNumber(child)) {
         child = this.children[child];
       }
+      bBack = _.indexOf(this.children, child) < _.indexOf(this.children, this._selectedView);
       if (this._selectedView) {
-        this._selectedView.$el.hide();
+        hideDir = bBack ? "right" : "left";
+        this._selectedView.$el.hide("slide", {
+          direction: hideDir
+        }, "slow");
       }
-      child.$el.show();
+      showDir = bBack ? "left" : "right";
+      child.$el.show("slide", {
+        direction: showDir
+      }, "slow");
       this._previousSelected = this._selectedView;
       this._selectedView = child;
     },

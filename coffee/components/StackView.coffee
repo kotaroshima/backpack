@@ -14,11 +14,13 @@ Backpack.StackView = Backpack.View.extend
   ###
   initialize:(options={})->
     Backpack.View::initialize.apply @, arguments
+    @$el.css position: "relative", width: "100%"
 
     # select one of its child views
     selectedIndex = options.selectedIndex || 0
     if @children && (0 <= selectedIndex < @children.length)
       @_selectedView = @children[selectedIndex]
+      @_previousSelected = @_selectedView
     @render()
     return
 
@@ -29,7 +31,7 @@ Backpack.StackView = Backpack.View.extend
   render:->
     _.each @children, (child)=>
       if child == @_selectedView
-        @selectChild child
+        child.$el.show()
       else
         child.$el.hide()
       return
@@ -40,6 +42,7 @@ Backpack.StackView = Backpack.View.extend
   * @param {Backbone.View} view A view to add
   ###
   addView:(view)->
+    view.$el.css position: "absolute", width: "100%"
     Backpack.ContainerPlugin.addView.apply @, arguments
 
     navigationEvents = @navigationEvents
@@ -83,9 +86,12 @@ Backpack.StackView = Backpack.View.extend
   selectChild:(child)->
     if _.isNumber child
       child = @children[child]
+    bBack = (_.indexOf(@children, child) < _.indexOf(@children, @_selectedView))
     if @_selectedView
-      @_selectedView.$el.hide()
-    child.$el.show()
+      hideDir = if bBack then "right" else "left"
+      @_selectedView.$el.hide "slide", { direction: hideDir }, "slow"
+    showDir = if bBack then "left" else "right"
+    child.$el.show "slide", { direction: showDir }, "slow"
     @_previousSelected = @_selectedView
     @_selectedView = child
     return
