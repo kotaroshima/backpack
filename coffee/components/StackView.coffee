@@ -8,19 +8,19 @@ Backpack.StackView = Backpack.View.extend
   * Constructor
   * @param {Object} [options={}] Initialization option
   * @param {Backpack.View[]} [options.children] Child views
-  * @param {integer} [options.selectedIndex=0] Index of child view to be selected
-  * @param {Object} [options.navigationEvents] Map to define event handler to select child.
+  * @param {integer} [options.showIndex=0] Index of child view to show on init
+  * @param {Object} [options.navigationEvents] Map to define event handler to show child.
   *    key is child view's 'name' property, and value is child view's method name to trigger selection
   ###
   initialize:(options={})->
     Backpack.View::initialize.apply @, arguments
     @$el.css position: "relative", width: "100%"
 
-    # select one of its child views
-    selectedIndex = options.selectedIndex || 0
-    if @children && (0 <= selectedIndex < @children.length)
-      @_selectedView = @children[selectedIndex]
-      @_previousSelected = @_selectedView
+    # show one of its child views on init
+    showIndex = options.showIndex || 0
+    if @children && (0 <= showIndex < @children.length)
+      @_currentView = @children[showIndex]
+      @_previousView = @_currentView
     @render()
     return
 
@@ -30,7 +30,7 @@ Backpack.StackView = Backpack.View.extend
   ###
   render:->
     _.each @children, (child)=>
-      if child == @_selectedView
+      if child == @_currentView
         child.$el.show()
       else
         child.$el.hide()
@@ -59,47 +59,47 @@ Backpack.StackView = Backpack.View.extend
     return
 
   ###
-  * Attach event of child view to select that view
+  * Attaches event of child view to show that view
   * @param {Backpack.View} view Child view
   * @param {Object} navigationDef map to define navigation event
   * @param {String} navigationDef.event Method name to trigger navigation event
   * @param {String} [navigationDef.target] `name` property of target view
-  * @param {boolean} [navigationDef.back] if true, selects previously selected view
+  * @param {boolean} [navigationDef.back] if true, shows previously shown child view
   ###
   attachNavigationEvent:(view, navigationDef)->
     if navigationDef.back == true
       view.attach view, navigationDef.event, =>
-        @selectPreviousSelected()
+        @showPreviousChild()
         return
     else
       targetView = _.find @children, (child)->
         child.name == navigationDef.target
       view.attach view, navigationDef.event, =>
-        @selectChild targetView
+        @showChild targetView
         return
     return
 
   ###
-  * Selects one of its child views
-  * @param {integer|Backbone.View} child Child view to select
+  * Hides previously shown child view and shows another child view
+  * @param {integer|Backbone.View} child Child view instance or index to show
   ###
-  selectChild:(child)->
+  showChild:(child)->
     if _.isNumber child
       child = @children[child]
-    bBack = (_.indexOf(@children, child) < _.indexOf(@children, @_selectedView))
-    if @_selectedView
+    bBack = (_.indexOf(@children, child) < _.indexOf(@children, @_currentView))
+    if @_currentView
       hideDir = if bBack then "right" else "left"
-      @_selectedView.$el.hide "slide", { direction: hideDir }, "slow"
+      @_currentView.$el.hide "slide", { direction: hideDir }, "slow"
     showDir = if bBack then "left" else "right"
     child.$el.show "slide", { direction: showDir }, "slow"
-    @_previousSelected = @_selectedView
-    @_selectedView = child
+    @_previousView = @_currentView
+    @_currentView = child
     return
 
   ###
-  * Select previously selected child view
+  * Shows previously shown child view again and hides currently shown child view
   ###
-  selectPreviousSelected:->
-    if @_previousSelected
-      @selectChild @_previousSelected
+  showPreviousChild:->
+    if @_previousView
+      @showChild @_previousView
     return

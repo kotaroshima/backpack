@@ -20,12 +20,12 @@ test 'initialize by passing children', 2, ->
       return
   stackView = @stackView = new Backpack.StackView
     children: [view1, view2]
-    selectedIndex: 0
+    showIndex: 0
   $('#testNode').append stackView.$el
   assert_visible_view stackView, 0
   return
 
-test 'no selectedIndex', 2, ->
+test 'no showIndex', 2, ->
   view1 = new Backpack.View
     initialize:(options)->
       @$el.html '<div style="background-color:blue">View1</div>'
@@ -40,7 +40,7 @@ test 'no selectedIndex', 2, ->
   assert_visible_view stackView, 0
   return
 
-test 'display view specified by selectedIndex', 2, ->
+test 'display view specified by showIndex', 2, ->
   view1 = new Backpack.View
     initialize:(options)->
       @$el.html '<div style="background-color:blue">View1</div>'
@@ -51,7 +51,7 @@ test 'display view specified by selectedIndex', 2, ->
       return
   stackView = @stackView = new Backpack.StackView
     children: [view1, view2]
-    selectedIndex: 1
+    showIndex: 1
   $('#testNode').append stackView.$el
   assert_visible_view stackView, 1
   return
@@ -71,7 +71,7 @@ asyncTest 'attach navigation event', 4, ->
     showPrevious:->
   stackView = @stackView = new Backpack.StackView
     children: [view1, view2]
-    selectedIndex: 0,
+    showIndex: 0,
     navigationEvents:
       view1:
         event: 'showNext'
@@ -113,7 +113,7 @@ asyncTest 'attach navigation event in array', 12, ->
     showView1:->
   stackView = @stackView = new Backpack.StackView
     children: [view1, view2, view3]
-    selectedIndex: 0,
+    showIndex: 0,
     navigationEvents:
       view1:
         [
@@ -165,7 +165,7 @@ asyncTest 'attach navigation event with back', 18, ->
     showPrevious:->
   stackView = @stackView = new Backpack.StackView
     children: [view1, view2, view3]
-    selectedIndex: 0,
+    showIndex: 0,
     navigationEvents:
       view1:
         [

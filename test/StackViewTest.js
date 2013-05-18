@@ -31,13 +31,13 @@
     });
     stackView = this.stackView = new Backpack.StackView({
       children: [view1, view2],
-      selectedIndex: 0
+      showIndex: 0
     });
     $('#testNode').append(stackView.$el);
     assert_visible_view(stackView, 0);
   });
 
-  test('no selectedIndex', 2, function() {
+  test('no showIndex', 2, function() {
     var stackView, view1, view2;
 
     view1 = new Backpack.View({
@@ -57,7 +57,7 @@
     assert_visible_view(stackView, 0);
   });
 
-  test('display view specified by selectedIndex', 2, function() {
+  test('display view specified by showIndex', 2, function() {
     var stackView, view1, view2;
 
     view1 = new Backpack.View({
@@ -72,7 +72,7 @@
     });
     stackView = this.stackView = new Backpack.StackView({
       children: [view1, view2],
-      selectedIndex: 1
+      showIndex: 1
     });
     $('#testNode').append(stackView.$el);
     assert_visible_view(stackView, 1);
@@ -97,7 +97,7 @@
     });
     stackView = this.stackView = new Backpack.StackView({
       children: [view1, view2],
-      selectedIndex: 0,
+      showIndex: 0,
       navigationEvents: {
         view1: {
           event: 'showNext',
@@ -148,7 +148,7 @@
     });
     stackView = this.stackView = new Backpack.StackView({
       children: [view1, view2, view3],
-      selectedIndex: 0,
+      showIndex: 0,
       navigationEvents: {
         view1: [
           {
@@ -213,7 +213,7 @@
     });
     stackView = this.stackView = new Backpack.StackView({
       children: [view1, view2, view3],
-      selectedIndex: 0,
+      showIndex: 0,
       navigationEvents: {
         view1: [
           {
