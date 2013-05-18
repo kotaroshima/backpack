@@ -7,22 +7,53 @@
 
   Backpack = root.Backpack = {};
 
-  Backpack.attach = function(context, method, callback) {
-    var origFunc;
+  /*
+  * Attach event handler
+  * if 3 arguments
+  * @param {Object} obj Object to which attach event
+  * @param {String} method Name of this object's method to which attach event
+  * @param {Function} callback Callback function
+  * if 4 arguments
+  * @param {Object} obj Object to which attach event
+  * @param {String} method Name of this object's method to which attach event
+  * @param {Object} context Context for callback function
+  * @param {Function|String} callback Callback function or callback function name within context
+  */
 
-    origFunc = context[method];
-    context[method] = function() {
+
+  Backpack.attach = function() {
+    var callback, context, method, obj, origFunc;
+
+    obj = arguments[0];
+    method = arguments[1];
+    switch (arguments.length) {
+      case 3:
+        callback = arguments[2];
+        break;
+      case 4:
+        context = arguments[2];
+        if (_.isString(arguments[3])) {
+          callback = context[arguments[3]];
+        } else {
+          callback = arguments[3];
+        }
+    }
+    origFunc = obj[method];
+    obj[method] = function() {
       var ret;
 
-      ret = origFunc.apply(context, arguments);
+      ret = origFunc.apply(obj, arguments);
+      if (!context) {
+        context = this;
+      }
       if (callback) {
-        callback.apply(this, arguments);
+        callback.apply(context, arguments);
       }
       return ret;
     };
     return {
       detach: function() {
-        context[method] = origFunc;
+        obj[method] = origFunc;
       }
     };
   };

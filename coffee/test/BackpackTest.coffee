@@ -26,15 +26,16 @@ test 'attach and detach', ->
   equal obj.counter, 5, 'counter should not be incremented after detach.'
   return
 
-test 'attach with arguments', ->
-  obj =
+test 'attach with context and callback name', ->
+  source =
+    trigger:->
+  target =
     counter: 0
-    event:(arg1, arg2)->
-  Backpack.attach obj, 'event', (arg1, arg2)->
-    equal arg1, 'x', 'first argument should be passed in the callback function'
-    equal arg2, 2, 'second argument should be passed in the callback function'
-    return
-  obj.event('x', 2)
+    event:->
+      @counter++
+  Backpack.attach source, 'trigger', target, 'event'
+  source.trigger()
+  equal target.counter, 1, 'counter should be incremented.'
   return
 
 test 'attach multiple events', ->

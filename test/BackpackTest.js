@@ -30,18 +30,21 @@
     equal(obj.counter, 5, 'counter should not be incremented after detach.');
   });
 
-  test('attach with arguments', function() {
-    var obj;
+  test('attach with context and callback name', function() {
+    var source, target;
 
-    obj = {
-      counter: 0,
-      event: function(arg1, arg2) {}
+    source = {
+      trigger: function() {}
     };
-    Backpack.attach(obj, 'event', function(arg1, arg2) {
-      equal(arg1, 'x', 'first argument should be passed in the callback function');
-      equal(arg2, 2, 'second argument should be passed in the callback function');
-    });
-    obj.event('x', 2);
+    target = {
+      counter: 0,
+      event: function() {
+        return this.counter++;
+      }
+    };
+    Backpack.attach(source, 'trigger', target, 'event');
+    source.trigger();
+    equal(target.counter, 1, 'counter should be incremented.');
   });
 
   test('attach multiple events', function() {

@@ -1,15 +1,39 @@
 root = this
 Backpack = root.Backpack = {}
 
-Backpack.attach = (context, method, callback)->
-  origFunc = context[method]
-  context[method] =->
-    ret = origFunc.apply context, arguments
-    callback.apply @, arguments if callback
+###
+* Attach event handler
+* if 3 arguments
+* @param {Object} obj Object to which attach event
+* @param {String} method Name of this object's method to which attach event
+* @param {Function} callback Callback function
+* if 4 arguments
+* @param {Object} obj Object to which attach event
+* @param {String} method Name of this object's method to which attach event
+* @param {Object} context Context for callback function
+* @param {Function|String} callback Callback function or callback function name within context
+###
+Backpack.attach = ->
+  obj = arguments[0]
+  method = arguments[1]
+  switch arguments.length
+    when 3
+      callback = arguments[2]
+    when 4
+      context = arguments[2]
+      if _.isString arguments[3]
+        callback = context[arguments[3]]
+      else
+        callback = arguments[3]
+  origFunc = obj[method]
+  obj[method] =->
+    ret = origFunc.apply obj, arguments
+    context = @ if !context
+    callback.apply context, arguments if callback
     ret
   {
     detach:->
-      context[method] = origFunc
+      obj[method] = origFunc
       return
   }
 
