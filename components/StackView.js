@@ -7,6 +7,28 @@
 (function() {
   Backpack.StackView = Backpack.View.extend({
     plugins: [Backpack.ContainerPlugin],
+    effects: {
+      HIDE_BACKWARD: [
+        "slide", {
+          direction: "right"
+        }, "slow"
+      ],
+      HIDE_FORWARD: [
+        "slide", {
+          direction: "left"
+        }, "slow"
+      ],
+      SHOW_BACKWARD: [
+        "slide", {
+          direction: "left"
+        }, "slow"
+      ],
+      SHOW_FORWARD: [
+        "slide", {
+          direction: "right"
+        }, "slow"
+      ]
+    },
     /*
     * Constructor
     * @param {Object} [options={}] Initialization option
@@ -112,22 +134,18 @@
     */
 
     showChild: function(child) {
-      var bBack, hideDir, showDir;
+      var bBack, hideKey, showKey;
 
       if (_.isNumber(child)) {
         child = this.children[child];
       }
       bBack = _.indexOf(this.children, child) < _.indexOf(this.children, this._currentView);
       if (this._currentView) {
-        hideDir = bBack ? "right" : "left";
-        this._currentView.$el.hide("slide", {
-          direction: hideDir
-        }, "slow");
+        hideKey = bBack ? 'HIDE_BACKWARD' : 'HIDE_FORWARD';
+        this._currentView.$el.hide.apply(this._currentView.$el, this.effects[hideKey]);
       }
-      showDir = bBack ? "left" : "right";
-      child.$el.show("slide", {
-        direction: showDir
-      }, "slow");
+      showKey = bBack ? 'SHOW_BACKWARD' : 'SHOW_FORWARD';
+      child.$el.show.apply(child.$el, this.effects[showKey]);
       this._previousView = this._currentView;
       this._currentView = child;
     },

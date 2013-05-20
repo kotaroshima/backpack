@@ -4,6 +4,12 @@
 Backpack.StackView = Backpack.View.extend
   plugins: [Backpack.ContainerPlugin]
 
+  effects:
+    HIDE_BACKWARD: ["slide", { direction: "right" }, "slow"]
+    HIDE_FORWARD: ["slide", { direction: "left" }, "slow"]
+    SHOW_BACKWARD: ["slide", { direction: "left" }, "slow"]
+    SHOW_FORWARD: ["slide", { direction: "right" }, "slow"]
+
   ###
   * Constructor
   * @param {Object} [options={}] Initialization option
@@ -88,10 +94,10 @@ Backpack.StackView = Backpack.View.extend
       child = @children[child]
     bBack = (_.indexOf(@children, child) < _.indexOf(@children, @_currentView))
     if @_currentView
-      hideDir = if bBack then "right" else "left"
-      @_currentView.$el.hide "slide", { direction: hideDir }, "slow"
-    showDir = if bBack then "left" else "right"
-    child.$el.show "slide", { direction: showDir }, "slow"
+      hideKey = if bBack then 'HIDE_BACKWARD' else 'HIDE_FORWARD'
+      @_currentView.$el.hide.apply @_currentView.$el, @effects[hideKey]
+    showKey = if bBack then 'SHOW_BACKWARD' else 'SHOW_FORWARD'
+    child.$el.show.apply child.$el, @effects[showKey]
     @_previousView = @_currentView
     @_currentView = child
     return
