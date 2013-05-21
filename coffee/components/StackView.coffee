@@ -48,7 +48,7 @@ Backpack.StackView = Backpack.View.extend
   * @param {Backbone.View} view A view to add
   ###
   addView:(view)->
-    view.$el.css position: "absolute", width: "100%"
+    view.$el.css position: "absolute", width: "99%"
     Backpack.ContainerPlugin.addView.apply @, arguments
 
     navigationEvents = @navigationEvents
@@ -87,11 +87,14 @@ Backpack.StackView = Backpack.View.extend
 
   ###
   * Hides previously shown child view and shows another child view
-  * @param {integer|Backbone.View} child Child view instance or index to show
+  * @param {Integer|String|Backbone.View} child Child view instance or child index or 'name' property of child view
   ###
   showChild:(child)->
     if _.isNumber child
       child = @children[child]
+    else if _.isString child
+      child = _.find @children, (view)->
+        view.name == child
     bBack = (_.indexOf(@children, child) < _.indexOf(@children, @_currentView))
     if @_currentView
       hideKey = if bBack then 'HIDE_BACKWARD' else 'HIDE_FORWARD'

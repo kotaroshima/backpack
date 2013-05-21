@@ -564,6 +564,7 @@
               collection.add(model, {
                 at: newIndex
               });
+              event.stopPropagation();
             }
           };
           if (this.sortableOptions) {
@@ -825,7 +826,7 @@
 
       view.$el.css({
         position: "absolute",
-        width: "100%"
+        width: "99%"
       });
       Backpack.ContainerPlugin.addView.apply(this, arguments);
       navigationEvents = this.navigationEvents;
@@ -871,7 +872,7 @@
     },
     /*
     * Hides previously shown child view and shows another child view
-    * @param {integer|Backbone.View} child Child view instance or index to show
+    * @param {Integer|String|Backbone.View} child Child view instance or child index or 'name' property of child view
     */
 
     showChild: function(child) {
@@ -879,6 +880,10 @@
 
       if (_.isNumber(child)) {
         child = this.children[child];
+      } else if (_.isString(child)) {
+        child = _.find(this.children, function(view) {
+          return view.name === child;
+        });
       }
       bBack = _.indexOf(this.children, child) < _.indexOf(this.children, this._currentView);
       if (this._currentView) {

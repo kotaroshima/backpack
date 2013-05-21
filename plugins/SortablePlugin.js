@@ -50,6 +50,7 @@
               collection.add(model, {
                 at: newIndex
               });
+              event.stopPropagation();
             }
           };
           if (this.sortableOptions) {

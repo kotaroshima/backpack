@@ -38,6 +38,7 @@ Backpack.SortablePlugin =
             newIndex = ui.item.index()
             collection.remove model
             collection.add model, { at: newIndex }
+            event.stopPropagation()
             return
         options = _.extend options, @sortableOptions if @sortableOptions
         containerNode.sortable options
