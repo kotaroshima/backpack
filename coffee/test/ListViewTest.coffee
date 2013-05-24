@@ -15,7 +15,7 @@ module 'Backpack.ListView',
     @listView.destroy() if @listView
     return
 
-test 'initialize with models', ->
+test 'initialize with models', 7, ->
   data = ['Orange', 'Apple', 'Grape']
   models = _.map data, (item)->
     { name: item }
@@ -32,7 +32,7 @@ test 'initialize with models', ->
     return
   return
 
-test 'add models after initialize', ->
+test 'add models after initialize', 7, ->
   data = ['Orange', 'Apple', 'Grape']
   collection = new Backbone.Collection
   @listView = new Backpack.ListView
@@ -52,7 +52,7 @@ test 'add models after initialize', ->
     return
   return
 
-test 'remove model', ->
+test 'remove model', 5, ->
   data = ['Orange', 'Apple', 'Grape']
   collection = new Backbone.Collection
   @listView = new Backpack.ListView
@@ -76,7 +76,7 @@ test 'remove model', ->
     return
   return
 
-test 'modify model', ->
+test 'modify model', 7, ->
   data = ['Orange', 'Apple', 'Grape']
   collection = new Backbone.Collection
   @listView = new Backpack.ListView

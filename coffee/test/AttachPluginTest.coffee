@@ -2,7 +2,7 @@ module 'Backpack.AttachPlugin'
 
 _.each Backpack.testDefs, (def)->
 
-  test _.template('attach and detach <%-name%>', def), ->
+  test _.template('attach and detach <%-name%>', def), 6, ->
     TestClass = def.class.extend
       onTestEvent:(arg1, arg2)->
     instance = new TestClass()
@@ -23,7 +23,7 @@ _.each Backpack.testDefs, (def)->
     equal var2, 2, "callback wasn't called"
     return
 
-  test _.template('attach and destroy <%-name%>', def), ->
+  test _.template('attach and destroy <%-name%>', def), 6, ->
     TestClass = def.class.extend
       onTestEvent:(arg1, arg2)->
     instance = new TestClass()

@@ -2,7 +2,7 @@ module 'Backpack.SubscribePlugin'
 
 _.each Backpack.testDefs, (def)->
 
-  test _.template('<%-name%> subscribes with inheritance', def), ->
+  test _.template('<%-name%> subscribes with inheritance', def), 2, ->
     TestClass = def.class.extend
       subscribers:
         TEST_EVENT: 'onTestEvent'
@@ -16,7 +16,7 @@ _.each Backpack.testDefs, (def)->
     equal instance.prop2, 2, 'callback function called and 2nd argument passed'
     return
 
-  test _.template('<%-name%> subscribes with initialization parameter', def), ->
+  test _.template('<%-name%> subscribes with initialization parameter', def), 2, ->
     instance = new def.createInstance
       subscribers:
         TEST_EVENT: 'onTestEvent'
@@ -29,7 +29,7 @@ _.each Backpack.testDefs, (def)->
     equal instance.prop2, 2, 'callback function called and 2nd argument passed'
     return
 
-  test _.template('<%-name%> add subscriber after initialization', def), ->
+  test _.template('<%-name%> add subscriber after initialization', def), 2, ->
     instance = new def.createInstance
       onTestEvent:(arg1, arg2)->
         @prop1 = arg1
@@ -41,7 +41,7 @@ _.each Backpack.testDefs, (def)->
     equal instance.prop2, 2, 'callback function called and 2nd argument passed'
     return
 
-  test _.template('<%-name%> remove subscriber with method name', def), ->
+  test _.template('<%-name%> remove subscriber with method name', def), 3, ->
     instance = new def.createInstance
       subscribers:
         TEST_EVENT: 'onTestEvent'
@@ -57,7 +57,7 @@ _.each Backpack.testDefs, (def)->
     equal instance.prop2, 2, 'callback function not called'
     return
 
-  test _.template('<%-name%> remove subscriber with function reference', def), ->
+  test _.template('<%-name%> remove subscriber with function reference', def), 3, ->
     instance = new def.createInstance
       subscribers:
         TEST_EVENT: 'onTestEvent'
@@ -73,7 +73,7 @@ _.each Backpack.testDefs, (def)->
     equal instance.prop2, 2, 'callback function not called'
     return
 
-  test _.template('<%-name%> all subscribers removed on destroy', def), ->
+  test _.template('<%-name%> all subscribers removed on destroy', def), 2, ->
     instance = new def.createInstance
       subscribers:
         TEST_EVENT: 'onTestEvent'

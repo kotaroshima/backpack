@@ -19,7 +19,7 @@
   });
 
   _.each(Backpack.testDefs, function(def) {
-    test(_.template('<%-name%> publishes with inheritance', def), function() {
+    test(_.template('<%-name%> publishes with inheritance', def), 2, function() {
       var TestClass, instance;
 
       TestClass = def["class"].extend({
@@ -33,7 +33,7 @@
       equal(this.prop1, 'x', 'callback function called and 1st argument passed');
       equal(this.prop2, 2, 'callback function called and 2nd argument passed');
     });
-    test(_.template('<%-name%> publishes with initialization parameter', def), function() {
+    test(_.template('<%-name%> publishes with initialization parameter', def), 2, function() {
       var instance;
 
       instance = def.createInstance({
@@ -46,7 +46,7 @@
       equal(this.prop1, 'x', 'callback function called and 1st argument passed');
       equal(this.prop2, 2, 'callback function called and 2nd argument passed');
     });
-    test(_.template('<%-name%> add publisher after initialize', def), function() {
+    test(_.template('<%-name%> add publisher after initialize', def), 2, function() {
       var instance;
 
       instance = def.createInstance({
@@ -57,7 +57,7 @@
       equal(this.prop1, 'x', 'callback function called and 1st argument passed');
       equal(this.prop2, 2, 'callback function called and 2nd argument passed');
     });
-    test(_.template('<%-name%> remove publisher with method name, topic name', def), function() {
+    test(_.template('<%-name%> remove publisher with method name, topic name', def), 3, function() {
       var instance, ret;
 
       instance = def.createInstance({
@@ -74,7 +74,7 @@
       equal(this.prop1, 'z', 'callback function not called');
       equal(this.prop2, 1, 'callback function not called');
     });
-    test(_.template('<%-name%> remove publisher with attach handler', def), function() {
+    test(_.template('<%-name%> remove publisher with attach handler', def), 3, function() {
       var handler, instance, ret;
 
       instance = def.createInstance({
@@ -89,7 +89,7 @@
       equal(this.prop1, 'z', 'callback function not called');
       equal(this.prop2, 1, 'callback function not called');
     });
-    test(_.template('<%-name%> all publishers removed on destroy', def), function() {
+    test(_.template('<%-name%> all publishers removed on destroy', def), 2, function() {
       var instance;
 
       instance = def.createInstance({

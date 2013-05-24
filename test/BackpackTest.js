@@ -4,7 +4,7 @@
 
   module('Backpack.attach');
 
-  test('attach and detach', function() {
+  test('attach and detach', 4, function() {
     var handler, obj;
 
     obj = {
@@ -30,7 +30,7 @@
     equal(obj.counter, 5, 'counter should not be incremented after detach.');
   });
 
-  test('attach with context and callback name', function() {
+  test('attach with context and callback name', 1, function() {
     var source, target;
 
     source = {
@@ -47,7 +47,7 @@
     equal(target.counter, 1, 'counter should be incremented.');
   });
 
-  test('attach multiple events', function() {
+  test('attach multiple events', 8, function() {
     var handler1, handler2, obj;
 
     obj = {
@@ -82,7 +82,7 @@
 
   _.each(Backpack.testDefs, function(def) {
     module(def.name);
-    test('extend with plugins', function() {
+    test('extend with plugins', 4, function() {
       var TestClass, instance, testPlugin1, testPlugin2;
 
       testPlugin1 = {
@@ -111,7 +111,7 @@
       equal(instance.prop1, 'bye', 'cleanup called for first plugin');
       equal(instance.prop2, 'sayonara', 'cleanup called for second plugin');
     });
-    test('initialize with plugins', function() {
+    test('initialize with plugins', 4, function() {
       var instance, testPlugin1, testPlugin2;
 
       testPlugin1 = {
@@ -139,7 +139,7 @@
       equal(instance.prop1, 'bye', 'cleanup called for first plugin');
       equal(instance.prop2, 'sayonara', 'cleanup called for second plugin');
     });
-    test('override extend plugins with initialize plugins', function() {
+    test('override extend plugins with initialize plugins', 4, function() {
       var TestClass, instance, testPlugin1, testPlugin2;
 
       testPlugin1 = {

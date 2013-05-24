@@ -2,7 +2,7 @@ module 'Backpack.SingletonPlugin'
 
 _.each Backpack.testDefs, (def)->
 
-  test _.template('only one instance of <%-name%> can be initialized', def), ->
+  test _.template('only one instance of <%-name%> can be initialized', def), 2, ->
     TestSingleton = def.class.extend
       plugins: [Backpack.Singleton]
       initialize:->
@@ -17,7 +17,7 @@ _.each Backpack.testDefs, (def)->
     , Error, 'throws an error when trying to initialize 2nd instance'
     return
 
-  test _.template('get the same instance of <%-name%>', def), ->
+  test _.template('get the same instance of <%-name%>', def), 1, ->
     TestSingleton = def.class.extend
       plugins: [Backpack.Singleton]
     instance1 = TestSingleton.getInstance()

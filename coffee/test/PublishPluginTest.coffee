@@ -15,7 +15,7 @@ module 'Backpack.PublishPlugin',
 
 _.each Backpack.testDefs, (def)->
 
-  test _.template('<%-name%> publishes with inheritance', def), ->
+  test _.template('<%-name%> publishes with inheritance', def), 2, ->
     TestClass = def.class.extend
       publishers:
         onTestEvent: 'TEST_EVENT'
@@ -26,7 +26,7 @@ _.each Backpack.testDefs, (def)->
     equal @prop2, 2, 'callback function called and 2nd argument passed'
     return
 
-  test _.template('<%-name%> publishes with initialization parameter', def), ->
+  test _.template('<%-name%> publishes with initialization parameter', def), 2, ->
     instance = def.createInstance
       publishers:
         onTestEvent: 'TEST_EVENT'
@@ -36,7 +36,7 @@ _.each Backpack.testDefs, (def)->
     equal @prop2, 2, 'callback function called and 2nd argument passed'
     return
 
-  test _.template('<%-name%> add publisher after initialize', def), ->
+  test _.template('<%-name%> add publisher after initialize', def), 2, ->
     instance = def.createInstance
       onTestEvent:(arg1, arg2)->
     instance.addPublisher 'onTestEvent', 'TEST_EVENT'
@@ -45,7 +45,7 @@ _.each Backpack.testDefs, (def)->
     equal @prop2, 2, 'callback function called and 2nd argument passed'
     return
 
-  test _.template('<%-name%> remove publisher with method name, topic name', def), ->
+  test _.template('<%-name%> remove publisher with method name, topic name', def), 3, ->
     instance = def.createInstance
       publishers:
         onTestEvent: 'TEST_EVENT'
@@ -59,7 +59,7 @@ _.each Backpack.testDefs, (def)->
     equal @prop2, 1, 'callback function not called'
     return
 
-  test _.template('<%-name%> remove publisher with attach handler', def), ->
+  test _.template('<%-name%> remove publisher with attach handler', def), 3, ->
     instance = def.createInstance
       onTestEvent:(arg1, arg2)->
     handler = instance.addPublisher 'onTestEvent', 'TEST_EVENT'
@@ -72,8 +72,7 @@ _.each Backpack.testDefs, (def)->
     equal @prop2, 1, 'callback function not called'
     return
 
-
-  test _.template('<%-name%> all publishers removed on destroy', def), ->
+  test _.template('<%-name%> all publishers removed on destroy', def), 2, ->
     instance = def.createInstance
       publishers:
         onTestEvent: 'TEST_EVENT'

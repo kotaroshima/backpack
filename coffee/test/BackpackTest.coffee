@@ -3,7 +3,7 @@ Backbone.sync = ->
 
 module 'Backpack.attach'
 
-test 'attach and detach', ->
+test 'attach and detach', 4, ->
   obj =
     counter: 0
     event:->
@@ -26,7 +26,7 @@ test 'attach and detach', ->
   equal obj.counter, 5, 'counter should not be incremented after detach.'
   return
 
-test 'attach with context and callback name', ->
+test 'attach with context and callback name', 1, ->
   source =
     trigger:->
   target =
@@ -38,7 +38,7 @@ test 'attach with context and callback name', ->
   equal target.counter, 1, 'counter should be incremented.'
   return
 
-test 'attach multiple events', ->
+test 'attach multiple events', 8, ->
   obj =
     counter1: 0
     counter2: 0
@@ -72,7 +72,7 @@ _.each Backpack.testDefs, (def)->
 
   module def.name
 
-  test 'extend with plugins', ->
+  test 'extend with plugins', 4, ->
     testPlugin1 =
       setup:->
         @prop1 = 'hello'
@@ -97,7 +97,7 @@ _.each Backpack.testDefs, (def)->
     equal instance.prop2, 'sayonara', 'cleanup called for second plugin'
     return
 
-  test 'initialize with plugins', ->
+  test 'initialize with plugins', 4, ->
     testPlugin1 =
       setup:->
         @prop1 = 'hello'
@@ -120,7 +120,7 @@ _.each Backpack.testDefs, (def)->
     equal instance.prop2, 'sayonara', 'cleanup called for second plugin'
     return
 
-  test 'override extend plugins with initialize plugins', ->
+  test 'override extend plugins with initialize plugins', 4, ->
     testPlugin1 =
       setup:->
         @prop1 = 'hello'

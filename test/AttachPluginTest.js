@@ -3,7 +3,7 @@
   module('Backpack.AttachPlugin');
 
   _.each(Backpack.testDefs, function(def) {
-    test(_.template('attach and detach <%-name%>', def), function() {
+    test(_.template('attach and detach <%-name%>', def), 6, function() {
       var TestClass, handler, instance, var1, var2;
 
       TestClass = def["class"].extend({
@@ -26,7 +26,7 @@
       equal(var1, 'x', "callback wasn't called");
       equal(var2, 2, "callback wasn't called");
     });
-    test(_.template('attach and destroy <%-name%>', def), function() {
+    test(_.template('attach and destroy <%-name%>', def), 6, function() {
       var TestClass, handler, instance, var1, var2;
 
       TestClass = def["class"].extend({

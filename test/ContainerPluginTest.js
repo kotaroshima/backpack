@@ -18,7 +18,7 @@
     }
   });
 
-  test('initialize with child views', function() {
+  test('initialize with child views', 7, function() {
     var data, itemNodes, views,
       _this = this;
 
@@ -41,7 +41,7 @@
     });
   });
 
-  test('add child views after initialize', function() {
+  test('add child views after initialize', 7, function() {
     var data, itemNodes,
       _this = this;
 
@@ -66,7 +66,7 @@
     });
   });
 
-  test('get child view at specified index', function() {
+  test('get child view at specified index', 4, function() {
     var data, itemNodes, views,
       _this = this;
 
@@ -88,7 +88,7 @@
     });
   });
 
-  test('remove child view', function() {
+  test('remove child view', 1, function() {
     var data, itemNodes, views,
       _this = this;
 
@@ -108,7 +108,7 @@
     equal(itemNodes.size(), 2);
   });
 
-  test('remove child view at specified index', function() {
+  test('remove child view at specified index', 1, function() {
     var data, itemNodes, views,
       _this = this;
 
@@ -128,7 +128,7 @@
     equal(itemNodes.size(), 2);
   });
 
-  test('clear child views', function() {
+  test('clear child views', 1, function() {
     var data, itemNodes, views,
       _this = this;
 

@@ -22,7 +22,7 @@
     }
   });
 
-  test('initialize with models', function() {
+  test('initialize with models', 7, function() {
     var collection, data, itemNodes, models;
 
     data = ['Orange', 'Apple', 'Grape'];
@@ -45,7 +45,7 @@
     });
   });
 
-  test('add models after initialize', function() {
+  test('add models after initialize', 7, function() {
     var collection, data, itemNodes;
 
     data = ['Orange', 'Apple', 'Grape'];
@@ -72,7 +72,7 @@
     });
   });
 
-  test('remove model', function() {
+  test('remove model', 5, function() {
     var collection, data, itemNodes, models;
 
     data = ['Orange', 'Apple', 'Grape'];
@@ -104,7 +104,7 @@
     });
   });
 
-  test('modify model', function() {
+  test('modify model', 7, function() {
     var collection, data, itemNodes, models;
 
     data = ['Orange', 'Apple', 'Grape'];

@@ -12,7 +12,7 @@ module 'Backpack.ContainerPlugin',
     @containerView.destroy() if @containerView
     return
 
-test 'initialize with child views', ->
+test 'initialize with child views', 7, ->
   data = ['Orange', 'Apple', 'Grape']
   views = _.map data, (item)=>
     new @ItemView
@@ -29,7 +29,7 @@ test 'initialize with child views', ->
     return
   return
 
-test 'add child views after initialize', ->
+test 'add child views after initialize', 7, ->
   data = ['Orange', 'Apple', 'Grape']
   @containerView = new Backpack.View
     plugins: [Backpack.ContainerPlugin]
@@ -47,7 +47,7 @@ test 'add child views after initialize', ->
     return
   return
 
-test 'get child view at specified index', ->
+test 'get child view at specified index', 4, ->
   data = ['Orange', 'Apple', 'Grape']
   views = _.map data, (item)=>
     new @ItemView
@@ -63,7 +63,7 @@ test 'get child view at specified index', ->
     return
   return
 
-test 'remove child view', ->
+test 'remove child view', 1, ->
   data = ['Orange', 'Apple', 'Grape']
   views = _.map data, (item)=>
     new @ItemView
@@ -77,7 +77,7 @@ test 'remove child view', ->
   equal itemNodes.size(), 2
   return
 
-test 'remove child view at specified index', ->
+test 'remove child view at specified index', 1, ->
   data = ['Orange', 'Apple', 'Grape']
   views = _.map data, (item)=>
     new @ItemView
@@ -91,7 +91,7 @@ test 'remove child view at specified index', ->
   equal itemNodes.size(), 2
   return
 
-test 'clear child views', ->
+test 'clear child views', 1, ->
   data = ['Orange', 'Apple', 'Grape']
   views = _.map data, (item)=>
     new @ItemView
