@@ -34,7 +34,7 @@
     collection = new Backbone.Collection(models);
     this.listView = new Backpack.ListView({
       collection: collection,
-      itemClass: this.ItemView
+      itemView: this.ItemView
     });
     $('#testNode').append(this.listView.$el);
     itemNodes = $('#testNode .itemNode');
@@ -52,7 +52,7 @@
     collection = new Backbone.Collection;
     this.listView = new Backpack.ListView({
       collection: collection,
-      itemClass: this.ItemView
+      itemView: this.ItemView
     });
     $('#testNode').append(this.listView.$el);
     _.each(data, function(item) {
@@ -79,7 +79,7 @@
     collection = new Backbone.Collection;
     this.listView = new Backpack.ListView({
       collection: collection,
-      itemClass: this.ItemView
+      itemView: this.ItemView
     });
     $('#testNode').append(this.listView.$el);
     models = _.map(data, function(item) {
@@ -111,7 +111,7 @@
     collection = new Backbone.Collection;
     this.listView = new Backpack.ListView({
       collection: collection,
-      itemClass: this.ItemView
+      itemView: this.ItemView
     });
     $('#testNode').append(this.listView.$el);
     models = _.map(data, function(item) {

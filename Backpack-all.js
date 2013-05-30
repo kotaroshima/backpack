@@ -674,13 +674,18 @@
 
   Backpack.defaultPlugins.push(Backpack.SubscribePlugin);
 
+  /*
+  * A view that that displays view specified in `itemView`
+  */
+
+
   Backpack.ListView = Backpack.View.extend({
     plugins: [Backpack.ContainerPlugin],
     template: _.template('<div class="mainNode"><div class="containerNode"></div><div class="noItemsNode">No Items</div></div><div class="loadingNode">Loading...</div>', this.messages),
-    itemClass: Backpack.View,
+    itemView: Backpack.View,
     initialize: function(options) {
-      if (options.itemClass) {
-        this.itemClass = options.itemClass;
+      if (options.itemView) {
+        this.itemView = options.itemView;
       }
       this.$el.html(this.template);
       this.containerNode = this.$('.containerNode');
@@ -722,7 +727,7 @@
     createChild: function(model) {
       var view;
 
-      view = new this.itemClass({
+      view = new this.itemView({
         model: model
       });
       return view.render();

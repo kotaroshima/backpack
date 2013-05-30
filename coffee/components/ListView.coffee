@@ -1,13 +1,16 @@
+###
+* A view that that displays view specified in `itemView`
+###
 Backpack.ListView = Backpack.View.extend
   plugins: [Backpack.ContainerPlugin]
 
   # TODO : i18n
   template: _.template '<div class="mainNode"><div class="containerNode"></div><div class="noItemsNode">No Items</div></div><div class="loadingNode">Loading...</div>', @messages
 
-  itemClass: Backpack.View
+  itemView: Backpack.View
 
   initialize:(options)->
-    @itemClass = options.itemClass if options.itemClass
+    @itemView = options.itemView if options.itemView
     @$el.html @template
     @containerNode = @$ '.containerNode'
     @_noItemsNode = @$ '.noItemsNode'
@@ -41,7 +44,7 @@ Backpack.ListView = Backpack.View.extend
     return
 
   createChild:(model)->
-    view = new @itemClass model: model
+    view = new @itemView model: model
     view.render()
 
   setLoading:(bLoading)->

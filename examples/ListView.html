@@ -24,7 +24,7 @@ $(function(){
   var listView = new Backpack.ListView({
     el: '#listView',
     collection: collection,
-    itemClass: ItemView
+    itemView: ItemView
   });
 
   _.each(['Orange', 'Apple', 'Grape'], function(name) {

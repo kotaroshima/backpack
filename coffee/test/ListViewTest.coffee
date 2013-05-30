@@ -22,7 +22,7 @@ test 'initialize with models', 7, ->
   collection = new Backbone.Collection models
   @listView = new Backpack.ListView
     collection: collection
-    itemClass: @ItemView
+    itemView: @ItemView
   $('#testNode').append @listView.$el
   itemNodes = $('#testNode .itemNode')
   equal itemNodes.size(), data.length
@@ -37,7 +37,7 @@ test 'add models after initialize', 7, ->
   collection = new Backbone.Collection
   @listView = new Backpack.ListView
     collection: collection
-    itemClass: @ItemView
+    itemView: @ItemView
   $('#testNode').append @listView.$el
   _.each data, (item)->
     model = new Backpack.Model { name:item }
@@ -57,7 +57,7 @@ test 'remove model', 5, ->
   collection = new Backbone.Collection
   @listView = new Backpack.ListView
     collection: collection
-    itemClass: @ItemView
+    itemView: @ItemView
   $('#testNode').append @listView.$el
   models = _.map data, (item)->
     model = new Backpack.Model { name:item }
@@ -81,7 +81,7 @@ test 'modify model', 7, ->
   collection = new Backbone.Collection
   @listView = new Backpack.ListView
     collection: collection
-    itemClass: @ItemView
+    itemView: @ItemView
   $('#testNode').append @listView.$el
   models = _.map data, (item)->
     model = new Backpack.Model { name:item }
