@@ -43,6 +43,11 @@ Backpack.ListView = Backpack.View.extend
       @containerNode.hide()
     return
 
+  ###
+  * Creates view to add to this list view as a child
+  * @param {Backbone.Model} model
+  * @return {Backbone.View}
+  ###
   createChild:(model)->
     view = new @itemView model: model
     view.render()

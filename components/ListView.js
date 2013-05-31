@@ -50,6 +50,12 @@
         this.containerNode.hide();
       }
     },
+    /*
+    * Creates view to add to this list view as a child
+    * @param {Backbone.Model} model
+    * @return {Backbone.View}
+    */
+
     createChild: function(model) {
       var view;
 
