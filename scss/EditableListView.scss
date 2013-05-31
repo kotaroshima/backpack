@@ -1,0 +1,60 @@
+@mixin round-corner($r) {
+  -moz-border-radius: $r;
+  border-radius: $r;
+}
+
+.delete-icon {
+  background-image: url('../images/delete_control.jpg');
+  background-position: no-repeat;
+  width: 34px;
+  height: 33px;
+  border: none;
+  padding: 0;
+  display: none;
+}
+
+.reorder-handle {
+  background-image: url('../images/row_reorder.jpg');
+  background-repeat: no-repeat;
+  background-position: 8px center;
+  width: 32px;
+  height: 32px;
+  display: none;
+}
+
+.item-view .item-actions BUTTON.delete-button {
+  height: 32px;
+  @include round-corner(6px);
+  background-color: red;
+  color: white;
+  border: 0;
+  display: none;
+}
+
+.listview-edit {
+  .delete-cell {
+    width: 40px;
+    text-align: center;
+  }
+
+  .delete-icon {
+    display: inline;
+  }
+
+  .remove-confirm .delete-icon {
+    -webkit-transform: rotate(90deg);  
+    -moz-transform: rotate(90deg);
+  }
+
+  .reorder-handle {
+    display: inline-block;
+  }
+
+  .remove-confirm .reorder-handle {
+    display: none;
+  }
+
+  .remove-confirm .item-actions BUTTON.delete-button {
+    display: inline;
+  }
+}
