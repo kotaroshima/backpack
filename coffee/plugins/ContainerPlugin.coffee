@@ -17,11 +17,18 @@ Backpack.ContainerPlugin =
 
   ###
   * Get child view at specified index
-  * @param {Integer} index Child index
+  * @param {Backbone.View|Integer|String} child Child view instance, or child index, or 'name' property of child
   * @return {Backbone.View}
   ###
-  getChild:(index)->
-    @children[index]
+  getChild:(child)->
+    if child && child.cid
+      _.find @children, (view)->
+        view == child
+    else if _.isNumber child
+      @children[child]
+    else if _.isString child
+      _.find @children, (view)->
+        view.name == child
 
   ###
   * Add view to container node

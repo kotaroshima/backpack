@@ -117,9 +117,9 @@
 
       if (navigationDef.back === true) {
         view.attach(view, navigationDef.event, function() {
-          _this.showPreviousChild();
+          _this.onBack();
         });
-      } else {
+      } else if (navigationDef.target) {
         targetView = _.find(this.children, function(child) {
           return child.name === navigationDef.target;
         });
@@ -128,21 +128,18 @@
         });
       }
     },
+    onBack: function() {
+      this.showPreviousChild();
+    },
     /*
     * Hides previously shown child view and shows another child view
-    * @param {Integer|String|Backbone.View} child Child view instance or child index or 'name' property of child view
+    * @param {Backbone.View|Integer|String} child Child view instance or child index or 'name' property of child view
     */
 
     showChild: function(child) {
       var bBack, hideKey, showKey;
 
-      if (_.isNumber(child)) {
-        child = this.children[child];
-      } else if (_.isString(child)) {
-        child = _.find(this.children, function(view) {
-          return view.name === child;
-        });
-      }
+      child = this.getChild(child);
       bBack = _.indexOf(this.children, child) < _.indexOf(this.children, this._currentView);
       if (this._currentView) {
         hideKey = bBack ? 'HIDE_BACKWARD' : 'HIDE_FORWARD';

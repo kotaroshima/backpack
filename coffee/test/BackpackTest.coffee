@@ -145,4 +145,18 @@ _.each Backpack.testDefs, (def)->
     equal instance.prop2, 'sayonara', 'cleanup called for initialize plugin'
     return
 
+  test 'later plugins should override previous plugins', 1, ->
+    testPlugin1 =
+      hello:->
+        @prop = 'plugin1'
+    testPlugin2 =
+      hello:->
+        @prop = 'plugin2'
+    TestClass = def.class.extend
+      plugins: [testPlugin1, testPlugin2]
+    instance = new TestClass()
+    instance.hello()
+    equal instance.prop, 'plugin2', 'override method called for later plugin'
+    return
+
   return

@@ -26,12 +26,22 @@
     },
     /*
     * Get child view at specified index
-    * @param {Integer} index Child index
+    * @param {Backbone.View|Integer|String} child Child view instance, or child index, or 'name' property of child
     * @return {Backbone.View}
     */
 
-    getChild: function(index) {
-      return this.children[index];
+    getChild: function(child) {
+      if (child && child.cid) {
+        return _.find(this.children, function(view) {
+          return view === child;
+        });
+      } else if (_.isNumber(child)) {
+        return this.children[child];
+      } else if (_.isString(child)) {
+        return _.find(this.children, function(view) {
+          return view.name === child;
+        });
+      }
     },
     /*
     * Add view to container node

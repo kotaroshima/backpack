@@ -47,14 +47,20 @@ applyOptions =(self, options={})->
 
   self.setups = []
   self.cleanups = []
+  mixins = {}
   _.each plugins, (pi)->
-    # mixin methods specified in plugins
+    # mixin property/methods specified in plugins
+    # later plugins will overwrite previous plugins
     for own key, value of pi
-      if key != 'setup' && key != 'cleanup' && key != 'staticProps' && !self[key]
-        self[key] = value
+      if key != 'setup' && key != 'cleanup' && key != 'staticProps'
+        mixins[key] = value
+
     self.setups.push pi.setup if pi.setup
     self.cleanups.push pi.cleanup if pi.cleanup
     return
+
+  for own key, value of mixins
+    self[key] = value if !self[key] # don't overwrite properties specified in extend
 
   # mixin all the properties/methods of initialization parameters
   for own key, value of options

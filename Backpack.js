@@ -61,7 +61,7 @@
   Backpack.defaultPlugins = [];
 
   applyOptions = function(self, options) {
-    var key, plugins, value;
+    var key, mixins, plugins, value;
 
     if (options == null) {
       options = {};
@@ -70,14 +70,15 @@
     plugins = _.clone(Backpack.defaultPlugins).concat(self.plugins || []);
     self.setups = [];
     self.cleanups = [];
+    mixins = {};
     _.each(plugins, function(pi) {
       var key, value;
 
       for (key in pi) {
         if (!__hasProp.call(pi, key)) continue;
         value = pi[key];
-        if (key !== 'setup' && key !== 'cleanup' && key !== 'staticProps' && !self[key]) {
-          self[key] = value;
+        if (key !== 'setup' && key !== 'cleanup' && key !== 'staticProps') {
+          mixins[key] = value;
         }
       }
       if (pi.setup) {
@@ -87,6 +88,13 @@
         self.cleanups.push(pi.cleanup);
       }
     });
+    for (key in mixins) {
+      if (!__hasProp.call(mixins, key)) continue;
+      value = mixins[key];
+      if (!self[key]) {
+        self[key] = value;
+      }
+    }
     for (key in options) {
       if (!__hasProp.call(options, key)) continue;
       value = options[key];

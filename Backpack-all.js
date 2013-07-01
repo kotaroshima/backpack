@@ -61,7 +61,7 @@
   Backpack.defaultPlugins = [];
 
   applyOptions = function(self, options) {
-    var key, plugins, value;
+    var key, mixins, plugins, value;
 
     if (options == null) {
       options = {};
@@ -70,14 +70,15 @@
     plugins = _.clone(Backpack.defaultPlugins).concat(self.plugins || []);
     self.setups = [];
     self.cleanups = [];
+    mixins = {};
     _.each(plugins, function(pi) {
       var key, value;
 
       for (key in pi) {
         if (!__hasProp.call(pi, key)) continue;
         value = pi[key];
-        if (key !== 'setup' && key !== 'cleanup' && key !== 'staticProps' && !self[key]) {
-          self[key] = value;
+        if (key !== 'setup' && key !== 'cleanup' && key !== 'staticProps') {
+          mixins[key] = value;
         }
       }
       if (pi.setup) {
@@ -87,6 +88,13 @@
         self.cleanups.push(pi.cleanup);
       }
     });
+    for (key in mixins) {
+      if (!__hasProp.call(mixins, key)) continue;
+      value = mixins[key];
+      if (!self[key]) {
+        self[key] = value;
+      }
+    }
     for (key in options) {
       if (!__hasProp.call(options, key)) continue;
       value = options[key];
@@ -315,12 +323,22 @@
     },
     /*
     * Get child view at specified index
-    * @param {Integer} index Child index
+    * @param {Backbone.View|Integer|String} child Child view instance, or child index, or 'name' property of child
     * @return {Backbone.View}
     */
 
-    getChild: function(index) {
-      return this.children[index];
+    getChild: function(child) {
+      if (child && child.cid) {
+        return _.find(this.children, function(view) {
+          return view === child;
+        });
+      } else if (_.isNumber(child)) {
+        return this.children[child];
+      } else if (_.isString(child)) {
+        return _.find(this.children, function(view) {
+          return view.name === child;
+        });
+      }
     },
     /*
     * Add view to container node
@@ -791,9 +809,9 @@
 
       if (navigationDef.back === true) {
         view.attach(view, navigationDef.event, function() {
-          _this.showPreviousChild();
+          _this.onBack();
         });
-      } else {
+      } else if (navigationDef.target) {
         targetView = _.find(this.children, function(child) {
           return child.name === navigationDef.target;
         });
@@ -802,21 +820,18 @@
         });
       }
     },
+    onBack: function() {
+      this.showPreviousChild();
+    },
     /*
     * Hides previously shown child view and shows another child view
-    * @param {Integer|String|Backbone.View} child Child view instance or child index or 'name' property of child view
+    * @param {Backbone.View|Integer|String} child Child view instance or child index or 'name' property of child view
     */
 
     showChild: function(child) {
       var bBack, hideKey, showKey;
 
-      if (_.isNumber(child)) {
-        child = this.children[child];
-      } else if (_.isString(child)) {
-        child = _.find(this.children, function(view) {
-          return view.name === child;
-        });
-      }
+      child = this.getChild(child);
       bBack = _.indexOf(this.children, child) < _.indexOf(this.children, this._currentView);
       if (this._currentView) {
         hideKey = bBack ? 'HIDE_BACKWARD' : 'HIDE_FORWARD';

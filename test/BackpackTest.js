@@ -170,6 +170,26 @@
       notEqual(instance.prop1, 'bye', 'cleanup not called for extend plugin');
       equal(instance.prop2, 'sayonara', 'cleanup called for initialize plugin');
     });
+    test('later plugins should override previous plugins', 1, function() {
+      var TestClass, instance, testPlugin1, testPlugin2;
+
+      testPlugin1 = {
+        hello: function() {
+          return this.prop = 'plugin1';
+        }
+      };
+      testPlugin2 = {
+        hello: function() {
+          return this.prop = 'plugin2';
+        }
+      };
+      TestClass = def["class"].extend({
+        plugins: [testPlugin1, testPlugin2]
+      });
+      instance = new TestClass();
+      instance.hello();
+      equal(instance.prop, 'plugin2', 'override method called for later plugin');
+    });
   });
 
 }).call(this);

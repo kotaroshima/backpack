@@ -75,9 +75,9 @@ Backpack.StackView = Backpack.View.extend
   attachNavigationEvent:(view, navigationDef)->
     if navigationDef.back == true
       view.attach view, navigationDef.event, =>
-        @showPreviousChild()
+        @onBack()
         return
-    else
+    else if navigationDef.target
       targetView = _.find @children, (child)->
         child.name == navigationDef.target
       view.attach view, navigationDef.event, =>
@@ -85,16 +85,16 @@ Backpack.StackView = Backpack.View.extend
         return
     return
 
+  onBack:->
+    @showPreviousChild()
+    return
+
   ###
   * Hides previously shown child view and shows another child view
-  * @param {Integer|String|Backbone.View} child Child view instance or child index or 'name' property of child view
+  * @param {Backbone.View|Integer|String} child Child view instance or child index or 'name' property of child view
   ###
   showChild:(child)->
-    if _.isNumber child
-      child = @children[child]
-    else if _.isString child
-      child = _.find @children, (view)->
-        view.name == child
+    child = @getChild child
     bBack = (_.indexOf(@children, child) < _.indexOf(@children, @_currentView))
     if @_currentView
       hideKey = if bBack then 'HIDE_BACKWARD' else 'HIDE_FORWARD'
