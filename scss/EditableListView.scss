@@ -32,6 +32,16 @@
 }
 
 .listview-edit {
+  .item-view {
+    display: table;
+    width: 100%;
+  }
+
+  .item-view > * {
+    display: table-cell;
+    vertical-align: middle;
+  }
+
   .delete-cell {
     width: 40px;
     text-align: center;

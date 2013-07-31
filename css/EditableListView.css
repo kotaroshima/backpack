@@ -27,6 +27,14 @@
   display: none;
 }
 
+.listview-edit .item-view {
+  display: table;
+  width: 100%;
+}
+.listview-edit .item-view > * {
+  display: table-cell;
+  vertical-align: middle;
+}
 .listview-edit .delete-cell {
   width: 40px;
   text-align: center;
