@@ -51,20 +51,27 @@
     display: inline;
   }
 
-  .remove-confirm .delete-icon {
-    -webkit-transform: rotate(90deg);  
-    -moz-transform: rotate(90deg);
-  }
-
   .reorder-handle {
     display: inline-block;
   }
 
-  .remove-confirm .reorder-handle {
-    display: none;
+  .item-actions {
+    width: 40px;
+    padding: 0 10px;
   }
 
-  .remove-confirm .item-actions BUTTON.delete-button {
-    display: inline;
+  .remove-confirm {
+    .delete-icon {
+      -webkit-transform: rotate(90deg);
+      -moz-transform: rotate(90deg);
+    }
+
+    .reorder-handle {
+      display: none;
+    }
+
+    .item-actions BUTTON.delete-button {
+        display: inline;
+    }
   }
 }
