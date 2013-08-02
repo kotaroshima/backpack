@@ -27,6 +27,14 @@
   display: none;
 }
 
+.listview-edit .item-view {
+  display: table;
+  width: 100%;
+}
+.listview-edit .item-view > * {
+  display: table-cell;
+  vertical-align: middle;
+}
 .listview-edit .delete-cell {
   width: 40px;
   text-align: center;
@@ -34,12 +42,16 @@
 .listview-edit .delete-icon {
   display: inline;
 }
+.listview-edit .reorder-handle {
+  display: inline-block;
+}
+.listview-edit .item-actions {
+  width: 40px;
+  padding: 0 10px;
+}
 .listview-edit .remove-confirm .delete-icon {
   -webkit-transform: rotate(90deg);
   -moz-transform: rotate(90deg);
-}
-.listview-edit .reorder-handle {
-  display: inline-block;
 }
 .listview-edit .remove-confirm .reorder-handle {
   display: none;

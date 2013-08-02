@@ -42,10 +42,6 @@ var view = new Backpack.View({
 });
 ```
 
-Test
-------
-* Just open test/index.html with a browser
-
 Development
 ------
 * For compiling CoffeeScript files, you need CoffeeScript installed:
@@ -56,13 +52,24 @@ npm install -g coffee-script
 ```
 cake build
 ```
+* To build CSS files from `.scss` files, run:
+```
+cake build-css
+```
+
+Test
+------
+* Just open test/index.html with a browser
+ * Or access the hosted version : http://kotaroshima.github.com/backpack/test/
 
 Libraries Used
 --------
 * [jQuery](http://jquery.com/)
 * [Underscore.js](http://underscorejs.org/)
 * [Backbone.js](http://backbonejs.org/)
+* [QUnit](http://qunitjs.com/)
 * [CoffeeScript](http://coffeescript.org/)
+* [Sass](http://sass-lang.com/)
 
 ----------
 Copyright &copy; 2013 Kotaro Shima

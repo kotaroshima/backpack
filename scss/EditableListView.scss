@@ -32,6 +32,16 @@
 }
 
 .listview-edit {
+  .item-view {
+    display: table;
+    width: 100%;
+  }
+
+  .item-view > * {
+    display: table-cell;
+    vertical-align: middle;
+  }
+
   .delete-cell {
     width: 40px;
     text-align: center;
@@ -41,20 +51,27 @@
     display: inline;
   }
 
-  .remove-confirm .delete-icon {
-    -webkit-transform: rotate(90deg);  
-    -moz-transform: rotate(90deg);
-  }
-
   .reorder-handle {
     display: inline-block;
   }
 
-  .remove-confirm .reorder-handle {
-    display: none;
+  .item-actions {
+    width: 40px;
+    padding: 0 10px;
   }
 
-  .remove-confirm .item-actions BUTTON.delete-button {
-    display: inline;
+  .remove-confirm {
+    .delete-icon {
+      -webkit-transform: rotate(90deg);
+      -moz-transform: rotate(90deg);
+    }
+
+    .reorder-handle {
+      display: none;
+    }
+
+    .item-actions BUTTON.delete-button {
+        display: inline;
+    }
   }
 }
