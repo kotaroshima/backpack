@@ -44,7 +44,7 @@ var view = new Backpack.View({
 
 Test
 ------
-* Just open test/index.html with a browser
+* Open test/index.html with a browser
 
 Development
 ------
@@ -56,13 +56,19 @@ npm install -g coffee-script
 ```
 cake build
 ```
+* To build CSS files from `.scss` files, run:
+```
+cake build-css
+```
 
 Libraries Used
 --------
 * [jQuery](http://jquery.com/)
 * [Underscore.js](http://underscorejs.org/)
 * [Backbone.js](http://backbonejs.org/)
+* [QUnit](http://qunitjs.com/)
 * [CoffeeScript](http://coffeescript.org/)
+* [Sass](http://sass-lang.com/)
 
 ----------
 Copyright &copy; 2013 Kotaro Shima
