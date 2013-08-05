@@ -11,7 +11,7 @@ task 'build', 'Builds CoffeeScript files into JavaScript files', (options)->
         if error
           util.log('Build fail : '+error)
         else
-          exec 'coffee -j Backpack-all.js -c ./coffee/Backpack.coffee ./coffee/plugins/*.coffee ./coffee/components/StackView.coffee ./coffee/components/ListView.coffee ./coffee/components/EditableListView.coffee', (error, stdout, stderr)->
+          exec 'coffee -j Backpack-all.js -c ./coffee/Backpack.coffee ./coffee/plugins/*.coffee ./coffee/components/StackView.coffee ./coffee/components/ListView.coffee ./coffee/components/EditableListView.coffee ./coffee/components/GoogleMapView.coffee', (error, stdout, stderr)->
             if error
               util.log('Build fail : '+error)
             else
