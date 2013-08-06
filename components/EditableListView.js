@@ -23,6 +23,7 @@
       view = new this.itemView({
         model: this.model
       });
+      view.render();
       this.$('.editable-container').append(view.$el);
       return this;
     },
@@ -60,7 +61,8 @@
   * An editable list view which can :
   * - Remove child views
   * - Reorder child views with drag & drop
-  * By default, list is non editable, and should call `setEditable` to enable editing.
+  * By default, list is non editable, and should call `setEditable` to enable editing
+  * Needs jQueryUI JS file and css/EditableListView.css included
   */
 
 
@@ -93,10 +95,11 @@
     createChild: function(model) {
       var itemView;
 
-      return itemView = new EditableItemView({
+      itemView = new EditableItemView({
         model: model,
         itemView: this.itemView
       });
+      return itemView.render();
     }
   });
 

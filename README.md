@@ -42,6 +42,12 @@ var view = new Backpack.View({
 });
 ```
 
+Examples
+------
+* Open examples/index.html with a browser
+ * Or access the hosted version : http://kotaroshima.github.com/backpack/examples/
+
+
 Development
 ------
 * For compiling CoffeeScript files, you need CoffeeScript installed:
@@ -59,7 +65,7 @@ cake build-css
 
 Test
 ------
-* Just open test/index.html with a browser
+* Open test/index.html with a browser
  * Or access the hosted version : http://kotaroshima.github.com/backpack/test/
 
 Libraries Used

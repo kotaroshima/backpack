@@ -16,6 +16,7 @@ EditableItemView = Backpack.View.extend
   render:->
     @$el.html @template
     view = new @itemView model: @model
+    view.render()
     @$('.editable-container').append view.$el
     @
 
@@ -49,7 +50,8 @@ EditableItemView = Backpack.View.extend
 * An editable list view which can :
 * - Remove child views
 * - Reorder child views with drag & drop
-* By default, list is non editable, and should call `setEditable` to enable editing.
+* By default, list is non editable, and should call `setEditable` to enable editing
+* Needs jQueryUI JS file and css/EditableListView.css included
 ###
 Backpack.EditableListView = Backpack.ListView.extend
   plugins: [Backpack.ContainerPlugin, Backpack.SortablePlugin]
@@ -81,3 +83,4 @@ Backpack.EditableListView = Backpack.ListView.extend
     itemView = new EditableItemView
       model: model
       itemView: @itemView
+    itemView.render()
