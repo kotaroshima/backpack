@@ -10,12 +10,15 @@ EditableItemView = Backpack.View.extend
 
   initialize:(options)->
     @itemView = options.itemView
+    @itemOptions = options.itemOptions
     @render()
     return
 
   render:->
     @$el.html @template
-    view = new @itemView model: @model
+    options = _.clone @itemOptions
+    options = _.extend options, { model: @model }
+    view = new @itemView options
     view.render()
     @$('.editable-container').append view.$el
     @
@@ -80,7 +83,5 @@ Backpack.EditableListView = Backpack.ListView.extend
   * @return {Backbone.View}
   ###
   createChild:(model)->
-    itemView = new EditableItemView
-      model: model
-      itemView: @itemView
-    itemView.render()
+    view = new EditableItemView { model: model, itemView: @itemView, itemOptions: @itemOptions }
+    view.render()

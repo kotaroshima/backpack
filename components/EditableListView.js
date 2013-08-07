@@ -14,15 +14,18 @@
     },
     initialize: function(options) {
       this.itemView = options.itemView;
+      this.itemOptions = options.itemOptions;
       this.render();
     },
     render: function() {
-      var view;
+      var options, view;
 
       this.$el.html(this.template);
-      view = new this.itemView({
+      options = _.clone(this.itemOptions);
+      options = _.extend(options, {
         model: this.model
       });
+      view = new this.itemView(options);
       view.render();
       this.$('.editable-container').append(view.$el);
       return this;
@@ -93,13 +96,14 @@
     */
 
     createChild: function(model) {
-      var itemView;
+      var view;
 
-      itemView = new EditableItemView({
+      view = new EditableItemView({
         model: model,
-        itemView: this.itemView
+        itemView: this.itemView,
+        itemOptions: this.itemOptions
       });
-      return itemView.render();
+      return view.render();
     }
   });
 

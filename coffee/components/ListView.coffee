@@ -8,6 +8,7 @@ Backpack.ListView = Backpack.View.extend
   template: _.template '<div class="mainNode"><div class="containerNode"></div><div class="noItemsNode">No Items</div></div><div class="loadingNode">Loading...</div>', @messages
 
   itemView: Backpack.View
+  itemOptions: {}
 
   initialize:(options)->
     @itemView = options.itemView if options.itemView
@@ -34,6 +35,11 @@ Backpack.ListView = Backpack.View.extend
         return
     @
 
+  ###
+  * Show list items if collection has one or more model
+  * and show "No items" message instead if collection includes no models
+  * @param {boolean} bShow true to show list items, false to hide list items and show "No items" message instead
+  ###
   _showContainerNode:(bShow)->
     if bShow
       @_noItemsNode.hide()
@@ -49,9 +55,15 @@ Backpack.ListView = Backpack.View.extend
   * @return {Backbone.View}
   ###
   createChild:(model)->
-    view = new @itemView model: model
+    options = _.clone @itemOptions
+    options = _.extend options, { model: model }
+    view = new @itemView _.extend options, { model: model }
     view.render()
 
+  ###
+  * Toggle show/hide loading node
+  * @param {boolean} bLoading true to show loading node, false to hide
+  ###
   setLoading:(bLoading)->
     if bLoading
       @_loadingNode.show()

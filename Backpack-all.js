@@ -862,6 +862,7 @@
     plugins: [Backpack.ContainerPlugin],
     template: _.template('<div class="mainNode"><div class="containerNode"></div><div class="noItemsNode">No Items</div></div><div class="loadingNode">Loading...</div>', this.messages),
     itemView: Backpack.View,
+    itemOptions: {},
     initialize: function(options) {
       if (options.itemView) {
         this.itemView = options.itemView;
@@ -894,6 +895,12 @@
       }
       return this;
     },
+    /*
+    * Show list items if collection has one or more model
+    * and show "No items" message instead if collection includes no models
+    * @param {boolean} bShow true to show list items, false to hide list items and show "No items" message instead
+    */
+
     _showContainerNode: function(bShow) {
       if (bShow) {
         this._noItemsNode.hide();
@@ -910,13 +917,22 @@
     */
 
     createChild: function(model) {
-      var view;
+      var options, view;
 
-      view = new this.itemView({
+      options = _.clone(this.itemOptions);
+      options = _.extend(options, {
         model: model
       });
+      view = new this.itemView(_.extend(options, {
+        model: model
+      }));
       return view.render();
     },
+    /*
+    * Toggle show/hide loading node
+    * @param {boolean} bLoading true to show loading node, false to hide
+    */
+
     setLoading: function(bLoading) {
       if (bLoading) {
         this._loadingNode.show();
@@ -944,15 +960,18 @@
     },
     initialize: function(options) {
       this.itemView = options.itemView;
+      this.itemOptions = options.itemOptions;
       this.render();
     },
     render: function() {
-      var view;
+      var options, view;
 
       this.$el.html(this.template);
-      view = new this.itemView({
+      options = _.clone(this.itemOptions);
+      options = _.extend(options, {
         model: this.model
       });
+      view = new this.itemView(options);
       view.render();
       this.$('.editable-container').append(view.$el);
       return this;
@@ -1023,13 +1042,14 @@
     */
 
     createChild: function(model) {
-      var itemView;
+      var view;
 
-      itemView = new EditableItemView({
+      view = new EditableItemView({
         model: model,
-        itemView: this.itemView
+        itemView: this.itemView,
+        itemOptions: this.itemOptions
       });
-      return itemView.render();
+      return view.render();
     }
   });
 
