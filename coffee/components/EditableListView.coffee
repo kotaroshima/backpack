@@ -17,7 +17,7 @@ EditableItemView = Backpack.View.extend
   render:->
     @$el.html @template
     options = _.clone @itemOptions
-    options = _.extend options, { model: @model }
+    options = _.extend options, model: @model
     view = new @itemView options
     view.render()
     @$('.editable-container').append view.$el
@@ -58,13 +58,15 @@ EditableItemView = Backpack.View.extend
 ###
 Backpack.EditableListView = Backpack.ListView.extend
   plugins: [Backpack.ContainerPlugin, Backpack.SortablePlugin]
-  sortable: false
   sortableOptions:
     handle: ".reorder-handle"
 
   initialize:(options)->
     Backpack.ListView::initialize.apply @, arguments
-    @setEditable false
+
+    # pass editable=true option if you want initial state to be editable
+    # default is editable=false
+    @setEditable (options.editable is true) || false
     return
 
   ###
@@ -83,5 +85,5 @@ Backpack.EditableListView = Backpack.ListView.extend
   * @return {Backbone.View}
   ###
   createChild:(model)->
-    view = new EditableItemView { model: model, itemView: @itemView, itemOptions: @itemOptions }
+    view = new EditableItemView model: model, itemView: @itemView, itemOptions: @itemOptions
     view.render()

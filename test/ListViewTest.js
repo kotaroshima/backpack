@@ -37,11 +37,14 @@
       itemView: this.ItemView
     });
     $('#testNode').append(this.listView.$el);
-    itemNodes = $('#testNode .itemNode');
+    itemNodes = $('#testNode').find('.itemNode');
     equal(itemNodes.size(), data.length);
     itemNodes.each(function(index, node) {
-      equal($(this).is(':visible'), true);
-      equal($(this).text(), data[index]);
+      var itemNode;
+
+      itemNode = $(this);
+      ok(itemNode.is(':visible'));
+      equal(itemNode.text(), data[index]);
     });
   });
 
@@ -64,11 +67,14 @@
       collection.add(model);
       model.save();
     });
-    itemNodes = $('#testNode .itemNode');
+    itemNodes = $('#testNode').find('.itemNode');
     equal(itemNodes.size(), data.length);
     itemNodes.each(function(index, node) {
-      equal($(this).is(':visible'), true);
-      equal($(this).text(), data[index]);
+      var itemNode;
+
+      itemNode = $(this);
+      ok(itemNode.is(':visible'));
+      equal(itemNode.text(), data[index]);
     });
   });
 
@@ -96,11 +102,14 @@
     });
     data.splice(1, 1);
     models[1].destroy();
-    itemNodes = $('#testNode .itemNode');
+    itemNodes = $('#testNode').find('.itemNode');
     equal(itemNodes.size(), data.length);
     itemNodes.each(function(index, node) {
-      equal($(this).is(':visible'), true);
-      equal($(this).text(), data[index]);
+      var itemNode;
+
+      itemNode = $(this);
+      ok(itemNode.is(':visible'));
+      equal(itemNode.text(), data[index]);
     });
   });
 
@@ -128,11 +137,14 @@
     });
     data[1] = 'Peach';
     models[1].set('name', data[1]);
-    itemNodes = $('#testNode .itemNode');
+    itemNodes = $('#testNode').find('.itemNode');
     equal(itemNodes.size(), data.length);
     itemNodes.each(function(index, node) {
-      equal($(this).is(':visible'), true);
-      equal($(this).text(), data[index]);
+      var itemNode;
+
+      itemNode = $(this);
+      ok(itemNode.is(':visible'));
+      equal(itemNode.text(), data[index]);
     });
   });
 

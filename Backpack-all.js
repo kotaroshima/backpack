@@ -1017,13 +1017,12 @@
 
   Backpack.EditableListView = Backpack.ListView.extend({
     plugins: [Backpack.ContainerPlugin, Backpack.SortablePlugin],
-    sortable: false,
     sortableOptions: {
       handle: ".reorder-handle"
     },
     initialize: function(options) {
       Backpack.ListView.prototype.initialize.apply(this, arguments);
-      this.setEditable(false);
+      this.setEditable((options.editable === true) || false);
     },
     /*
     * Turn on/off edit mode

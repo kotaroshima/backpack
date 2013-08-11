@@ -56,8 +56,8 @@ Backpack.ListView = Backpack.View.extend
   ###
   createChild:(model)->
     options = _.clone @itemOptions
-    options = _.extend options, { model: model }
-    view = new @itemView _.extend options, { model: model }
+    options = _.extend options, model: model
+    view = new @itemView _.extend options, model: model
     view.render()
 
   ###
