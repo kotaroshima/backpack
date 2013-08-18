@@ -371,10 +371,13 @@
         index = _.indexOf(this.children, view);
       }
       if (index >= 0) {
-        this.children[index].remove();
+        view = this.children[index];
+        view.remove();
         this.children.splice(index, 1);
+        this.onChildRemoved(view);
       }
     },
+    onChildRemoved: function(view) {},
     /*
     * Clear all children
     */
@@ -566,22 +569,22 @@
       containerNode = this._getSortableContainer();
       if (isSortable) {
         if (this._sortableInit) {
-          containerNode.sortable("enable");
+          containerNode.sortable('enable');
         } else {
           options = {
             start: function(event, ui) {
               ui.item.startIndex = ui.item.index();
             },
             stop: function(event, ui) {
-              var collection, model, newIndex;
+              var collection, model, models, newIndex;
 
               collection = _this.collection;
               model = collection.at(ui.item.startIndex);
               newIndex = ui.item.index();
-              collection.remove(model);
-              collection.add(model, {
-                at: newIndex
-              });
+              models = collection.models;
+              models.splice(ui.item.startIndex, 1);
+              models.splice(newIndex, 0, model);
+              collection.reset(models);
               event.stopPropagation();
             }
           };
@@ -593,7 +596,7 @@
         }
       } else {
         if (this._sortableInit) {
-          containerNode.sortable("disable");
+          containerNode.sortable('disable');
         }
       }
     },
@@ -603,7 +606,7 @@
 
     cleanup: function() {
       if (this._sortableInit) {
-        this._getSortableContainer().sortable("destroy");
+        this._getSortableContainer().sortable('destroy');
       }
     }
   };
@@ -860,8 +863,9 @@
 
   Backpack.ListView = Backpack.View.extend({
     plugins: [Backpack.ContainerPlugin],
-    template: _.template('<div class="mainNode"><div class="containerNode"></div><div class="noItemsNode">No Items</div></div><div class="loadingNode">Loading...</div>', this.messages),
+    template: _.template('<div class="main-node"><div class="containerNode"></div><div class="noItemsNode">No Items</div></div><div class="loadingNode">Loading...</div>', this.messages),
     itemView: Backpack.View,
+    itemOptions: {},
     initialize: function(options) {
       if (options.itemView) {
         this.itemView = options.itemView;
@@ -869,33 +873,34 @@
       this.$el.html(this.template);
       this.containerNode = this.$('.containerNode');
       this._noItemsNode = this.$('.noItemsNode');
-      this._mainNode = this.$('.mainNode');
+      this._mainNode = this.$('.main-node');
       this._loadingNode = this.$('.loadingNode');
       this.setLoading(false);
       Backpack.View.prototype.initialize.apply(this, arguments);
-      this.collection.on("add remove reset", this.render, this);
+      this.collection.on('add reset', this.render, this);
+      this.collection.on('remove', this.onRemoveModel, this);
       this.render();
     },
     render: function() {
-      var len, models,
-        _this = this;
+      var _this = this;
 
-      models = this.collection.models;
-      len = models.length;
-      this._showContainerNode(len > 0);
+      this._toggleContainerNode();
       this.clearChildren();
-      if (len > 0) {
-        _.each(models, function(model) {
-          var child;
+      _.each(this.collection.models, function(model) {
+        var child;
 
-          child = _this.createChild(model);
-          _this.addChild(child);
-        });
-      }
+        child = _this.createChild(model);
+        _this.addChild(child);
+      });
       return this;
     },
-    _showContainerNode: function(bShow) {
-      if (bShow) {
+    /*
+    * Show list items if collection has one or more model
+    * and show "No items" message instead if collection includes no models
+    */
+
+    _toggleContainerNode: function() {
+      if (this.collection.models.length > 0) {
         this._noItemsNode.hide();
         this.containerNode.show();
       } else {
@@ -910,13 +915,41 @@
     */
 
     createChild: function(model) {
-      var view;
+      var options, view;
 
-      view = new this.itemView({
+      options = _.clone(this.itemOptions);
+      options = _.extend(options, {
         model: model
       });
+      view = new this.itemView(_.extend(options, {
+        model: model
+      }));
+      view.$el.addClass('item-view');
       return view.render();
     },
+    onRemoveModel: function(model) {
+      var child, children, i, _i, _ref,
+        _this = this;
+
+      children = this.children;
+      for (i = _i = _ref = children.length - 1; _i >= 0; i = _i += -1) {
+        child = children[i];
+        if (child.model === model) {
+          child.$el.hide('slide', {
+            direction: 'left'
+          }, 'fast', function() {
+            _this.removeChild(child);
+            _this._toggleContainerNode();
+          });
+          break;
+        }
+      }
+    },
+    /*
+    * Toggle show/hide loading node
+    * @param {boolean} bLoading true to show loading node, false to hide
+    */
+
     setLoading: function(bLoading) {
       if (bLoading) {
         this._loadingNode.show();
@@ -927,7 +960,8 @@
       }
     },
     remove: function() {
-      this.collection.off("add remove reset", this.render);
+      this.collection.off('add reset', this.render);
+      this.collection.off('remove', this.onRemoveModel);
       Backpack.View.prototype.remove.call(this);
     }
   });
@@ -944,15 +978,19 @@
     },
     initialize: function(options) {
       this.itemView = options.itemView;
+      this.itemOptions = options.itemOptions;
       this.render();
     },
     render: function() {
-      var view;
+      var options, view;
 
       this.$el.html(this.template);
-      view = new this.itemView({
+      options = _.clone(this.itemOptions);
+      options = _.extend(options, {
         model: this.model
       });
+      view = new this.itemView(options);
+      view.render();
       this.$('.editable-container').append(view.$el);
       return this;
     },
@@ -990,19 +1028,19 @@
   * An editable list view which can :
   * - Remove child views
   * - Reorder child views with drag & drop
-  * By default, list is non editable, and should call `setEditable` to enable editing.
+  * By default, list is non editable, and should call `setEditable` to enable editing
+  * Needs jQueryUI JS file and css/EditableListView.css included
   */
 
 
   Backpack.EditableListView = Backpack.ListView.extend({
     plugins: [Backpack.ContainerPlugin, Backpack.SortablePlugin],
-    sortable: false,
     sortableOptions: {
       handle: ".reorder-handle"
     },
     initialize: function(options) {
       Backpack.ListView.prototype.initialize.apply(this, arguments);
-      this.setEditable(false);
+      this.setEditable((options.editable === true) || false);
     },
     /*
     * Turn on/off edit mode
@@ -1021,12 +1059,14 @@
     */
 
     createChild: function(model) {
-      var itemView;
+      var view;
 
-      return itemView = new EditableItemView({
+      view = new EditableItemView({
         model: model,
-        itemView: this.itemView
+        itemView: this.itemView,
+        itemOptions: this.itemOptions
       });
+      return view.render();
     }
   });
 
@@ -1048,8 +1088,8 @@
       Backpack.View.prototype.initialize.apply(this, arguments);
       if (!options.el) {
         this.$el.css({
-          width: "100%",
-          height: "100%"
+          width: '100%',
+          height: '100%'
         });
       }
     },
@@ -1066,8 +1106,8 @@
       if (this._mapInit) {
         return;
       }
-      script = document.createElement("script");
-      script.type = "text/javascript";
+      script = document.createElement('script');
+      script.type = 'text/javascript';
       script.src = 'http://maps.googleapis.com/maps/api/js?sensor=true&callback=Backpack.GoogleMapView.onScriptLoaded&key=' + this.apiKey;
       document.body.appendChild(script);
       this._mapInit = true;
@@ -1084,11 +1124,28 @@
     * Move center of map
     * @param {Object} location
     * @param {Number} location.lat latitude
-    * @param {Number} location.lng longiitude
+    * @param {Number} location.lng longitude
     */
 
     setLocation: function(location) {
       this.map.panTo(new google.maps.LatLng(location.lat, location.lng));
+    },
+    /*
+    * Add marker to map
+    * @param {Object} option
+    * @param {Number} option.lat latitude
+    * @param {Number} option.lng longitude
+    * @param {String} option.title title of marker
+    */
+
+    addMarker: function(option) {
+      var marker;
+
+      marker = new google.maps.Marker({
+        position: new google.maps.LatLng(option.lat, option.lng),
+        title: option.title
+      });
+      marker.setMap(this.map);
     }
   });
 

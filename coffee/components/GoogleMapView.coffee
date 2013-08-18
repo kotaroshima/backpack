@@ -15,7 +15,7 @@ Backpack.GoogleMapView = Backpack.View.extend
     Backpack.View::initialize.apply @, arguments
 
     if !options.el
-      @$el.css width: "100%", height: "100%"
+      @$el.css width: '100%', height: '100%'
     return
 
   ###
@@ -26,19 +26,18 @@ Backpack.GoogleMapView = Backpack.View.extend
       throw new Error 'You need Google Map API key to use this widget'
     return if @_mapInit
     
-    script = document.createElement("script")
-    script.type = "text/javascript"
+    script = document.createElement 'script'
+    script.type = 'text/javascript'
     script.src = 'http://maps.googleapis.com/maps/api/js?sensor=true&callback=Backpack.GoogleMapView.onScriptLoaded&key='+@apiKey
     document.body.appendChild script
     @_mapInit = true
     return
 
   _onScriptLoaded:->
-    @map = new google.maps.Map @$el.get(0), {
+    @map = new google.maps.Map @$el.get(0),
       zoom: 8
-      center: new google.maps.LatLng(@defaultLocation.lat, @defaultLocation.lng)
+      center: new google.maps.LatLng @defaultLocation.lat, @defaultLocation.lng
       mapTypeId: google.maps.MapTypeId.ROADMAP
-    }
     @removeSubscriber 'GOOGLE_MAP_SCRIPT_LOADED', @_onScriptLoaded
     return
 
@@ -46,10 +45,24 @@ Backpack.GoogleMapView = Backpack.View.extend
   * Move center of map
   * @param {Object} location
   * @param {Number} location.lat latitude
-  * @param {Number} location.lng longiitude
+  * @param {Number} location.lng longitude
   ###
   setLocation:(location)->
     @map.panTo new google.maps.LatLng location.lat, location.lng
+    return
+
+  ###
+  * Add marker to map
+  * @param {Object} option
+  * @param {Number} option.lat latitude
+  * @param {Number} option.lng longitude
+  * @param {String} option.title title of marker
+  ###
+  addMarker:(option)->
+    marker = new google.maps.Marker
+        position: new google.maps.LatLng option.lat, option.lng
+        title: option.title
+    marker.setMap @map
     return
 
 Backpack.GoogleMapView.onScriptLoaded = ->

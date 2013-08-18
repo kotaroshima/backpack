@@ -57,9 +57,13 @@ Backpack.ContainerPlugin =
     else
       index = _.indexOf @children, view
     if index >= 0
-      @children[index].remove()
+      view = @children[index]
+      view.remove()
       @children.splice index, 1
+      @onChildRemoved view
     return
+
+  onChildRemoved:(view)->
 
   ###
   * Clear all children

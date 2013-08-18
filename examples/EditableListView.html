@@ -2,8 +2,10 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Backpack.ListView Example</title>
+<title>Backpack.EditableListView Example</title>
+<link rel="stylesheet" type="text/css" href="../css/EditableListView.css"></link>
 <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/jquery/1.9.1/jquery.js"></script>
+<script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.10.2/jquery-ui.js"></script>
 <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.3.3/underscore-min.js"></script>
 <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/backbone.js/0.9.9/backbone-min.js"></script>
 <script type="text/javascript" src="../Backpack-all.js"></script>
@@ -15,6 +17,9 @@
   color: green;
   font-weight: bold;
   padding: 5px;
+}
+.listview-edit .item-view {
+  padding: 0;
 }
 </style>
 <script type="text/javascript">
@@ -31,7 +36,7 @@ $(function(){
   });
 
   var collection = new Backbone.Collection();
-  var listView = new Backpack.ListView({
+  var listView = new Backpack.EditableListView({
     el: '#listView',
     collection: collection,
     itemView: ItemView
@@ -42,11 +47,22 @@ $(function(){
     collection.add(model);
     model.save();
   })
+
+  $('#edit-button').click(function(){
+    listView.setEditable(true);
+  });
+  $('#done-button').click(function(){
+    listView.setEditable(false);
+  });
 });
 </script>
 </head>
 <body>
-<h1>Backpack.ListView Example</h1>
+<h1>Backpack.EditableListView Example</h1>
+<div>
+<button id="edit-button">Edit</button>
+<button id="done-button">Done</button>
+</div>
 <div id="listView"></div>
 </body>
 </html>

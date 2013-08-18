@@ -14,15 +14,19 @@
     },
     initialize: function(options) {
       this.itemView = options.itemView;
+      this.itemOptions = options.itemOptions;
       this.render();
     },
     render: function() {
-      var view;
+      var options, view;
 
       this.$el.html(this.template);
-      view = new this.itemView({
+      options = _.clone(this.itemOptions);
+      options = _.extend(options, {
         model: this.model
       });
+      view = new this.itemView(options);
+      view.render();
       this.$('.editable-container').append(view.$el);
       return this;
     },
@@ -60,19 +64,19 @@
   * An editable list view which can :
   * - Remove child views
   * - Reorder child views with drag & drop
-  * By default, list is non editable, and should call `setEditable` to enable editing.
+  * By default, list is non editable, and should call `setEditable` to enable editing
+  * Needs jQueryUI JS file and css/EditableListView.css included
   */
 
 
   Backpack.EditableListView = Backpack.ListView.extend({
     plugins: [Backpack.ContainerPlugin, Backpack.SortablePlugin],
-    sortable: false,
     sortableOptions: {
       handle: ".reorder-handle"
     },
     initialize: function(options) {
       Backpack.ListView.prototype.initialize.apply(this, arguments);
-      this.setEditable(false);
+      this.setEditable((options.editable === true) || false);
     },
     /*
     * Turn on/off edit mode
@@ -91,12 +95,14 @@
     */
 
     createChild: function(model) {
-      var itemView;
+      var view;
 
-      return itemView = new EditableItemView({
+      view = new EditableItemView({
         model: model,
-        itemView: this.itemView
+        itemView: this.itemView,
+        itemOptions: this.itemOptions
       });
+      return view.render();
     }
   });
 
