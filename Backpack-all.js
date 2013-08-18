@@ -1088,8 +1088,8 @@
       Backpack.View.prototype.initialize.apply(this, arguments);
       if (!options.el) {
         this.$el.css({
-          width: "100%",
-          height: "100%"
+          width: '100%',
+          height: '100%'
         });
       }
     },
@@ -1106,8 +1106,8 @@
       if (this._mapInit) {
         return;
       }
-      script = document.createElement("script");
-      script.type = "text/javascript";
+      script = document.createElement('script');
+      script.type = 'text/javascript';
       script.src = 'http://maps.googleapis.com/maps/api/js?sensor=true&callback=Backpack.GoogleMapView.onScriptLoaded&key=' + this.apiKey;
       document.body.appendChild(script);
       this._mapInit = true;
@@ -1124,11 +1124,28 @@
     * Move center of map
     * @param {Object} location
     * @param {Number} location.lat latitude
-    * @param {Number} location.lng longiitude
+    * @param {Number} location.lng longitude
     */
 
     setLocation: function(location) {
       this.map.panTo(new google.maps.LatLng(location.lat, location.lng));
+    },
+    /*
+    * Add marker to map
+    * @param {Object} option
+    * @param {Number} option.lat latitude
+    * @param {Number} option.lng longitude
+    * @param {String} option.title title of marker
+    */
+
+    addMarker: function(option) {
+      var marker;
+
+      marker = new google.maps.Marker({
+        position: new google.maps.LatLng(option.lat, option.lng),
+        title: option.title
+      });
+      marker.setMap(this.map);
     }
   });
 
