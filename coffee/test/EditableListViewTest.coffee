@@ -1,16 +1,15 @@
 Backbone.sync = ->
 
-module 'Backpack.EditableListView',
-  setup:->
-    @ItemView = Backpack.View.extend
-      template: _.template '<div class="item-content" style="border:1px solid red"><%- name %></div>'
-      initialize:(options)->
-        @listenTo @model, 'change', @render
-        return
-      render: ->
-        @$el.html @template @model.attributes
-        @
+ItemView = Backpack.View.extend
+  template: _.template '<div class="item-content" style="border:1px solid red"><%- name %></div>'
+  initialize:(options)->
+    @listenTo @model, 'change', @render
     return
+  render: ->
+    @$el.html @template @model.attributes
+    @
+
+module 'Backpack.EditableListView',
   teardown:->
     @listView.destroy() if @listView
     return
@@ -21,7 +20,7 @@ test 'initialize with default editable (false)', 13, ->
   collection = new Backbone.Collection models
   @listView = new Backpack.EditableListView
     collection: collection
-    itemView: @ItemView
+    itemView: ItemView
   $('#testNode').append @listView.$el
   itemNodes = $('#testNode').find '.item-view'
   equal itemNodes.size(), data.length
@@ -40,7 +39,7 @@ test 'initialize with editable=true', 13, ->
   collection = new Backbone.Collection models
   @listView = new Backpack.EditableListView
     collection: collection
-    itemView: @ItemView
+    itemView: ItemView
     editable: true
   $('#testNode').append @listView.$el
   itemNodes = $('#testNode').find '.item-view'
@@ -59,7 +58,7 @@ test 'add models after initialize', 13, ->
   collection = new Backbone.Collection
   @listView = new Backpack.EditableListView
     collection: collection
-    itemView: @ItemView
+    itemView: ItemView
   $('#testNode').append @listView.$el
   _.each data, (item)->
     model = new Backpack.Model name:item
@@ -77,12 +76,12 @@ test 'add models after initialize', 13, ->
     return
   return
 
-test 'remove model', 9, ->
+asyncTest 'remove model', 5, ->
   data = ['Orange', 'Apple', 'Grape']
   collection = new Backbone.Collection
-  @listView = new Backpack.EditableListView
+  listView = @listView = new Backpack.EditableListView
     collection: collection
-    itemView: @ItemView
+    itemView: ItemView
   $('#testNode').append @listView.$el
   models = _.map data, (item)->
     model = new Backpack.Model name:item
@@ -92,16 +91,18 @@ test 'remove model', 9, ->
     collection.add model
     return
   data.splice 1, 1
-  models[1].destroy()
-  itemNodes = $('#testNode').find '.item-view'
-  equal itemNodes.size(), data.length
-  itemNodes.each (index, node)->
-    itemNode = $ @
-    ok itemNode.is ':visible'
-    equal itemNode.find('.item-content').text(), data[index]
-    ok itemNode.find('.delete-icon').is ':hidden'
-    ok itemNode.find('.reorder-handle').is ':hidden'
+  handle = listView.attach 'onChildRemoved', (view)->
+    itemNodes = $('#testNode').find '.item-content'
+    equal itemNodes.size(), data.length
+    itemNodes.each (index, node)->
+      itemNode = $ @
+      ok itemNode.is ':visible'
+      equal itemNode.text(), data[index]
+      return
+    handle.detach()
+    start()
     return
+  models[1].destroy()
   return
 
 test 'modify model', 13, ->
@@ -109,7 +110,7 @@ test 'modify model', 13, ->
   collection = new Backbone.Collection
   @listView = new Backpack.EditableListView
     collection: collection
-    itemView: @ItemView
+    itemView: ItemView
   $('#testNode').append @listView.$el
   models = _.map data, (item)->
     model = new Backpack.Model { name:item }
@@ -138,7 +139,7 @@ test 'setEditable=true', 13, ->
   collection = new Backbone.Collection models
   listView = @listView = new Backpack.EditableListView
     collection: collection
-    itemView: @ItemView
+    itemView: ItemView
   $('#testNode').append listView.$el
   listView.setEditable true
   itemNodes = $('#testNode').find '.item-view'
@@ -158,7 +159,7 @@ test 'setEditable=false', 13, ->
   collection = new Backbone.Collection models
   listView = @listView = new Backpack.EditableListView
     collection: collection
-    itemView: @ItemView
+    itemView: ItemView
     editable: true
   $('#testNode').append listView.$el
   listView.setEditable false
@@ -179,7 +180,7 @@ test 'click remove confirm icon', 4, ->
   collection = new Backbone.Collection models
   listView = @listView = new Backpack.EditableListView
     collection: collection
-    itemView: @ItemView
+    itemView: ItemView
   $('#testNode').append listView.$el
   listView.setEditable true
   itemNodes = $('#testNode').find '.item-view'
@@ -198,13 +199,13 @@ test 'click remove confirm icon', 4, ->
     return
   return
 
-test 'click remove confirm icon and actually delete', 10, ->
+asyncTest 'click remove confirm icon and actually delete', 10, ->
   data = ['Orange', 'Apple', 'Grape']
   models = _.map data, (item)-> name: item
   collection = new Backbone.Collection models
   listView = @listView = new Backpack.EditableListView
     collection: collection
-    itemView: @ItemView
+    itemView: ItemView
   $('#testNode').append listView.$el
   listView.setEditable true
   itemNodes = $('#testNode').find '.item-view'
@@ -215,8 +216,7 @@ test 'click remove confirm icon and actually delete', 10, ->
     ok targetNode.find('.delete-button').is ':visible'
     return
   deleteButton = targetNode.find '.delete-button'
-  deleteButton.click()
-  deleteButton.promise().done ->
+  handle = listView.attach 'onChildRemoved', (view)->
     itemNodes = $('#testNode').find '.item-view'
     data_after = ['Orange', 'Grape']
     equal itemNodes.size(), data_after.length
@@ -227,5 +227,8 @@ test 'click remove confirm icon and actually delete', 10, ->
       ok itemNode.find('.delete-icon').is ':visible'
       ok itemNode.find('.reorder-handle').is ':visible'
       return
+    handle.detach()
+    start()
     return
+  deleteButton.click()
   return

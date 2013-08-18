@@ -74,10 +74,13 @@
         index = _.indexOf(this.children, view);
       }
       if (index >= 0) {
-        this.children[index].remove();
+        view = this.children[index];
+        view.remove();
         this.children.splice(index, 1);
+        this.onChildRemoved(view);
       }
     },
+    onChildRemoved: function(view) {},
     /*
     * Clear all children
     */
