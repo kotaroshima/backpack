@@ -25,7 +25,7 @@ Backpack.SortablePlugin =
     containerNode = @_getSortableContainer()
     if isSortable
       if @_sortableInit
-        containerNode.sortable "enable"
+        containerNode.sortable 'enable'
       else
         # make the list sortable
         options =
@@ -36,8 +36,10 @@ Backpack.SortablePlugin =
             collection = @collection
             model = collection.at ui.item.startIndex
             newIndex = ui.item.index()
-            collection.remove model
-            collection.add model, { at: newIndex }
+            models = collection.models
+            models.splice ui.item.startIndex, 1
+            models.splice newIndex, 0, model
+            collection.reset models
             event.stopPropagation()
             return
         options = _.extend options, @sortableOptions if @sortableOptions
@@ -45,7 +47,7 @@ Backpack.SortablePlugin =
         @_sortableInit = true
     else
       if @_sortableInit
-        containerNode.sortable "disable"
+        containerNode.sortable 'disable'
     return
 
   ###
@@ -53,5 +55,5 @@ Backpack.SortablePlugin =
   ###
   cleanup:->
     if @_sortableInit
-      @_getSortableContainer().sortable "destroy"
+      @_getSortableContainer().sortable 'destroy'
     return

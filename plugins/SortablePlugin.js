@@ -34,22 +34,22 @@
       containerNode = this._getSortableContainer();
       if (isSortable) {
         if (this._sortableInit) {
-          containerNode.sortable("enable");
+          containerNode.sortable('enable');
         } else {
           options = {
             start: function(event, ui) {
               ui.item.startIndex = ui.item.index();
             },
             stop: function(event, ui) {
-              var collection, model, newIndex;
+              var collection, model, models, newIndex;
 
               collection = _this.collection;
               model = collection.at(ui.item.startIndex);
               newIndex = ui.item.index();
-              collection.remove(model);
-              collection.add(model, {
-                at: newIndex
-              });
+              models = collection.models;
+              models.splice(ui.item.startIndex, 1);
+              models.splice(newIndex, 0, model);
+              collection.reset(models);
               event.stopPropagation();
             }
           };
@@ -61,7 +61,7 @@
         }
       } else {
         if (this._sortableInit) {
-          containerNode.sortable("disable");
+          containerNode.sortable('disable');
         }
       }
     },
@@ -71,7 +71,7 @@
 
     cleanup: function() {
       if (this._sortableInit) {
-        this._getSortableContainer().sortable("destroy");
+        this._getSortableContainer().sortable('destroy');
       }
     }
   };
