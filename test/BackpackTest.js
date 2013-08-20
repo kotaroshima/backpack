@@ -190,6 +190,58 @@
       instance.hello();
       equal(instance.prop, 'plugin2', 'override method called for later plugin');
     });
+    test('extend subclass with plugins', 4, function() {
+      var TestSubClass, TestSubSubClass, instance, testPlugin1, testPlugin2;
+
+      testPlugin1 = {
+        setup: function() {
+          this.prop1 = 'hello';
+        },
+        cleanup: function() {
+          this.prop1 = 'bye';
+        }
+      };
+      testPlugin2 = {
+        setup: function() {
+          this.prop2 = 'konichiwa';
+        },
+        cleanup: function() {
+          this.prop2 = 'sayonara';
+        }
+      };
+      TestSubClass = def["class"].extend({
+        plugins: [testPlugin1]
+      });
+      TestSubSubClass = TestSubClass.extend({
+        plugins: [testPlugin2]
+      });
+      instance = new TestSubSubClass();
+      ok(!instance.prop1, 'setup not called for first plugin');
+      equal(instance.prop2, 'konichiwa', 'setup called for second plugin');
+      instance.destroy();
+      ok(!instance.prop1, 'cleanup not called for first plugin');
+      equal(instance.prop2, 'sayonara', 'cleanup called for second plugin');
+    });
+    test('superclass plugins enabled when subclassed without plugins', 2, function() {
+      var TestSubClass, TestSubSubClass, instance, testPlugin;
+
+      testPlugin = {
+        setup: function() {
+          this.prop = 'hello';
+        },
+        cleanup: function() {
+          this.prop = 'bye';
+        }
+      };
+      TestSubClass = def["class"].extend({
+        plugins: [testPlugin]
+      });
+      TestSubSubClass = TestSubClass.extend();
+      instance = new TestSubSubClass();
+      equal(instance.prop, 'hello', 'setup called for plugin');
+      instance.destroy();
+      equal(instance.prop, 'bye', 'cleanup called for plugin');
+    });
   });
 
 }).call(this);

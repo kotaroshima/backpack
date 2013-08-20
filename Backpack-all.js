@@ -117,16 +117,28 @@
   };
 
   extend = function(protoProps, staticProps) {
-    var child;
+    var child, plugins;
 
     child = Backbone.Model.extend.call(this, protoProps, staticProps);
-    child.prototype.plugins = protoProps.plugins || [];
-    if (protoProps.plugins) {
-      _.each(protoProps.plugins, function(pi) {
-        if (pi.staticProps) {
-          _.extend(child, pi.staticProps);
-        }
-      });
+    if (protoProps) {
+      plugins = protoProps.plugins;
+      if (plugins) {
+        /* Override superclass plugins with subclass plugins
+        */
+
+        child.prototype.plugins = plugins;
+        /* apply static props
+        */
+
+        _.each(plugins, function(pi) {
+          if (pi.staticProps) {
+            _.extend(child, pi.staticProps);
+          }
+        });
+      }
+    }
+    if (!child.prototype.plugins) {
+      child.prototype.plugins = [];
     }
     return child;
   };

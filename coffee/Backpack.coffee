@@ -82,13 +82,18 @@ cleanup=(self)->
 
 extend =(protoProps, staticProps)->
   child = Backbone.Model.extend.call @, protoProps, staticProps
-  child::plugins = protoProps.plugins || []
 
-  # apply static props
-  if protoProps.plugins
-    _.each protoProps.plugins, (pi)->
-      _.extend child, pi.staticProps if pi.staticProps
-      return
+  if protoProps
+    plugins = protoProps.plugins
+    if plugins
+      ### Override superclass plugins with subclass plugins ###
+      child::plugins = plugins
+
+      ### apply static props ###
+      _.each plugins, (pi)->
+        _.extend child, pi.staticProps if pi.staticProps
+        return
+  child::plugins = [] if !child::plugins
   child
 
 Clazz = Backpack.Class =->
