@@ -159,4 +159,48 @@ _.each Backpack.testDefs, (def)->
     equal instance.prop, 'plugin2', 'override method called for later plugin'
     return
 
+  test 'extend subclass with plugins', 4, ->
+    testPlugin1 =
+      setup:->
+        @prop1 = 'hello'
+        return
+      cleanup:->
+        @prop1 = 'bye'
+        return
+    testPlugin2 =
+      setup:->
+        @prop2 = 'konichiwa'
+        return
+      cleanup:->
+        @prop2 = 'sayonara'
+        return
+    TestSubClass = def.class.extend
+      plugins: [testPlugin1]
+    TestSubSubClass = TestSubClass.extend
+      plugins: [testPlugin2]
+    instance = new TestSubSubClass()
+    ok !instance.prop1, 'setup not called for first plugin'
+    equal instance.prop2, 'konichiwa', 'setup called for second plugin'
+    instance.destroy()
+    ok !instance.prop1, 'cleanup not called for first plugin'
+    equal instance.prop2, 'sayonara', 'cleanup called for second plugin'
+    return
+
+  test 'superclass plugins enabled when subclassed without plugins', 2, ->
+    testPlugin =
+      setup:->
+        @prop = 'hello'
+        return
+      cleanup:->
+        @prop = 'bye'
+        return
+    TestSubClass = def.class.extend
+      plugins: [testPlugin]
+    TestSubSubClass = TestSubClass.extend()
+    instance = new TestSubSubClass()
+    equal instance.prop, 'hello', 'setup called for plugin'
+    instance.destroy()
+    equal instance.prop, 'bye', 'cleanup called for plugin'
+    return
+
   return

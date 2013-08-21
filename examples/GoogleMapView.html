@@ -33,11 +33,27 @@ $(function(){
     apiKey: 'AIzaSyDAJRmpbhxdAaoSYj2_iwaMEGxuxBR3YoM'
   });
   mapView.initMap();
+
+  $('#search-button').click(function(){
+    var lat = parseFloat($('#lat').val()),
+        lng = parseFloat($('#lng').val());
+    if(isNaN(lat)) return alert('latitude must be a number!');
+    if(isNaN(lng)) return alert('longitude must be a number!');
+    mapView.setLocation({ lat:lat, lng:lng });
+  });
+  $('#marker-button').click(function(){
+    var lat = parseFloat($('#lat').val()),
+    lng = parseFloat($('#lng').val());
+		if(isNaN(lat)) return alert('latitude must be a number!');
+		if(isNaN(lng)) return alert('longitude must be a number!');
+		mapView.addMarker({ lat:lat, lng:lng });
+  });
 });
 </script>
 </head>
 <body>
 <h1>Backpack.GoogleMapView Example</h1>
+<div><label>Latitude: <input id="lat" type="text" /> </label> <label>Longitude: <input id="lng" type="text" /> </label><button id="search-button">Move center</button> <button id="marker-button">Add Marker</button></div>
 <div id="mapNode"></div>
 </body>
 </html>

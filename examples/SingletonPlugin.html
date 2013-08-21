@@ -13,12 +13,13 @@ $(function(){
     plugins: [Backpack.Singleton]
   });
 
-  $('#newButton').on('click', function(e){
+  var container = $('#text-container');
+  $('#new-button').click(function(e){
     try{
       var instance = new SingletonClass1();
-      alert('Instance : '+instance.cid);
+      container.append('<p>Instance : '+instance.cid+'</p>');
     }catch(e){
-      alert(e);
+      container.append('<p>Error : '+e+'</p>');
     }
   });
 
@@ -26,16 +27,17 @@ $(function(){
     plugins: [Backpack.Singleton]
   });
 
-  $('#getInstanceButton').on('click', function(e){
+  $('#get-instance-button').click(function(e){
     var instance = SingletonClass2.getInstance();
-    alert('Instance : '+instance.cid);
+    container.append('<p>Instance : '+instance.cid+'</p>');
   });
 });
 </script>
 </head>
 <body>
 <h1>Backpack.SingletonPlugin Example</h1>
-<div><label for="newButton">Create instance by 'new' :</label> <button id="newButton">Click</button></div>
-<div><label for="getInstanceButton">Get instance : </label> <button id="getInstanceButton">Click</button></div>
+<div><label for="new-button">Create instance by 'new' :</label> <button id="new-button">Click</button></div>
+<div><label for="get-instance-button">Get instance : </label> <button id="get-instance-button">Click</button></div>
+<div id="text-container"></div>
 </body>
 </html>
