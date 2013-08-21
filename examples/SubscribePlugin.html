@@ -12,9 +12,10 @@ $(function(){
   // Override so that it doesn't try to save to server
   Backbone.sync = function(){};
 
+  var container = $('#text-container');
   var MyModel = Backpack.Model.extend({
     sayHello: function(firstName, lastName) {
-      alert('Hello, '+firstName+' '+lastName);
+      container.append('<p>Hello, '+firstName+' '+lastName+'</p>');
     }
   });
   new MyModel(null, {
@@ -23,7 +24,7 @@ $(function(){
     }
   });
 
-  $('#myButton').on('click', function(){
+  $('#my-button').click(function(){
     Backbone.trigger('MY_EVENT', 'Michael', 'Jackson');
   });
 });
@@ -31,6 +32,7 @@ $(function(){
 </head>
 <body>
 <h1>Backpack.SubscribePlugin Example</h1>
-<button id="myButton">Click Me!</button>
+<button id="my-button">Click Me!</button>
+<div id="text-container"></div>
 </body>
 </html>

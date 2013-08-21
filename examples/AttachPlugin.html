@@ -16,11 +16,12 @@ $(function(){
     sayHello: function(firstName, lastName) {}
   });
   var model = new MyModel();
+  var container = $('#text-container');
   model.attach('sayHello', function(firstName, lastName){
-    alert('Hello, '+firstName+' '+lastName);
+    container.append('<p>Hello, '+firstName+' '+lastName+'</p>');
   });
 
-  $('#myButton').on('click', function(){
+  $('#my-button').click(function(){
     model.sayHello('Michael', 'Jackson');
   });
 });
@@ -28,6 +29,7 @@ $(function(){
 </head>
 <body>
 <h1>Backpack.AttachPlugin Example</h1>
-<button id="myButton">Click Me!</button>
+<button id="my-button">Click Me!</button>
+<div id="text-container"></div>
 </body>
 </html>

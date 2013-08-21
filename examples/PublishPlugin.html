@@ -12,12 +12,13 @@ $(function(){
   // Override so that it doesn't try to save to server
   Backbone.sync = function(){};
 
+  var container = $('#text-container');
   Backbone.on('MY_EVENT', function(firstName, lastName) {
-    alert('Hello, '+firstName+' '+lastName);
+    container.append('<p>Hello, '+firstName+' '+lastName+'</p>');
   });
 
   var ButtonView = Backpack.View.extend({
-    el: '#myButtonView',
+    el: '#my-button',
     template: _.template('<button>Click Me!</button>'),
 
     events: {
@@ -45,6 +46,7 @@ $(function(){
 </head>
 <body>
 <h1>Backpack.PublishPlugin Example</h1>
-<div id="myButtonView"></div>
+<div id="my-button"></div>
+<div id="text-container"></div>
 </body>
 </html>
