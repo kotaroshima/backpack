@@ -9,34 +9,36 @@
 <script type="text/javascript" src="../Backpack-all.js"></script>
 <script type="text/javascript">
 $(function(){
+  var container = $('#text-container');
   var obj = {
     hello: function(a, b) {
-      alert('Hello!! My name is '+a+', '+b);
+      container.append('<p>Hello!! My name is '+a+' '+b+'</p>');
     }
   };
 
   var handler;
   var attachEvent = function() {
     handler = Backpack.attach(obj, 'hello', function(a, b) {
-      alert('Nice to meet you, '+a+' '+b);
+      container.append('<p>Nice to meet you, '+a+' '+b+'</p>');
     });
   };
   attachEvent();
 
-  $('#helloButton').on('click', function() {
+  $('#hello-button').click(function() {
     obj.hello('Michael', 'Jackson');
   });
 
-  $('#detachButton').on('click', function() {
+  var detachButton = $('#detach-button');
+  detachButton.click(function() {
     if (handler) {
       handler.detach();
       handler = null;
-      alert('Event detached!!');
-      $('#detachButton').html('Attach');
+      container.append('<p>Event detached!!</p>');
+      detachButton.html('Attach');
     } else {
       attachEvent();
-      alert('Event attached!!');
-      $('#detachButton').html('Detach');
+      container.append('<p>Event attached!!</p>');
+      detachButton.html('Detach');
     }
   });
 });
@@ -44,7 +46,7 @@ $(function(){
 </head>
 <body>
 <h1>Backpack.attach Example</h1>
-<div><button id="helloButton">Hello</button></div>
-<div><button id="detachButton">Detach</button></div>
+<div><button id="hello-button">Hello</button> <button id="detach-button">Detach</button></div>
+<div id="text-container"></div>
 </body>
 </html>
