@@ -3,7 +3,7 @@
   var __hasProp = {}.hasOwnProperty;
 
   Backpack.PublishPlugin = {
-    /*
+    /**
     * Sets up publishers from `publishers` property
     * `publishers` property takes key-value pair of:
     * - key : method name to trigger the event
@@ -23,7 +23,7 @@
         }
       }
     },
-    /*
+    /**
     * Add publisher
     * @param {String} method Method name to trigger the event
     * @param {String} topic Topic name of events to be published
@@ -47,7 +47,7 @@
       });
       return handler;
     },
-    /*
+    /**
     * Remove publisher
     * If 1 argument
     * @param {Object} handler Handler object to detach (return value of Backpack.attach)
@@ -83,7 +83,7 @@
       }
       return false;
     },
-    /*
+    /**
     * Remove all publishers on destroy
     */
 

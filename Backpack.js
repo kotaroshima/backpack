@@ -7,7 +7,7 @@
 
   Backpack = root.Backpack = {};
 
-  /*
+  /**
   * Attach event handler
   * if 3 arguments
   * @param {Object} obj Object to which attach event
@@ -205,7 +205,7 @@
         options.initialize.apply(this, arguments);
       }
     },
-    /*
+    /**
     * Override so that event handler works even if method has been dynamically overwritten
     * TODO : submit a patch to Backbone
     */
@@ -260,7 +260,7 @@
     setup: function() {
       this._attached = [];
     },
-    /*
+    /**
     * Attaches an event handler, which will be detached when this object is destroyed
     * if 2 arguments:
     * @param {String} method Name of this object's method to which attach event
@@ -284,7 +284,7 @@
       this._attached.push(handler);
       return handler;
     },
-    /*
+    /**
     * Detaches an event and it will be removed from event handler list which will be cleaned up on destroy
     * @param {Object} handler Event handler
     */
@@ -310,7 +310,7 @@
   Backpack.defaultPlugins.push(Backpack.AttachPlugin);
 
   Backpack.SubscribePlugin = {
-    /*
+    /**
     * Sets up subscribers from `subscribers` property
     * `subscribers` property takes key-value pair of:
     * - key : topic name of events to subscribe
@@ -377,7 +377,7 @@
       }
       return false;
     },
-    /*
+    /**
     * Remove all subscribers on destroy
     */
 
@@ -394,7 +394,7 @@
   Backpack.defaultPlugins.push(Backpack.SubscribePlugin);
 
   Backpack.PublishPlugin = {
-    /*
+    /**
     * Sets up publishers from `publishers` property
     * `publishers` property takes key-value pair of:
     * - key : method name to trigger the event
@@ -414,7 +414,7 @@
         }
       }
     },
-    /*
+    /**
     * Add publisher
     * @param {String} method Method name to trigger the event
     * @param {String} topic Topic name of events to be published
@@ -438,7 +438,7 @@
       });
       return handler;
     },
-    /*
+    /**
     * Remove publisher
     * If 1 argument
     * @param {Object} handler Handler object to detach (return value of Backpack.attach)
@@ -474,7 +474,7 @@
       }
       return false;
     },
-    /*
+    /**
     * Remove all publishers on destroy
     */
 

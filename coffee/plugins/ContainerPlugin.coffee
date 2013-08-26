@@ -1,8 +1,8 @@
-###
+###*
 * A plugin to make a view container
 ###
 Backpack.ContainerPlugin =
-  ###
+  ###*
   * Setup containerNode and add child views on initialize
   ###
   setup:->
@@ -15,7 +15,7 @@ Backpack.ContainerPlugin =
       @children = []
     return
 
-  ###
+  ###*
   * Get child view at specified index
   * @param {Backbone.View|Integer|String} child Child view instance, or child index, or 'name' property of child
   * @return {Backbone.View}
@@ -30,7 +30,7 @@ Backpack.ContainerPlugin =
       _.find @children, (view)->
         view.name == child
 
-  ###
+  ###*
   * Add view to container node
   * @param {Backbone.View} view A view to add
   ###
@@ -38,7 +38,7 @@ Backpack.ContainerPlugin =
     @containerNode.append view.$el
     return
 
-  ###
+  ###*
   * Add view as child
   * @param {Backbone.View} view A view to add
   ###
@@ -47,7 +47,7 @@ Backpack.ContainerPlugin =
     @children.push view
     return
 
-  ###
+  ###*
   * Remove child view at specified index
   * @param {Backbone.View|Integer} view A view to remove or child index
   ###
@@ -65,7 +65,7 @@ Backpack.ContainerPlugin =
 
   onChildRemoved:(view)->
 
-  ###
+  ###*
   * Clear all children
   ###
   clearChildren:->
@@ -82,7 +82,7 @@ Backpack.ContainerPlugin =
       return
     return
 
-  ###
+  ###*
   * Clear children on destroy
   ###
   cleanup:->

@@ -37,7 +37,7 @@
       return
     */
 
-    /*
+    /**
     * Click event handler for remove confirm icon
     * switches to remove confirm mode
     */
@@ -49,7 +49,7 @@
       this.$el.toggleClass(CLS_REMOVE_CONFIRM, !isRemoveConfirm);
       e.stopPropagation();
     },
-    /*
+    /**
     * Click event handler for [Remove] button
     * removes this item from play list
     */
@@ -60,7 +60,7 @@
     }
   });
 
-  /*
+  /**
   * An editable list view which can :
   * - Remove child views
   * - Reorder child views with drag & drop
@@ -78,7 +78,7 @@
       Backpack.ListView.prototype.initialize.apply(this, arguments);
       this.setEditable((options.editable === true) || false);
     },
-    /*
+    /**
     * Turn on/off edit mode
     * When in edit mode, allows deleting/drag & drop play list items
     * @param {Boolean} isEdit If true, turns on edit mode. If false, turns off edit mode.
@@ -88,7 +88,7 @@
       this.setSortable(isEdit);
       this.$el.toggleClass(CLS_LISTVIEW_EDIT, isEdit);
     },
-    /*
+    /**
     * Override ListView to use EditableItemView as direct child
     * @param {Backbone.Model} model
     * @return {Backbone.View}

@@ -7,7 +7,7 @@
 
   Backpack = root.Backpack = {};
 
-  /*
+  /**
   * Attach event handler
   * if 3 arguments
   * @param {Object} obj Object to which attach event
@@ -205,7 +205,7 @@
         options.initialize.apply(this, arguments);
       }
     },
-    /*
+    /**
     * Override so that event handler works even if method has been dynamically overwritten
     * TODO : submit a patch to Backbone
     */
@@ -260,7 +260,7 @@
     setup: function() {
       this._attached = [];
     },
-    /*
+    /**
     * Attaches an event handler, which will be detached when this object is destroyed
     * if 2 arguments:
     * @param {String} method Name of this object's method to which attach event
@@ -284,7 +284,7 @@
       this._attached.push(handler);
       return handler;
     },
-    /*
+    /**
     * Detaches an event and it will be removed from event handler list which will be cleaned up on destroy
     * @param {Object} handler Event handler
     */
@@ -309,13 +309,13 @@
 
   Backpack.defaultPlugins.push(Backpack.AttachPlugin);
 
-  /*
+  /**
   * A plugin to make a view container
   */
 
 
   Backpack.ContainerPlugin = {
-    /*
+    /**
     * Setup containerNode and add child views on initialize
     */
 
@@ -333,7 +333,7 @@
         this.children = [];
       }
     },
-    /*
+    /**
     * Get child view at specified index
     * @param {Backbone.View|Integer|String} child Child view instance, or child index, or 'name' property of child
     * @return {Backbone.View}
@@ -352,7 +352,7 @@
         });
       }
     },
-    /*
+    /**
     * Add view to container node
     * @param {Backbone.View} view A view to add
     */
@@ -360,7 +360,7 @@
     addView: function(view) {
       this.containerNode.append(view.$el);
     },
-    /*
+    /**
     * Add view as child
     * @param {Backbone.View} view A view to add
     */
@@ -369,7 +369,7 @@
       this.addView(view);
       this.children.push(view);
     },
-    /*
+    /**
     * Remove child view at specified index
     * @param {Backbone.View|Integer} view A view to remove or child index
     */
@@ -390,7 +390,7 @@
       }
     },
     onChildRemoved: function(view) {},
-    /*
+    /**
     * Clear all children
     */
 
@@ -410,7 +410,7 @@
         }
       });
     },
-    /*
+    /**
     * Clear children on destroy
     */
 
@@ -420,7 +420,7 @@
   };
 
   Backpack.PublishPlugin = {
-    /*
+    /**
     * Sets up publishers from `publishers` property
     * `publishers` property takes key-value pair of:
     * - key : method name to trigger the event
@@ -440,7 +440,7 @@
         }
       }
     },
-    /*
+    /**
     * Add publisher
     * @param {String} method Method name to trigger the event
     * @param {String} topic Topic name of events to be published
@@ -464,7 +464,7 @@
       });
       return handler;
     },
-    /*
+    /**
     * Remove publisher
     * If 1 argument
     * @param {Object} handler Handler object to detach (return value of Backpack.attach)
@@ -500,7 +500,7 @@
       }
       return false;
     },
-    /*
+    /**
     * Remove all publishers on destroy
     */
 
@@ -547,7 +547,7 @@
     }
   };
 
-  /*
+  /**
   * A plugin to use jQuery UI Sortable
   * options :
   *   sortable {Boolean} pass `false` if you don't want to make it sortable on initialization (default `true`)
@@ -556,7 +556,7 @@
 
 
   Backpack.SortablePlugin = {
-    /*
+    /**
     * Set sortable on initialize
     * By default, sets sortable. If `sortable` property is given `false`, it doesn't make it sortable.
     */
@@ -569,7 +569,7 @@
     _getSortableContainer: function() {
       return this.containerNode || this.$el;
     },
-    /*
+    /**
     * Set this view sortable
     * @param {Boolean} true to enable sortable, false to disable sortable
     */
@@ -612,7 +612,7 @@
         }
       }
     },
-    /*
+    /**
     * Cleanup sortable on destroy
     */
 
@@ -624,7 +624,7 @@
   };
 
   Backpack.SubscribePlugin = {
-    /*
+    /**
     * Sets up subscribers from `subscribers` property
     * `subscribers` property takes key-value pair of:
     * - key : topic name of events to subscribe
@@ -691,7 +691,7 @@
       }
       return false;
     },
-    /*
+    /**
     * Remove all subscribers on destroy
     */
 
@@ -707,7 +707,7 @@
 
   Backpack.defaultPlugins.push(Backpack.SubscribePlugin);
 
-  /*
+  /**
   * A view that stacks its children
   */
 
@@ -736,7 +736,7 @@
         }, "slow"
       ]
     },
-    /*
+    /**
     * Constructor
     * @param {Object} [options={}] Initialization option
     * @param {Backpack.View[]} [options.children] Child views
@@ -763,7 +763,7 @@
       }
       this.render();
     },
-    /*
+    /**
     * Select only one of its children and hide others
     * @returns {Backpack.View} this instance
     */
@@ -780,7 +780,7 @@
       });
       return this;
     },
-    /*
+    /**
     * Override Backpack.ContainerPlugin to attach navigation events
     * @param {Backbone.View} view A view to add
     */
@@ -809,7 +809,7 @@
         }
       }
     },
-    /*
+    /**
     * Attaches event of child view to show that view
     * @param {Backpack.View} view Child view
     * @param {Object} navigationDef map to define navigation event
@@ -838,7 +838,7 @@
     onBack: function() {
       this.showPreviousChild();
     },
-    /*
+    /**
     * Hides previously shown child view and shows another child view
     * @param {Backbone.View|Integer|String} child Child view instance or child index or 'name' property of child view
     */
@@ -857,7 +857,7 @@
       this._previousView = this._currentView;
       this._currentView = child;
     },
-    /*
+    /**
     * Shows previously shown child view again and hides currently shown child view
     */
 
@@ -868,7 +868,7 @@
     }
   });
 
-  /*
+  /**
   * A view that that displays view specified in `itemView`
   */
 
@@ -906,7 +906,7 @@
       });
       return this;
     },
-    /*
+    /**
     * Show list items if collection has one or more model
     * and show "No items" message instead if collection includes no models
     */
@@ -920,7 +920,7 @@
         this.containerNode.hide();
       }
     },
-    /*
+    /**
     * Creates view to add to this list view as a child
     * @param {Backbone.Model} model
     * @return {Backbone.View}
@@ -957,7 +957,7 @@
         }
       }
     },
-    /*
+    /**
     * Toggle show/hide loading node
     * @param {boolean} bLoading true to show loading node, false to hide
     */
@@ -1013,7 +1013,7 @@
       return
     */
 
-    /*
+    /**
     * Click event handler for remove confirm icon
     * switches to remove confirm mode
     */
@@ -1025,7 +1025,7 @@
       this.$el.toggleClass(CLS_REMOVE_CONFIRM, !isRemoveConfirm);
       e.stopPropagation();
     },
-    /*
+    /**
     * Click event handler for [Remove] button
     * removes this item from play list
     */
@@ -1036,7 +1036,7 @@
     }
   });
 
-  /*
+  /**
   * An editable list view which can :
   * - Remove child views
   * - Reorder child views with drag & drop
@@ -1054,7 +1054,7 @@
       Backpack.ListView.prototype.initialize.apply(this, arguments);
       this.setEditable((options.editable === true) || false);
     },
-    /*
+    /**
     * Turn on/off edit mode
     * When in edit mode, allows deleting/drag & drop play list items
     * @param {Boolean} isEdit If true, turns on edit mode. If false, turns off edit mode.
@@ -1064,7 +1064,7 @@
       this.setSortable(isEdit);
       this.$el.toggleClass(CLS_LISTVIEW_EDIT, isEdit);
     },
-    /*
+    /**
     * Override ListView to use EditableItemView as direct child
     * @param {Backbone.Model} model
     * @return {Backbone.View}
@@ -1082,7 +1082,7 @@
     }
   });
 
-  /*
+  /**
   * A view that that displays Google map
   */
 
@@ -1105,7 +1105,7 @@
         });
       }
     },
-    /*
+    /**
     * Need to call this after being added to the DOM tree
     */
 
@@ -1132,7 +1132,7 @@
       });
       this.removeSubscriber('GOOGLE_MAP_SCRIPT_LOADED', this._onScriptLoaded);
     },
-    /*
+    /**
     * Move center of map
     * @param {Object} location
     * @param {Number} location.lat latitude
@@ -1142,7 +1142,7 @@
     setLocation: function(location) {
       this.map.panTo(new google.maps.LatLng(location.lat, location.lng));
     },
-    /*
+    /**
     * Add marker to map
     * @param {Object} option
     * @param {Number} option.lat latitude

@@ -1,4 +1,4 @@
-###
+###*
 * A view that stacks its children
 ###
 Backpack.StackView = Backpack.View.extend
@@ -10,7 +10,7 @@ Backpack.StackView = Backpack.View.extend
     SHOW_BACKWARD: ["slide", { direction: "left" }, "slow"]
     SHOW_FORWARD: ["slide", { direction: "right" }, "slow"]
 
-  ###
+  ###*
   * Constructor
   * @param {Object} [options={}] Initialization option
   * @param {Backpack.View[]} [options.children] Child views
@@ -30,7 +30,7 @@ Backpack.StackView = Backpack.View.extend
     @render()
     return
 
-  ###
+  ###*
   * Select only one of its children and hide others
   * @returns {Backpack.View} this instance
   ###
@@ -43,7 +43,7 @@ Backpack.StackView = Backpack.View.extend
       return
     @
 
-  ###
+  ###*
   * Override Backpack.ContainerPlugin to attach navigation events
   * @param {Backbone.View} view A view to add
   ###
@@ -64,7 +64,7 @@ Backpack.StackView = Backpack.View.extend
           return
     return
 
-  ###
+  ###*
   * Attaches event of child view to show that view
   * @param {Backpack.View} view Child view
   * @param {Object} navigationDef map to define navigation event
@@ -89,7 +89,7 @@ Backpack.StackView = Backpack.View.extend
     @showPreviousChild()
     return
 
-  ###
+  ###*
   * Hides previously shown child view and shows another child view
   * @param {Backbone.View|Integer|String} child Child view instance or child index or 'name' property of child view
   ###
@@ -105,7 +105,7 @@ Backpack.StackView = Backpack.View.extend
     @_currentView = child
     return
 
-  ###
+  ###*
   * Shows previously shown child view again and hides currently shown child view
   ###
   showPreviousChild:->

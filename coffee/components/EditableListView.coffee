@@ -30,7 +30,7 @@ EditableItemView = Backpack.View.extend
     return
   ###
 
-  ###
+  ###*
   * Click event handler for remove confirm icon
   * switches to remove confirm mode
   ###
@@ -40,7 +40,7 @@ EditableItemView = Backpack.View.extend
     e.stopPropagation()
     return
 
-  ###
+  ###*
   * Click event handler for [Remove] button
   * removes this item from play list
   ###
@@ -49,7 +49,7 @@ EditableItemView = Backpack.View.extend
     e.stopPropagation()
     return
 
-###
+###*
 * An editable list view which can :
 * - Remove child views
 * - Reorder child views with drag & drop
@@ -69,7 +69,7 @@ Backpack.EditableListView = Backpack.ListView.extend
     @setEditable (options.editable is true) || false
     return
 
-  ###
+  ###*
   * Turn on/off edit mode
   * When in edit mode, allows deleting/drag & drop play list items
   * @param {Boolean} isEdit If true, turns on edit mode. If false, turns off edit mode.
@@ -79,7 +79,7 @@ Backpack.EditableListView = Backpack.ListView.extend
     @$el.toggleClass CLS_LISTVIEW_EDIT, isEdit
     return
 
-  ###
+  ###*
   * Override ListView to use EditableItemView as direct child
   * @param {Backbone.Model} model
   * @return {Backbone.View}

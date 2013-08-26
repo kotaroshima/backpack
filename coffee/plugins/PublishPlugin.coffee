@@ -1,5 +1,5 @@
 Backpack.PublishPlugin =
-  ###
+  ###*
   * Sets up publishers from `publishers` property
   * `publishers` property takes key-value pair of:
   * - key : method name to trigger the event
@@ -12,7 +12,7 @@ Backpack.PublishPlugin =
         @addPublisher key, value
     return
 
-  ###
+  ###*
   * Add publisher
   * @param {String} method Method name to trigger the event
   * @param {String} topic Topic name of events to be published
@@ -30,7 +30,7 @@ Backpack.PublishPlugin =
       topic: topic
     handler
 
-  ###
+  ###*
   * Remove publisher
   * If 1 argument
   * @param {Object} handler Handler object to detach (return value of Backpack.attach)
@@ -56,7 +56,7 @@ Backpack.PublishPlugin =
       return true
     return false
 
-  ###
+  ###*
   * Remove all publishers on destroy
   ###
   cleanup:->

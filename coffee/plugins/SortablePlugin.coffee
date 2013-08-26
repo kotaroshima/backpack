@@ -1,11 +1,11 @@
-###
+###*
 * A plugin to use jQuery UI Sortable
 * options :
 *   sortable {Boolean} pass `false` if you don't want to make it sortable on initialization (default `true`)
 *   sortableOptions {Object} initialization option to pass when initializing sortable
 ###
 Backpack.SortablePlugin =
-  ###
+  ###*
   * Set sortable on initialize
   * By default, sets sortable. If `sortable` property is given `false`, it doesn't make it sortable.
   ###
@@ -17,7 +17,7 @@ Backpack.SortablePlugin =
   _getSortableContainer:->
     @containerNode || @$el
 
-  ###
+  ###*
   * Set this view sortable
   * @param {Boolean} true to enable sortable, false to disable sortable
   ###
@@ -50,7 +50,7 @@ Backpack.SortablePlugin =
         containerNode.sortable 'disable'
     return
 
-  ###
+  ###*
   * Cleanup sortable on destroy
   ###
   cleanup:->

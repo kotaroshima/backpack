@@ -3,7 +3,7 @@ Backpack.AttachPlugin =
     @_attached = []
     return
 
-  ###
+  ###*
   * Attaches an event handler, which will be detached when this object is destroyed
   * if 2 arguments:
   * @param {String} method Name of this object's method to which attach event
@@ -22,7 +22,7 @@ Backpack.AttachPlugin =
     @_attached.push handler
     handler
 
-  ###
+  ###*
   * Detaches an event and it will be removed from event handler list which will be cleaned up on destroy
   * @param {Object} handler Event handler
   ###

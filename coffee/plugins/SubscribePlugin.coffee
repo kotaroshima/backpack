@@ -1,5 +1,5 @@
 Backpack.SubscribePlugin =
-  ###
+  ###*
   * Sets up subscribers from `subscribers` property
   * `subscribers` property takes key-value pair of:
   * - key : topic name of events to subscribe
@@ -43,7 +43,7 @@ Backpack.SubscribePlugin =
       return true
     return false
 
-  ###
+  ###*
   * Remove all subscribers on destroy
   ###
   cleanup:->
