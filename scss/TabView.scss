@@ -1,0 +1,33 @@
+$border-color: #D5D5D5;
+
+@mixin tab-button-default {
+  background-color: white;
+  text-decoration: none;
+}
+
+.tab-button {
+  display: inline-block;
+  padding: 5px 10px;
+  text-decoration: none;
+  color: black;
+  @include tab-button-default;
+  
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.tab-button-container {
+  .selected {
+    -moz-border-radius: 5px 5px 0 0;
+    border-radius:  5px 5px 0 0;
+    border-width: 1px 1px 0 1px;
+    border-style: solid;
+    border-color: $border-color;
+
+    &:hover {
+      @include tab-button-default;
+      cursor: auto;
+    }
+  }
+}

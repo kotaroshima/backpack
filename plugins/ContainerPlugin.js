@@ -11,18 +11,28 @@
     */
 
     setup: function() {
-      var _this = this;
+      var containerNode;
 
-      if (!this.containerNode) {
+      containerNode = this.containerNode;
+      if (!containerNode) {
         this.containerNode = this.$el;
+      } else if (_.isString(containerNode)) {
+        this.containerNode = this.$(containerNode);
       }
-      if (this.children) {
-        _.each(this.children, function(child) {
-          _this.addView(child);
-        });
-      } else {
+      if (!this.children) {
         this.children = [];
       }
+      if (this.autoRender !== false) {
+        this.renderContainer();
+      }
+    },
+    renderContainer: function() {
+      var _this = this;
+
+      _.each(this.children, function(child) {
+        _this.addView(child);
+      });
+      return this;
     },
     /**
     * Get child view at specified index
@@ -46,27 +56,30 @@
     /**
     * Add view to container node
     * @param {Backbone.View} view A view to add
+    * @param {Object} options optional parameters
     */
 
-    addView: function(view) {
+    addView: function(view, options) {
       this.containerNode.append(view.$el);
     },
     /**
     * Add view as child
     * @param {Backbone.View} view A view to add
+    * @param {Object} options optional parameters
     */
 
-    addChild: function(view) {
-      this.addView(view);
+    addChild: function(view, options) {
       this.children.push(view);
+      this.addView(view, options);
     },
     /**
     * Remove child view at specified index
     * @param {Backbone.View|Integer} view A view to remove or child index
+    * @return {Backbone.View} a removed view
     */
 
     removeChild: function(view) {
-      var index;
+      var child, index;
 
       if (_.isNumber(view)) {
         index = view;
@@ -74,11 +87,12 @@
         index = _.indexOf(this.children, view);
       }
       if (index >= 0) {
-        view = this.children[index];
-        view.remove();
+        child = this.children[index];
+        child.remove();
         this.children.splice(index, 1);
-        this.onChildRemoved(view);
+        this.onChildRemoved(child);
       }
+      return child;
     },
     onChildRemoved: function(view) {},
     /**

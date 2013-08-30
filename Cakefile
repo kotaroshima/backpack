@@ -11,7 +11,7 @@ task 'build', 'Builds CoffeeScript files into JavaScript files', (options)->
         if error
           util.log('Build fail : '+error)
         else
-          exec 'coffee -j Backpack-all.js -c ./coffee/Backpack.coffee ./coffee/plugins/*.coffee ./coffee/components/StackView.coffee ./coffee/components/ListView.coffee ./coffee/components/EditableListView.coffee ./coffee/components/GoogleMapView.coffee', (error, stdout, stderr)->
+          exec 'coffee -j Backpack-all.js -c ./coffee/Backpack.coffee ./coffee/plugins/*.coffee ./coffee/components/StackView.coffee ./coffee/components/ListView.coffee ./coffee/components/EditableListView.coffee ./coffee/components/TabView.coffee ./coffee/components/GoogleMapView.coffee', (error, stdout, stderr)->
             if error
               util.log('Build fail : '+error)
             else
@@ -19,7 +19,7 @@ task 'build', 'Builds CoffeeScript files into JavaScript files', (options)->
 
 task 'build-css', 'Builds SCSS files into CSS files', (options)->
   util.log('Start build...')
-  exec 'scss scss/EditableListView.scss css/EditableListView.css -t expanded', (error, stdout, stderr)->
+  exec 'scss scss/EditableListView.scss css/EditableListView.css -t expanded; scss scss/TabView.scss css/TabView.css -t expanded', (error, stdout, stderr)->
     if error
       util.log('Build fail : '+error)
     else

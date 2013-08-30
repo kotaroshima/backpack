@@ -39,7 +39,8 @@
     */
 
     initialize: function(options) {
-      var showIndex;
+      var showIndex,
+        _this = this;
 
       if (options == null) {
         options = {};
@@ -48,6 +49,11 @@
       this.$el.css({
         position: "relative",
         width: "100%"
+      });
+      this.attach('addView', function(view, options) {
+        if ((options != null ? options.showOnAdd : void 0) === true) {
+          _this.showChild(view, true);
+        }
       });
       showIndex = options.showIndex || 0;
       if (this.children && ((0 <= showIndex && showIndex < this.children.length))) {
@@ -62,23 +68,17 @@
     */
 
     render: function() {
-      var _this = this;
-
-      _.each(this.children, function(child) {
-        if (child === _this._currentView) {
-          child.$el.show();
-        } else {
-          child.$el.hide();
-        }
-      });
+      this.showChild(this._currentView, true);
       return this;
     },
     /**
     * Override Backpack.ContainerPlugin to attach navigation events
     * @param {Backbone.View} view A view to add
+    * @param {Object} options optional parameters
+    * @param {boolean} options.showOnAdd if true, this view will be shown when added
     */
 
-    addView: function(view) {
+    addView: function(view, options) {
       var eventDef, navigationEvents, stackEvent,
         _this = this;
 
@@ -101,6 +101,39 @@
           });
         }
       }
+      view.$el.hide();
+    },
+    /**
+    * Override Backpack.ContainerPlugin to show added view if this is the only child
+    */
+
+    addChild: function(view, options) {
+      if (this.children.length === 0) {
+        if (!options) {
+          options = {};
+        }
+        options.showOnAdd = true;
+      }
+      return Backpack.ContainerPlugin.addChild.apply(this, [view, options]);
+    },
+    /**
+    * Override Backpack.ContainerPlugin to show different child if selected child has been removed
+    */
+
+    removeChild: function(view) {
+      var index;
+
+      view = this.getChild(view);
+      if (view === this._currentView) {
+        index = _.indexOf(this.children, view);
+        if (index > 0) {
+          this.showChild(this.getChild(index - 1), true);
+        } else {
+          this._currentView = null;
+          this._previousView = null;
+        }
+      }
+      return Backpack.ContainerPlugin.removeChild.apply(this, arguments);
     },
     /**
     * Attaches event of child view to show that view
@@ -134,21 +167,29 @@
     /**
     * Hides previously shown child view and shows another child view
     * @param {Backbone.View|Integer|String} child Child view instance or child index or 'name' property of child view
+    * @param {boolean} bNoAnimation if true, show child without animation
+    * @return {Backbone.View} shown child view
     */
 
-    showChild: function(child) {
-      var bBack, hideKey, showKey;
+    showChild: function(child, bNoAnimation) {
+      var bBack, hideEffect, hideKey, showEffect, showKey;
 
       child = this.getChild(child);
       bBack = _.indexOf(this.children, child) < _.indexOf(this.children, this._currentView);
       if (this._currentView) {
         hideKey = bBack ? 'HIDE_BACKWARD' : 'HIDE_FORWARD';
-        this._currentView.$el.hide.apply(this._currentView.$el, this.effects[hideKey]);
+        if (!bNoAnimation) {
+          hideEffect = this.effects[hideKey];
+        }
+        this._currentView.$el.hide.apply(this._currentView.$el, hideEffect);
       }
       showKey = bBack ? 'SHOW_BACKWARD' : 'SHOW_FORWARD';
-      child.$el.show.apply(child.$el, this.effects[showKey]);
+      if (!bNoAnimation) {
+        showEffect = this.effects[showKey];
+      }
+      child.$el.show.apply(child.$el, showEffect);
       this._previousView = this._currentView;
-      this._currentView = child;
+      return this._currentView = child;
     },
     /**
     * Shows previously shown child view again and hides currently shown child view
