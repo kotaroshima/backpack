@@ -7,7 +7,7 @@
 
   Backpack = root.Backpack = {};
 
-  /*
+  /**
   * Attach event handler
   * if 3 arguments
   * @param {Object} obj Object to which attach event
@@ -205,7 +205,7 @@
         options.initialize.apply(this, arguments);
       }
     },
-    /*
+    /**
     * Override so that event handler works even if method has been dynamically overwritten
     * TODO : submit a patch to Backbone
     */
@@ -260,7 +260,7 @@
     setup: function() {
       this._attached = [];
     },
-    /*
+    /**
     * Attaches an event handler, which will be detached when this object is destroyed
     * if 2 arguments:
     * @param {String} method Name of this object's method to which attach event
@@ -284,7 +284,7 @@
       this._attached.push(handler);
       return handler;
     },
-    /*
+    /**
     * Detaches an event and it will be removed from event handler list which will be cleaned up on destroy
     * @param {Object} handler Event handler
     */
@@ -309,31 +309,41 @@
 
   Backpack.defaultPlugins.push(Backpack.AttachPlugin);
 
-  /*
+  /**
   * A plugin to make a view container
   */
 
 
   Backpack.ContainerPlugin = {
-    /*
+    /**
     * Setup containerNode and add child views on initialize
     */
 
     setup: function() {
-      var _this = this;
+      var containerNode;
 
-      if (!this.containerNode) {
+      containerNode = this.containerNode;
+      if (!containerNode) {
         this.containerNode = this.$el;
+      } else if (_.isString(containerNode)) {
+        this.containerNode = this.$(containerNode);
       }
-      if (this.children) {
-        _.each(this.children, function(child) {
-          _this.addView(child);
-        });
-      } else {
+      if (!this.children) {
         this.children = [];
       }
+      if (this.autoRender !== false) {
+        this.renderContainer();
+      }
     },
-    /*
+    renderContainer: function() {
+      var _this = this;
+
+      _.each(this.children, function(child) {
+        _this.addView(child);
+      });
+      return this;
+    },
+    /**
     * Get child view at specified index
     * @param {Backbone.View|Integer|String} child Child view instance, or child index, or 'name' property of child
     * @return {Backbone.View}
@@ -352,30 +362,33 @@
         });
       }
     },
-    /*
+    /**
     * Add view to container node
     * @param {Backbone.View} view A view to add
+    * @param {Object} options optional parameters
     */
 
-    addView: function(view) {
+    addView: function(view, options) {
       this.containerNode.append(view.$el);
     },
-    /*
+    /**
     * Add view as child
     * @param {Backbone.View} view A view to add
+    * @param {Object} options optional parameters
     */
 
-    addChild: function(view) {
-      this.addView(view);
+    addChild: function(view, options) {
       this.children.push(view);
+      this.addView(view, options);
     },
-    /*
+    /**
     * Remove child view at specified index
     * @param {Backbone.View|Integer} view A view to remove or child index
+    * @return {Backbone.View} a removed view
     */
 
     removeChild: function(view) {
-      var index;
+      var child, index;
 
       if (_.isNumber(view)) {
         index = view;
@@ -383,14 +396,15 @@
         index = _.indexOf(this.children, view);
       }
       if (index >= 0) {
-        view = this.children[index];
-        view.remove();
+        child = this.children[index];
+        child.remove();
         this.children.splice(index, 1);
-        this.onChildRemoved(view);
+        this.onChildRemoved(child);
       }
+      return child;
     },
     onChildRemoved: function(view) {},
-    /*
+    /**
     * Clear all children
     */
 
@@ -410,7 +424,7 @@
         }
       });
     },
-    /*
+    /**
     * Clear children on destroy
     */
 
@@ -420,7 +434,7 @@
   };
 
   Backpack.PublishPlugin = {
-    /*
+    /**
     * Sets up publishers from `publishers` property
     * `publishers` property takes key-value pair of:
     * - key : method name to trigger the event
@@ -440,7 +454,7 @@
         }
       }
     },
-    /*
+    /**
     * Add publisher
     * @param {String} method Method name to trigger the event
     * @param {String} topic Topic name of events to be published
@@ -464,7 +478,7 @@
       });
       return handler;
     },
-    /*
+    /**
     * Remove publisher
     * If 1 argument
     * @param {Object} handler Handler object to detach (return value of Backpack.attach)
@@ -500,7 +514,7 @@
       }
       return false;
     },
-    /*
+    /**
     * Remove all publishers on destroy
     */
 
@@ -547,7 +561,7 @@
     }
   };
 
-  /*
+  /**
   * A plugin to use jQuery UI Sortable
   * options :
   *   sortable {Boolean} pass `false` if you don't want to make it sortable on initialization (default `true`)
@@ -556,7 +570,7 @@
 
 
   Backpack.SortablePlugin = {
-    /*
+    /**
     * Set sortable on initialize
     * By default, sets sortable. If `sortable` property is given `false`, it doesn't make it sortable.
     */
@@ -569,7 +583,7 @@
     _getSortableContainer: function() {
       return this.containerNode || this.$el;
     },
-    /*
+    /**
     * Set this view sortable
     * @param {Boolean} true to enable sortable, false to disable sortable
     */
@@ -612,7 +626,7 @@
         }
       }
     },
-    /*
+    /**
     * Cleanup sortable on destroy
     */
 
@@ -624,7 +638,7 @@
   };
 
   Backpack.SubscribePlugin = {
-    /*
+    /**
     * Sets up subscribers from `subscribers` property
     * `subscribers` property takes key-value pair of:
     * - key : topic name of events to subscribe
@@ -691,7 +705,7 @@
       }
       return false;
     },
-    /*
+    /**
     * Remove all subscribers on destroy
     */
 
@@ -707,7 +721,13 @@
 
   Backpack.defaultPlugins.push(Backpack.SubscribePlugin);
 
-  /*
+  Backpack.TemplatePlugin = {
+    setup: function() {
+      this.$el.html(this.template, this.templateData);
+    }
+  };
+
+  /**
   * A view that stacks its children
   */
 
@@ -736,7 +756,7 @@
         }, "slow"
       ]
     },
-    /*
+    /**
     * Constructor
     * @param {Object} [options={}] Initialization option
     * @param {Backpack.View[]} [options.children] Child views
@@ -746,7 +766,8 @@
     */
 
     initialize: function(options) {
-      var showIndex;
+      var showIndex,
+        _this = this;
 
       if (options == null) {
         options = {};
@@ -756,6 +777,11 @@
         position: "relative",
         width: "100%"
       });
+      this.attach('addView', function(view, options) {
+        if ((options != null ? options.showOnAdd : void 0) === true) {
+          _this.showChild(view, true);
+        }
+      });
       showIndex = options.showIndex || 0;
       if (this.children && ((0 <= showIndex && showIndex < this.children.length))) {
         this._currentView = this.children[showIndex];
@@ -763,29 +789,23 @@
       }
       this.render();
     },
-    /*
+    /**
     * Select only one of its children and hide others
     * @returns {Backpack.View} this instance
     */
 
     render: function() {
-      var _this = this;
-
-      _.each(this.children, function(child) {
-        if (child === _this._currentView) {
-          child.$el.show();
-        } else {
-          child.$el.hide();
-        }
-      });
+      this.showChild(this._currentView, true);
       return this;
     },
-    /*
+    /**
     * Override Backpack.ContainerPlugin to attach navigation events
     * @param {Backbone.View} view A view to add
+    * @param {Object} options optional parameters
+    * @param {boolean} options.showOnAdd if true, this view will be shown when added
     */
 
-    addView: function(view) {
+    addView: function(view, options) {
       var eventDef, navigationEvents, stackEvent,
         _this = this;
 
@@ -808,8 +828,41 @@
           });
         }
       }
+      view.$el.hide();
     },
-    /*
+    /**
+    * Override Backpack.ContainerPlugin to show added view if this is the only child
+    */
+
+    addChild: function(view, options) {
+      if (this.children.length === 0) {
+        if (!options) {
+          options = {};
+        }
+        options.showOnAdd = true;
+      }
+      return Backpack.ContainerPlugin.addChild.apply(this, [view, options]);
+    },
+    /**
+    * Override Backpack.ContainerPlugin to show different child if selected child has been removed
+    */
+
+    removeChild: function(view) {
+      var index;
+
+      view = this.getChild(view);
+      if (view === this._currentView) {
+        index = _.indexOf(this.children, view);
+        if (index > 0) {
+          this.showChild(this.getChild(index - 1), true);
+        } else {
+          this._currentView = null;
+          this._previousView = null;
+        }
+      }
+      return Backpack.ContainerPlugin.removeChild.apply(this, arguments);
+    },
+    /**
     * Attaches event of child view to show that view
     * @param {Backpack.View} view Child view
     * @param {Object} navigationDef map to define navigation event
@@ -838,26 +891,34 @@
     onBack: function() {
       this.showPreviousChild();
     },
-    /*
+    /**
     * Hides previously shown child view and shows another child view
     * @param {Backbone.View|Integer|String} child Child view instance or child index or 'name' property of child view
+    * @param {boolean} bNoAnimation if true, show child without animation
+    * @return {Backbone.View} shown child view
     */
 
-    showChild: function(child) {
-      var bBack, hideKey, showKey;
+    showChild: function(child, bNoAnimation) {
+      var bBack, hideEffect, hideKey, showEffect, showKey;
 
       child = this.getChild(child);
       bBack = _.indexOf(this.children, child) < _.indexOf(this.children, this._currentView);
       if (this._currentView) {
         hideKey = bBack ? 'HIDE_BACKWARD' : 'HIDE_FORWARD';
-        this._currentView.$el.hide.apply(this._currentView.$el, this.effects[hideKey]);
+        if (!bNoAnimation) {
+          hideEffect = this.effects[hideKey];
+        }
+        this._currentView.$el.hide.apply(this._currentView.$el, hideEffect);
       }
       showKey = bBack ? 'SHOW_BACKWARD' : 'SHOW_FORWARD';
-      child.$el.show.apply(child.$el, this.effects[showKey]);
+      if (!bNoAnimation) {
+        showEffect = this.effects[showKey];
+      }
+      child.$el.show.apply(child.$el, showEffect);
       this._previousView = this._currentView;
-      this._currentView = child;
+      return this._currentView = child;
     },
-    /*
+    /**
     * Shows previously shown child view again and hides currently shown child view
     */
 
@@ -868,7 +929,7 @@
     }
   });
 
-  /*
+  /**
   * A view that that displays view specified in `itemView`
   */
 
@@ -906,7 +967,7 @@
       });
       return this;
     },
-    /*
+    /**
     * Show list items if collection has one or more model
     * and show "No items" message instead if collection includes no models
     */
@@ -920,7 +981,7 @@
         this.containerNode.hide();
       }
     },
-    /*
+    /**
     * Creates view to add to this list view as a child
     * @param {Backbone.Model} model
     * @return {Backbone.View}
@@ -957,7 +1018,7 @@
         }
       }
     },
-    /*
+    /**
     * Toggle show/hide loading node
     * @param {boolean} bLoading true to show loading node, false to hide
     */
@@ -1013,7 +1074,7 @@
       return
     */
 
-    /*
+    /**
     * Click event handler for remove confirm icon
     * switches to remove confirm mode
     */
@@ -1025,7 +1086,7 @@
       this.$el.toggleClass(CLS_REMOVE_CONFIRM, !isRemoveConfirm);
       e.stopPropagation();
     },
-    /*
+    /**
     * Click event handler for [Remove] button
     * removes this item from play list
     */
@@ -1036,7 +1097,7 @@
     }
   });
 
-  /*
+  /**
   * An editable list view which can :
   * - Remove child views
   * - Reorder child views with drag & drop
@@ -1054,7 +1115,7 @@
       Backpack.ListView.prototype.initialize.apply(this, arguments);
       this.setEditable((options.editable === true) || false);
     },
-    /*
+    /**
     * Turn on/off edit mode
     * When in edit mode, allows deleting/drag & drop play list items
     * @param {Boolean} isEdit If true, turns on edit mode. If false, turns off edit mode.
@@ -1064,7 +1125,7 @@
       this.setSortable(isEdit);
       this.$el.toggleClass(CLS_LISTVIEW_EDIT, isEdit);
     },
-    /*
+    /**
     * Override ListView to use EditableItemView as direct child
     * @param {Backbone.Model} model
     * @return {Backbone.View}
@@ -1083,6 +1144,127 @@
   });
 
   /*
+  * Tab panel view
+  */
+
+
+  /*
+  * Tab button view
+  */
+
+
+  Backpack.TabButtonView = Backpack.View.extend({
+    tagName: 'a',
+    attributes: {
+      href: '#',
+      "class": 'tab-button'
+    },
+    template: _.template('<%- title %>'),
+    events: {
+      'click': 'onClicked'
+    },
+    initialize: function(options) {
+      Backpack.View.prototype.initialize.apply(this, arguments);
+      this.render();
+    },
+    /*
+    * Renders template HTML
+    */
+
+    render: function() {
+      this.$el.html(this.template(this.options));
+      return this;
+    },
+    onClicked: function(e) {}
+  });
+
+  /*
+  * A tab panel view that contains tab button view and tab content view
+  */
+
+
+  Backpack.TabView = Backpack.StackView.extend({
+    plugins: [Backpack.TemplatePlugin, Backpack.ContainerPlugin],
+    template: '<div class="tab-button-container"></div><div class="tab-content-container"></div>',
+    containerNode: '.tab-content-container',
+    autoRender: false,
+    render: function() {
+      /* setup tab buttons
+      */
+      this._buttonMap = {};
+      this.buttonContainer = new Backpack.View({
+        el: '.tab-button-container',
+        plugins: [Backpack.ContainerPlugin]
+      });
+      /*
+      * When autoRender=false, need to explicitly call renderContainer
+      * This needs to be after tab buttons have been setup
+      */
+
+      this.renderContainer();
+      Backpack.StackView.prototype.render.apply(this, arguments);
+      return this;
+    },
+    /*
+    * Override Backpack.ContainerPlugin to add tab button
+    */
+
+    addView: function(view, options) {
+      var tabButtonView, tabView;
+
+      Backpack.StackView.prototype.addView.apply(this, arguments);
+      tabView = this;
+      tabButtonView = new Backpack.TabButtonView({
+        title: view.name,
+        onClicked: function(e) {
+          /*
+          * If tab button view is clicked, show corresponding content view
+          * `this` points to a TabButtonView instance in this scope
+          */
+          tabView.showChild(this._tabContentView);
+        }
+      });
+      this.buttonContainer.addChild(tabButtonView);
+      this._buttonMap[view.cid] = tabButtonView;
+      tabButtonView._tabContentView = view;
+    },
+    /*
+    * Override Backpack.StackView to remove/destroy tab button
+    */
+
+    removeChild: function(view) {
+      var child, tabButtonView;
+
+      child = Backpack.StackView.prototype.removeChild.apply(this, arguments);
+      if (child) {
+        tabButtonView = this._buttonMap[child.cid];
+        this.buttonContainer.removeChild(tabButtonView);
+        tabButtonView.destroy();
+        delete this._buttonMap[child.cid];
+      }
+      return child;
+    },
+    /*
+    * Override Backpack.StackView to change styles of selected tab button
+    */
+
+    showChild: function(child) {
+      var CLS_SELECTED, map;
+
+      child = Backpack.StackView.prototype.showChild.apply(this, [child, true]);
+      if (child) {
+        CLS_SELECTED = 'selected';
+        map = this._buttonMap;
+        if (this._previousView) {
+          map[this._previousView.cid].$el.removeClass(CLS_SELECTED);
+        }
+        map[child.cid].$el.addClass(CLS_SELECTED);
+      }
+      return child;
+    }
+  });
+
+  /**
   * A view that that displays Google map
   */
 
@@ -1105,7 +1287,7 @@
         });
       }
     },
-    /*
+    /**
     * Need to call this after being added to the DOM tree
     */
 
@@ -1132,7 +1314,7 @@
       });
       this.removeSubscriber('GOOGLE_MAP_SCRIPT_LOADED', this._onScriptLoaded);
     },
-    /*
+    /**
     * Move center of map
     * @param {Object} location
     * @param {Number} location.lat latitude
@@ -1142,7 +1324,7 @@
     setLocation: function(location) {
       this.map.panTo(new google.maps.LatLng(location.lat, location.lng));
     },
-    /*
+    /**
     * Add marker to map
     * @param {Object} option
     * @param {Number} option.lat latitude

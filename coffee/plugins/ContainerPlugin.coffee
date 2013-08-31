@@ -1,21 +1,28 @@
-###
+###*
 * A plugin to make a view container
 ###
 Backpack.ContainerPlugin =
-  ###
+  ###*
   * Setup containerNode and add child views on initialize
   ###
   setup:->
-    @containerNode = @$el if !@containerNode
-    if @children
-      _.each @children, (child)=>
-        @addView child
-        return
-    else
-      @children = []
+    containerNode = @containerNode
+    if !containerNode
+      @containerNode = @$el
+    else if _.isString containerNode
+      @containerNode = @$ containerNode
+
+    @children = [] if !@children
+    @renderContainer() if @autoRender != false
     return
 
-  ###
+  renderContainer:->
+    _.each @children, (child)=>
+      @addView child
+      return
+    @
+
+  ###*
   * Get child view at specified index
   * @param {Backbone.View|Integer|String} child Child view instance, or child index, or 'name' property of child
   * @return {Backbone.View}
@@ -30,26 +37,29 @@ Backpack.ContainerPlugin =
       _.find @children, (view)->
         view.name == child
 
-  ###
+  ###*
   * Add view to container node
   * @param {Backbone.View} view A view to add
+  * @param {Object} options optional parameters
   ###
-  addView:(view)->
+  addView:(view, options)->
     @containerNode.append view.$el
     return
 
-  ###
+  ###*
   * Add view as child
   * @param {Backbone.View} view A view to add
+  * @param {Object} options optional parameters
   ###
-  addChild:(view)->
-    @addView view
+  addChild:(view, options)->
     @children.push view
+    @addView view, options
     return
 
-  ###
+  ###*
   * Remove child view at specified index
   * @param {Backbone.View|Integer} view A view to remove or child index
+  * @return {Backbone.View} a removed view
   ###
   removeChild:(view)->
     if _.isNumber view
@@ -57,15 +67,15 @@ Backpack.ContainerPlugin =
     else
       index = _.indexOf @children, view
     if index >= 0
-      view = @children[index]
-      view.remove()
+      child = @children[index]
+      child.remove()
       @children.splice index, 1
-      @onChildRemoved view
-    return
+      @onChildRemoved child
+    child
 
   onChildRemoved:(view)->
 
-  ###
+  ###*
   * Clear all children
   ###
   clearChildren:->
@@ -82,7 +92,7 @@ Backpack.ContainerPlugin =
       return
     return
 
-  ###
+  ###*
   * Clear children on destroy
   ###
   cleanup:->

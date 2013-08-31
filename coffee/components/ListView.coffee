@@ -1,4 +1,4 @@
-###
+###*
 * A view that that displays view specified in `itemView`
 ###
 Backpack.ListView = Backpack.View.extend
@@ -33,7 +33,7 @@ Backpack.ListView = Backpack.View.extend
       return
     @
 
-  ###
+  ###*
   * Show list items if collection has one or more model
   * and show "No items" message instead if collection includes no models
   ###
@@ -46,7 +46,7 @@ Backpack.ListView = Backpack.View.extend
       @containerNode.hide()
     return
 
-  ###
+  ###*
   * Creates view to add to this list view as a child
   * @param {Backbone.Model} model
   * @return {Backbone.View}
@@ -70,7 +70,7 @@ Backpack.ListView = Backpack.View.extend
         break
     return
 
-  ###
+  ###*
   * Toggle show/hide loading node
   * @param {boolean} bLoading true to show loading node, false to hide
   ###

@@ -1,4 +1,4 @@
-###
+###*
 * A view that stacks its children
 ###
 Backpack.StackView = Backpack.View.extend
@@ -10,7 +10,7 @@ Backpack.StackView = Backpack.View.extend
     SHOW_BACKWARD: ["slide", { direction: "left" }, "slow"]
     SHOW_FORWARD: ["slide", { direction: "right" }, "slow"]
 
-  ###
+  ###*
   * Constructor
   * @param {Object} [options={}] Initialization option
   * @param {Backpack.View[]} [options.children] Child views
@@ -20,34 +20,37 @@ Backpack.StackView = Backpack.View.extend
   ###
   initialize:(options={})->
     Backpack.View::initialize.apply @, arguments
+
     @$el.css position: "relative", width: "100%"
+
+    @attach 'addView', (view, options)=>
+      @showChild view, true if options?.showOnAdd == true
+      return
 
     # show one of its child views on init
     showIndex = options.showIndex || 0
     if @children && (0 <= showIndex < @children.length)
       @_currentView = @children[showIndex]
       @_previousView = @_currentView
+
     @render()
     return
 
-  ###
+  ###*
   * Select only one of its children and hide others
   * @returns {Backpack.View} this instance
   ###
   render:->
-    _.each @children, (child)=>
-      if child == @_currentView
-        child.$el.show()
-      else
-        child.$el.hide()
-      return
+    @showChild @_currentView, true
     @
 
-  ###
+  ###*
   * Override Backpack.ContainerPlugin to attach navigation events
   * @param {Backbone.View} view A view to add
+  * @param {Object} options optional parameters
+  * @param {boolean} options.showOnAdd if true, this view will be shown when added
   ###
-  addView:(view)->
+  addView:(view, options)->
     view.$el.css position: "absolute", width: "99%"
     Backpack.ContainerPlugin.addView.apply @, arguments
 
@@ -62,9 +65,34 @@ Backpack.StackView = Backpack.View.extend
         _.each eventDef, (def)=>
           @attachNavigationEvent view, def
           return
+
+    view.$el.hide()
     return
 
+  ###*
+  * Override Backpack.ContainerPlugin to show added view if this is the only child
   ###
+  addChild:(view, options)->
+    if @children.length == 0
+      options = {} if !options
+      options.showOnAdd = true
+    Backpack.ContainerPlugin.addChild.apply @, [view, options]
+
+  ###*
+  * Override Backpack.ContainerPlugin to show different child if selected child has been removed
+  ###
+  removeChild:(view)->
+    view = @getChild view
+    if view == @_currentView
+      index = _.indexOf @children, view
+      if index > 0
+        @showChild @getChild(index-1), true
+      else
+        @_currentView = null
+        @_previousView = null
+    Backpack.ContainerPlugin.removeChild.apply @, arguments
+
+  ###*
   * Attaches event of child view to show that view
   * @param {Backpack.View} view Child view
   * @param {Object} navigationDef map to define navigation event
@@ -89,23 +117,26 @@ Backpack.StackView = Backpack.View.extend
     @showPreviousChild()
     return
 
-  ###
+  ###*
   * Hides previously shown child view and shows another child view
   * @param {Backbone.View|Integer|String} child Child view instance or child index or 'name' property of child view
+  * @param {boolean} bNoAnimation if true, show child without animation
+  * @return {Backbone.View} shown child view
   ###
-  showChild:(child)->
+  showChild:(child, bNoAnimation)->
     child = @getChild child
     bBack = (_.indexOf(@children, child) < _.indexOf(@children, @_currentView))
     if @_currentView
       hideKey = if bBack then 'HIDE_BACKWARD' else 'HIDE_FORWARD'
-      @_currentView.$el.hide.apply @_currentView.$el, @effects[hideKey]
+      hideEffect = @effects[hideKey] if !bNoAnimation
+      @_currentView.$el.hide.apply @_currentView.$el, hideEffect
     showKey = if bBack then 'SHOW_BACKWARD' else 'SHOW_FORWARD'
-    child.$el.show.apply child.$el, @effects[showKey]
+    showEffect = @effects[showKey] if !bNoAnimation
+    child.$el.show.apply child.$el, showEffect
     @_previousView = @_currentView
     @_currentView = child
-    return
 
-  ###
+  ###*
   * Shows previously shown child view again and hides currently shown child view
   ###
   showPreviousChild:->

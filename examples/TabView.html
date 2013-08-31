@@ -1,0 +1,121 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Backpack.TabView Example</title>
+<link rel="stylesheet" type="text/css" href="../css/TabView.css"></link>
+<script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/jquery/1.9.1/jquery.js"></script>
+<script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.10.2/jquery-ui.js"></script>
+<script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.4.4/underscore.js"></script>
+<script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/backbone.js/1.0.0/backbone.js"></script>
+<script type="text/javascript" src="../Backpack-all.js"></script>
+<style type="text/css">
+.header {
+  background-color: #E0E0E0;
+  display: table;
+  width: 100%;
+}
+
+.header > * {
+  display: table-cell;
+  vertical-align: middle;
+}
+
+.header-left {
+  width: 150px;
+  text-align: left;
+  padding-left: 10px;
+}
+
+.header-right {
+  width: 150px;
+  text-align: right;
+  padding-right: 10px;
+}
+
+H2 {
+  text-align: center;
+}
+
+.content {
+  width: 100%;
+  height: 400px;
+}
+
+.content1 {
+  background-color: #f6f6dc;
+}
+
+.content2 {
+  background-color: #b3d4fc;
+}
+
+.content3 {
+  background-color: #55a716;
+}
+</style>
+<script type="text/javascript">
+$(function(){
+  var view1 = new Backpack.View({
+    name: 'view1',
+    template: '<div class="header"><span class="header-left"></span><h2>View1</h2><span class="header-right"><button id="view2Button">View2</button><button id="view3Button">View3</button></span></div><div class="content content1">Content of view 1</div>',
+    initialize: function(options){
+      this.$el.html(this.template);
+    },
+    events: {
+      'click #view2Button': 'onView2Clicked',
+      'click #view3Button': 'onView3Clicked'
+    },
+    onView2Clicked: function(e){},
+    onView3Clicked: function(e){}
+  });
+  var view2 = new Backpack.View({
+    name: 'view2',
+    template: '<div class="header"><span class="header-left"><button id="view1Button">View1</button></span><h2>View2</h2><span class="header-right"><button id="view3Button">View3</button></span></div><div class="content content2">Content of view 2</div>',
+    events: {
+      'click #view1Button': 'onView1Clicked',
+      'click #view3Button': 'onView3Clicked'
+    },
+    initialize: function(options){
+      this.$el.html(this.template);
+    },
+    onView1Clicked: function(e){},
+    onView3Clicked: function(e){}
+  });
+  var view3 = new Backpack.View({
+    name: 'view3',
+    template: '<div class="header"><span class="header-left"><button id="backButton">Back</button></span><h2>View3</h2><span class="header-right"></span></div><div class="content content3">Content of view 3</div>',
+    events: {
+      'click #backButton': 'onBackClicked'
+    },
+    initialize: function(options){
+      this.$el.html(this.template);
+    },
+    onBackClicked: function(e){}
+  });
+  var tabView = new Backpack.TabView({
+    el: '#tab-view',
+    children: [view1, view2, view3],
+	  navigationEvents: {
+	    view1: [
+	      { event: 'onView2Clicked', target: 'view2' },
+	      { event: 'onView3Clicked', target: 'view3' }
+	    ],
+	    view2: [
+	      { event: 'onView1Clicked', target: 'view1' },
+	      { event: 'onView3Clicked', target: 'view3' }
+	    ],
+	    view3: {
+	      event: 'onBackClicked',
+	      back: true
+	    }
+	  }
+  });
+});
+</script>
+</head>
+<body>
+<h1>Backpack.TabView Example</h1>
+<div id="tab-view"></div>
+</body>
+</html>

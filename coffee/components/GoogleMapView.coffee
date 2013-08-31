@@ -1,4 +1,4 @@
-###
+###*
 * A view that that displays Google map
 ###
 Backpack.GoogleMapView = Backpack.View.extend
@@ -18,7 +18,7 @@ Backpack.GoogleMapView = Backpack.View.extend
       @$el.css width: '100%', height: '100%'
     return
 
-  ###
+  ###*
   * Need to call this after being added to the DOM tree
   ###
   initMap:->
@@ -41,7 +41,7 @@ Backpack.GoogleMapView = Backpack.View.extend
     @removeSubscriber 'GOOGLE_MAP_SCRIPT_LOADED', @_onScriptLoaded
     return
 
-  ###
+  ###*
   * Move center of map
   * @param {Object} location
   * @param {Number} location.lat latitude
@@ -51,7 +51,7 @@ Backpack.GoogleMapView = Backpack.View.extend
     @map.panTo new google.maps.LatLng location.lat, location.lng
     return
 
-  ###
+  ###*
   * Add marker to map
   * @param {Object} option
   * @param {Number} option.lat latitude

@@ -1,7 +1,7 @@
 root = this
 Backpack = root.Backpack = {}
 
-###
+###*
 * Attach event handler
 * if 3 arguments
 * @param {Object} obj Object to which attach event
@@ -142,7 +142,7 @@ Backpack.View = Backbone.View.extend
     options.initialize.apply @, arguments if options?.initialize
     return
 
-  ###
+  ###*
   * Override so that event handler works even if method has been dynamically overwritten
   * TODO : submit a patch to Backbone
   ###
