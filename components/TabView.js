@@ -72,7 +72,7 @@
       Backpack.StackView.prototype.addView.apply(this, arguments);
       tabView = this;
       tabButtonView = new Backpack.TabButtonView({
-        title: view.name,
+        title: view.title || view.name,
         onClicked: function(e) {
           /*
           * If tab button view is clicked, show corresponding content view

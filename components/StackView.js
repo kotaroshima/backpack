@@ -91,11 +91,7 @@
       if (navigationEvents) {
         stackEvent = navigationEvents[view.name];
         if (stackEvent) {
-          if (_.isArray(stackEvent)) {
-            eventDef = stackEvent;
-          } else {
-            eventDef = [stackEvent];
-          }
+          eventDef = _.isArray(stackEvent) ? stackEvent : [stackEvent];
           _.each(eventDef, function(def) {
             _this.attachNavigationEvent(view, def);
           });

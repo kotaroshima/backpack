@@ -58,10 +58,7 @@ Backpack.StackView = Backpack.View.extend
     if navigationEvents
       stackEvent = navigationEvents[view.name]
       if stackEvent
-        if _.isArray stackEvent
-          eventDef = stackEvent
-        else
-          eventDef = [stackEvent]
+        eventDef = if _.isArray stackEvent then stackEvent else [stackEvent]
         _.each eventDef, (def)=>
           @attachNavigationEvent view, def
           return

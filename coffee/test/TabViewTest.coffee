@@ -22,19 +22,51 @@ assertTabButtonClicked = (tabView, tabIndex)->
   return
 
 test 'initialize by passing children', 4, ->
+  tabLabels = ['view1', 'view2']
   view1 = new Backpack.View
+    name: tabLabels[0]
     initialize:(options)->
       @$el.html '<div>View1</div>'
       return
   view2 = new Backpack.View
+    name: tabLabels[1]
     initialize:(options)->
       @$el.html '<div>View2</div>'
       return
   tabView = @tabView = new Backpack.TabView
     children: [view1, view2]
     showIndex: 0
-  $('#testNode').append tabView.$el
+  testNode = $ '#testNode'
+  testNode.append tabView.$el
   assertSelectedView tabView, 0
+  testNode.find('.tab-button').each (index, tabButton)->
+    equal $(@).text(), tabLabels[index]
+    return
+  return
+
+test 'title shown in tab button', 4, ->
+  tabLabels = ['View 1', 'View 2']
+  view1 = new Backpack.View
+    name: 'view1'
+    title: tabLabels[0]
+    initialize:(options)->
+      @$el.html '<div>View1</div>'
+      return
+  view2 = new Backpack.View
+    name: 'view2'
+    title: tabLabels[1]
+    initialize:(options)->
+      @$el.html '<div>View2</div>'
+      return
+  tabView = @tabView = new Backpack.TabView
+    children: [view1, view2]
+    showIndex: 0
+  testNode = $ '#testNode'
+  testNode.append tabView.$el
+  assertSelectedView tabView, 0
+  testNode.find('.tab-button').each (index, tabButton)->
+    equal $(@).text(), tabLabels[index]
+    return
   return
 
 test 'no showIndex', 4, ->

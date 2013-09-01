@@ -818,11 +818,7 @@
       if (navigationEvents) {
         stackEvent = navigationEvents[view.name];
         if (stackEvent) {
-          if (_.isArray(stackEvent)) {
-            eventDef = stackEvent;
-          } else {
-            eventDef = [stackEvent];
-          }
+          eventDef = _.isArray(stackEvent) ? stackEvent : [stackEvent];
           _.each(eventDef, function(def) {
             _this.attachNavigationEvent(view, def);
           });
@@ -1215,7 +1211,7 @@
       Backpack.StackView.prototype.addView.apply(this, arguments);
       tabView = this;
       tabButtonView = new Backpack.TabButtonView({
-        title: view.name,
+        title: view.title || view.name,
         onClicked: function(e) {
           /*
           * If tab button view is clicked, show corresponding content view
