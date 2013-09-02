@@ -932,18 +932,20 @@
 
   Backpack.ListView = Backpack.View.extend({
     plugins: [Backpack.ContainerPlugin],
-    template: _.template('<div class="main-node"><div class="containerNode"></div><div class="noItemsNode">No Items</div></div><div class="loadingNode">Loading...</div>', this.messages),
+    messages: {
+      NO_ITEMS: 'No Items'
+    },
+    template: '<div class="main-node"><div class="container-node"></div><div class="message-node"></div></div><div class="loading-node">Loading...</div>',
     itemView: Backpack.View,
-    itemOptions: {},
     initialize: function(options) {
       if (options.itemView) {
         this.itemView = options.itemView;
       }
       this.$el.html(this.template);
-      this.containerNode = this.$('.containerNode');
-      this._noItemsNode = this.$('.noItemsNode');
-      this._mainNode = this.$('.main-node');
-      this._loadingNode = this.$('.loadingNode');
+      this.containerNode = this.$('.container-node');
+      this.messageNode = this.$('.message-node');
+      this.mainNode = this.$('.main-node');
+      this.loadingNode = this.$('.loading-node');
       this.setLoading(false);
       Backpack.View.prototype.initialize.apply(this, arguments);
       this.collection.on('add reset', this.render, this);
@@ -953,7 +955,7 @@
     render: function() {
       var _this = this;
 
-      this._toggleContainerNode();
+      this.toggleContainerNode(this.collection.models.length > 0, this.messages.NO_ITEMS);
       this.clearChildren();
       _.each(this.collection.models, function(model) {
         var child;
@@ -966,15 +968,22 @@
     /**
     * Show list items if collection has one or more model
     * and show "No items" message instead if collection includes no models
+    * @param {boolean} bShow specify true to show container node, false to hide container node and show message node instead
+    * @param {String} message a message to show for bShow=false
     */
 
-    _toggleContainerNode: function() {
-      if (this.collection.models.length > 0) {
-        this._noItemsNode.hide();
-        this.containerNode.show();
+    toggleContainerNode: function(bShow, message) {
+      var containerNode, messageNode;
+
+      messageNode = this.messageNode;
+      containerNode = this.containerNode;
+      if (bShow) {
+        messageNode.hide();
+        containerNode.show();
       } else {
-        this._noItemsNode.show();
-        this.containerNode.hide();
+        messageNode.html(message);
+        messageNode.show();
+        containerNode.hide();
       }
     },
     /**
@@ -986,7 +995,7 @@
     createChild: function(model) {
       var options, view;
 
-      options = _.clone(this.itemOptions);
+      options = _.clone(this.itemOptions || {});
       options = _.extend(options, {
         model: model
       });
@@ -1008,7 +1017,7 @@
             direction: 'left'
           }, 'fast', function() {
             _this.removeChild(child);
-            _this._toggleContainerNode();
+            _this.toggleContainerNode(_this.collection.models.length > 0, _this.messages.NO_ITEMS);
           });
           break;
         }
@@ -1021,11 +1030,11 @@
 
     setLoading: function(bLoading) {
       if (bLoading) {
-        this._loadingNode.show();
-        this._mainNode.hide();
+        this.loadingNode.show();
+        this.mainNode.hide();
       } else {
-        this._loadingNode.hide();
-        this._mainNode.show();
+        this.loadingNode.hide();
+        this.mainNode.show();
       }
     },
     remove: function() {
@@ -1133,7 +1142,7 @@
       view = new EditableItemView({
         model: model,
         itemView: this.itemView,
-        itemOptions: this.itemOptions
+        itemOptions: this.itemOptions || {}
       });
       return view.render();
     }

@@ -5,18 +5,19 @@ Backpack.ListView = Backpack.View.extend
   plugins: [Backpack.ContainerPlugin]
 
   # TODO : i18n
-  template: _.template '<div class="main-node"><div class="containerNode"></div><div class="noItemsNode">No Items</div></div><div class="loadingNode">Loading...</div>', @messages
+  messages:
+    NO_ITEMS: 'No Items'
+  template: '<div class="main-node"><div class="container-node"></div><div class="message-node"></div></div><div class="loading-node">Loading...</div>'
 
   itemView: Backpack.View
-  itemOptions: {}
 
   initialize:(options)->
     @itemView = options.itemView if options.itemView
     @$el.html @template
-    @containerNode = @$ '.containerNode'
-    @_noItemsNode = @$ '.noItemsNode'
-    @_mainNode = @$ '.main-node'
-    @_loadingNode = @$ '.loadingNode'
+    @containerNode = @$ '.container-node'
+    @messageNode = @$ '.message-node'
+    @mainNode = @$ '.main-node'
+    @loadingNode = @$ '.loading-node'
     @setLoading false
     Backpack.View::initialize.apply @, arguments
     @collection.on 'add reset', @render, @
@@ -25,7 +26,7 @@ Backpack.ListView = Backpack.View.extend
     return
 
   render:->
-    @_toggleContainerNode()
+    @toggleContainerNode (@collection.models.length > 0), @messages.NO_ITEMS
     @clearChildren()
     _.each @collection.models, (model)=>
       child = @createChild model
@@ -36,14 +37,19 @@ Backpack.ListView = Backpack.View.extend
   ###*
   * Show list items if collection has one or more model
   * and show "No items" message instead if collection includes no models
+  * @param {boolean} bShow specify true to show container node, false to hide container node and show message node instead
+  * @param {String} message a message to show for bShow=false 
   ###
-  _toggleContainerNode:()->
-    if @collection.models.length > 0
-      @_noItemsNode.hide()
-      @containerNode.show()
+  toggleContainerNode:(bShow, message)->
+    messageNode = @messageNode
+    containerNode = @containerNode
+    if bShow
+      messageNode.hide()
+      containerNode.show()
     else
-      @_noItemsNode.show()
-      @containerNode.hide()
+      messageNode.html message
+      messageNode.show()
+      containerNode.hide()
     return
 
   ###*
@@ -52,7 +58,7 @@ Backpack.ListView = Backpack.View.extend
   * @return {Backbone.View}
   ###
   createChild:(model)->
-    options = _.clone @itemOptions
+    options = _.clone @itemOptions || {}
     options = _.extend options, model: model
     view = new @itemView _.extend options, model: model
     view.$el.addClass 'item-view'
@@ -65,7 +71,7 @@ Backpack.ListView = Backpack.View.extend
       if child.model == model
         child.$el.hide 'slide', { direction: 'left' }, 'fast', =>
           @removeChild child
-          @_toggleContainerNode()
+          @toggleContainerNode (@collection.models.length > 0), @messages.NO_ITEMS
           return
         break
     return
@@ -76,11 +82,11 @@ Backpack.ListView = Backpack.View.extend
   ###
   setLoading:(bLoading)->
     if bLoading
-      @_loadingNode.show()
-      @_mainNode.hide()
+      @loadingNode.show()
+      @mainNode.hide()
     else
-      @_loadingNode.hide()
-      @_mainNode.show()
+      @loadingNode.hide()
+      @mainNode.show()
     return
 
   remove:->
