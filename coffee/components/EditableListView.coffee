@@ -85,5 +85,5 @@ Backpack.EditableListView = Backpack.ListView.extend
   * @return {Backbone.View}
   ###
   createChild:(model)->
-    view = new EditableItemView model: model, itemView: @itemView, itemOptions: @itemOptions
+    view = new EditableItemView model: model, itemView: @itemView, itemOptions: @itemOptions || {}
     view.render()

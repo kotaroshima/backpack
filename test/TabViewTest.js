@@ -33,14 +33,17 @@
   };
 
   test('initialize by passing children', 4, function() {
-    var tabView, view1, view2;
+    var tabLabels, tabView, testNode, view1, view2;
 
+    tabLabels = ['view1', 'view2'];
     view1 = new Backpack.View({
+      name: tabLabels[0],
       initialize: function(options) {
         this.$el.html('<div>View1</div>');
       }
     });
     view2 = new Backpack.View({
+      name: tabLabels[1],
       initialize: function(options) {
         this.$el.html('<div>View2</div>');
       }
@@ -49,8 +52,42 @@
       children: [view1, view2],
       showIndex: 0
     });
-    $('#testNode').append(tabView.$el);
+    testNode = $('#testNode');
+    testNode.append(tabView.$el);
     assertSelectedView(tabView, 0);
+    testNode.find('.tab-button').each(function(index, tabButton) {
+      equal($(this).text(), tabLabels[index]);
+    });
+  });
+
+  test('title shown in tab button', 4, function() {
+    var tabLabels, tabView, testNode, view1, view2;
+
+    tabLabels = ['View 1', 'View 2'];
+    view1 = new Backpack.View({
+      name: 'view1',
+      title: tabLabels[0],
+      initialize: function(options) {
+        this.$el.html('<div>View1</div>');
+      }
+    });
+    view2 = new Backpack.View({
+      name: 'view2',
+      title: tabLabels[1],
+      initialize: function(options) {
+        this.$el.html('<div>View2</div>');
+      }
+    });
+    tabView = this.tabView = new Backpack.TabView({
+      children: [view1, view2],
+      showIndex: 0
+    });
+    testNode = $('#testNode');
+    testNode.append(tabView.$el);
+    assertSelectedView(tabView, 0);
+    testNode.find('.tab-button').each(function(index, tabButton) {
+      equal($(this).text(), tabLabels[index]);
+    });
   });
 
   test('no showIndex', 4, function() {

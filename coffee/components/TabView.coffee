@@ -61,7 +61,7 @@ Backpack.TabView = Backpack.StackView.extend
     Backpack.StackView::addView.apply @, arguments
     tabView = @
     tabButtonView = new Backpack.TabButtonView
-      title: view.name
+      title: view.title || view.name
       onClicked:(e)->
         ###
         * If tab button view is clicked, show corresponding content view

@@ -100,7 +100,7 @@
       view = new EditableItemView({
         model: model,
         itemView: this.itemView,
-        itemOptions: this.itemOptions
+        itemOptions: this.itemOptions || {}
       });
       return view.render();
     }
