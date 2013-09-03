@@ -9,8 +9,6 @@ Backpack.ContainerPlugin =
     containerNode = @containerNode
     if !containerNode
       @containerNode = @$el
-    else if _.isString containerNode
-      @containerNode = @$ containerNode
 
     @children = [] if !@children
     @renderContainer() if @autoRender != false

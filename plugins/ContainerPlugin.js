@@ -16,8 +16,6 @@
       containerNode = this.containerNode;
       if (!containerNode) {
         this.containerNode = this.$el;
-      } else if (_.isString(containerNode)) {
-        this.containerNode = this.$(containerNode);
       }
       if (!this.children) {
         this.children = [];

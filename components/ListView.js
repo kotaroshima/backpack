@@ -6,23 +6,24 @@
 
 (function() {
   Backpack.ListView = Backpack.View.extend({
-    plugins: [Backpack.ContainerPlugin],
+    plugins: [Backpack.TemplatePlugin, Backpack.ContainerPlugin],
     messages: {
       NO_ITEMS: 'No Items'
     },
     template: '<div class="main-node"><div class="container-node"></div><div class="message-node"></div></div><div class="loading-node">Loading...</div>',
+    templateNodes: {
+      containerNode: '.container-node',
+      messageNode: '.message-node',
+      mainNode: '.main-node',
+      loadingNode: '.loading-node'
+    },
     itemView: Backpack.View,
     initialize: function(options) {
       if (options.itemView) {
         this.itemView = options.itemView;
       }
-      this.$el.html(this.template);
-      this.containerNode = this.$('.container-node');
-      this.messageNode = this.$('.message-node');
-      this.mainNode = this.$('.main-node');
-      this.loadingNode = this.$('.loading-node');
-      this.setLoading(false);
       Backpack.View.prototype.initialize.apply(this, arguments);
+      this.setLoading(false);
       this.collection.on('add reset', this.render, this);
       this.collection.on('remove', this.onRemoveModel, this);
       this.render();

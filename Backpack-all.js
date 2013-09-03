@@ -325,8 +325,6 @@
       containerNode = this.containerNode;
       if (!containerNode) {
         this.containerNode = this.$el;
-      } else if (_.isString(containerNode)) {
-        this.containerNode = this.$(containerNode);
       }
       if (!this.children) {
         this.children = [];
@@ -721,9 +719,31 @@
 
   Backpack.defaultPlugins.push(Backpack.SubscribePlugin);
 
+  /**
+  * A plugin to render HTML template
+  */
+
+
   Backpack.TemplatePlugin = {
     setup: function() {
-      this.$el.html(this.template, this.templateData);
+      var key, template, val, _ref;
+
+      template = this.template;
+      if (_.isFunction(template)) {
+        template = template(this.options);
+      }
+      this.$el.html(template);
+      /* cache jQuery object for HTML nodes to be referenced later
+      */
+
+      if (this.templateNodes) {
+        _ref = this.templateNodes;
+        for (key in _ref) {
+          if (!__hasProp.call(_ref, key)) continue;
+          val = _ref[key];
+          this[key] = this.$(val);
+        }
+      }
     }
   };
 
@@ -931,23 +951,24 @@
 
 
   Backpack.ListView = Backpack.View.extend({
-    plugins: [Backpack.ContainerPlugin],
+    plugins: [Backpack.TemplatePlugin, Backpack.ContainerPlugin],
     messages: {
       NO_ITEMS: 'No Items'
     },
     template: '<div class="main-node"><div class="container-node"></div><div class="message-node"></div></div><div class="loading-node">Loading...</div>',
+    templateNodes: {
+      containerNode: '.container-node',
+      messageNode: '.message-node',
+      mainNode: '.main-node',
+      loadingNode: '.loading-node'
+    },
     itemView: Backpack.View,
     initialize: function(options) {
       if (options.itemView) {
         this.itemView = options.itemView;
       }
-      this.$el.html(this.template);
-      this.containerNode = this.$('.container-node');
-      this.messageNode = this.$('.message-node');
-      this.mainNode = this.$('.main-node');
-      this.loadingNode = this.$('.loading-node');
-      this.setLoading(false);
       Backpack.View.prototype.initialize.apply(this, arguments);
+      this.setLoading(false);
       this.collection.on('add reset', this.render, this);
       this.collection.on('remove', this.onRemoveModel, this);
       this.render();
@@ -1112,7 +1133,7 @@
 
 
   Backpack.EditableListView = Backpack.ListView.extend({
-    plugins: [Backpack.ContainerPlugin, Backpack.SortablePlugin],
+    plugins: [Backpack.TemplatePlugin, Backpack.ContainerPlugin, Backpack.SortablePlugin],
     sortableOptions: {
       handle: ".reorder-handle"
     },
@@ -1164,21 +1185,10 @@
       href: '#',
       "class": 'tab-button'
     },
+    plugins: [Backpack.TemplatePlugin],
     template: _.template('<%- title %>'),
     events: {
       'click': 'onClicked'
-    },
-    initialize: function(options) {
-      Backpack.View.prototype.initialize.apply(this, arguments);
-      this.render();
-    },
-    /*
-    * Renders template HTML
-    */
-
-    render: function() {
-      this.$el.html(this.template(this.options));
-      return this;
     },
     onClicked: function(e) {}
   });
@@ -1191,7 +1201,9 @@
   Backpack.TabView = Backpack.StackView.extend({
     plugins: [Backpack.TemplatePlugin, Backpack.ContainerPlugin],
     template: '<div class="tab-button-container"></div><div class="tab-content-container"></div>',
-    containerNode: '.tab-content-container',
+    templateNodes: {
+      containerNode: '.tab-content-container'
+    },
     autoRender: false,
     render: function() {
       /* setup tab buttons

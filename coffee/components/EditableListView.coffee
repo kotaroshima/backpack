@@ -57,7 +57,7 @@ EditableItemView = Backpack.View.extend
 * Needs jQueryUI JS file and css/EditableListView.css included
 ###
 Backpack.EditableListView = Backpack.ListView.extend
-  plugins: [Backpack.ContainerPlugin, Backpack.SortablePlugin]
+  plugins: [Backpack.TemplatePlugin, Backpack.ContainerPlugin, Backpack.SortablePlugin]
   sortableOptions:
     handle: ".reorder-handle"
 

@@ -16,21 +16,10 @@
       href: '#',
       "class": 'tab-button'
     },
+    plugins: [Backpack.TemplatePlugin],
     template: _.template('<%- title %>'),
     events: {
       'click': 'onClicked'
-    },
-    initialize: function(options) {
-      Backpack.View.prototype.initialize.apply(this, arguments);
-      this.render();
-    },
-    /*
-    * Renders template HTML
-    */
-
-    render: function() {
-      this.$el.html(this.template(this.options));
-      return this;
     },
     onClicked: function(e) {}
   });
@@ -43,7 +32,9 @@
   Backpack.TabView = Backpack.StackView.extend({
     plugins: [Backpack.TemplatePlugin, Backpack.ContainerPlugin],
     template: '<div class="tab-button-container"></div><div class="tab-content-container"></div>',
-    containerNode: '.tab-content-container',
+    templateNodes: {
+      containerNode: '.tab-content-container'
+    },
     autoRender: false,
     render: function() {
       /* setup tab buttons
