@@ -22,7 +22,7 @@ test 'initialize with default editable (false)', 13, ->
     collection: collection
     itemView: ItemView
   $('#testNode').append @listView.$el
-  itemNodes = $('#testNode').find '.item-view'
+  itemNodes = $('#testNode').find '.action-view'
   equal itemNodes.size(), data.length
   itemNodes.each (index, node)->
     itemNode = $ @
@@ -42,7 +42,7 @@ test 'initialize with editable=true', 13, ->
     itemView: ItemView
     editable: true
   $('#testNode').append @listView.$el
-  itemNodes = $('#testNode').find '.item-view'
+  itemNodes = $('#testNode').find '.action-view'
   equal itemNodes.size(), data.length
   itemNodes.each (index, node)->
     itemNode = $ @
@@ -65,7 +65,7 @@ test 'add models after initialize', 13, ->
     collection.add model
     model.save()
     return
-  itemNodes = $('#testNode').find '.item-view'
+  itemNodes = $('#testNode').find '.action-view'
   equal itemNodes.size(), data.length
   itemNodes.each (index, node)->
     itemNode = $ @
@@ -122,7 +122,7 @@ test 'modify model', 13, ->
   data[1] = 'Peach'
   models[1].set('name', data[1])
   #models[1].save()
-  itemNodes = $('#testNode').find '.item-view'
+  itemNodes = $('#testNode').find '.action-view'
   equal itemNodes.size(), data.length
   itemNodes.each (index, node)->
     itemNode = $ @
@@ -142,7 +142,7 @@ test 'setEditable=true', 13, ->
     itemView: ItemView
   $('#testNode').append listView.$el
   listView.setEditable true
-  itemNodes = $('#testNode').find '.item-view'
+  itemNodes = $('#testNode').find '.action-view'
   equal itemNodes.size(), data.length
   itemNodes.each (index, node)->
     itemNode = $ @
@@ -163,7 +163,7 @@ test 'setEditable=false', 13, ->
     editable: true
   $('#testNode').append listView.$el
   listView.setEditable false
-  itemNodes = $('#testNode').find '.item-view'
+  itemNodes = $('#testNode').find '.action-view'
   equal itemNodes.size(), data.length
   itemNodes.each (index, node)->
     itemNode = $ @
@@ -183,7 +183,7 @@ test 'click remove confirm icon', 4, ->
     itemView: ItemView
   $('#testNode').append listView.$el
   listView.setEditable true
-  itemNodes = $('#testNode').find '.item-view'
+  itemNodes = $('#testNode').find '.action-view'
   targetNode = itemNodes.slice 1, 2
   deleteIcon = targetNode.find '.delete-icon'
   reorderHandle = targetNode.find '.reorder-handle'
@@ -208,7 +208,7 @@ asyncTest 'click remove confirm icon and actually delete', 10, ->
     itemView: ItemView
   $('#testNode').append listView.$el
   listView.setEditable true
-  itemNodes = $('#testNode').find '.item-view'
+  itemNodes = $('#testNode').find '.action-view'
   targetNode = itemNodes.slice 1, 2
   deleteIcon = targetNode.find '.delete-icon'
   deleteIcon.click()
@@ -217,7 +217,7 @@ asyncTest 'click remove confirm icon and actually delete', 10, ->
     return
   deleteButton = targetNode.find '.delete-button'
   handle = listView.attach 'onChildRemoved', (view)->
-    itemNodes = $('#testNode').find '.item-view'
+    itemNodes = $('#testNode').find '.action-view'
     data_after = ['Orange', 'Grape']
     equal itemNodes.size(), data_after.length
     itemNodes.each (index, node)->

@@ -229,13 +229,17 @@
       for (key in events) {
         if (!__hasProp.call(events, key)) continue;
         methodName = events[key];
-        if (!this[methodName] || !_.isFunction(this[methodName])) {
+        if ((!this[methodName] || !_.isFunction(this[methodName])) && !_.isFunction(methodName)) {
           continue;
         }
         match = key.match(/^(\S+)\s*(.*)$/);
         eventName = match[1];
         selector = match[2];
-        method = bindMethod(methodName);
+        if (_.isFunction(methodName)) {
+          method = methodName;
+        } else {
+          method = bindMethod(methodName);
+        }
         eventName += '.delegateEvents' + this.cid;
         if (selector === '') {
           this.$el.on(eventName, method);
@@ -720,7 +724,7 @@
   Backpack.defaultPlugins.push(Backpack.SubscribePlugin);
 
   /**
-  * A plugin to render HTML template
+  * A plugin to render HTML templates
   */
 
 
@@ -746,6 +750,102 @@
       }
     }
   };
+
+  /**
+  * A view that has action buttons in the left/right
+  */
+
+
+  Backpack.ActionView = Backpack.View.extend({
+    plugins: [Backpack.TemplatePlugin],
+    template: _.template('<%= leftActionHtml %><span class="main-cell"><%= text %></span><%= rightActionHtml %>'),
+    templateNodes: {
+      mainCell: '.main-cell'
+    },
+    initialize: function(options) {
+      var actions, leftActionHtml, leftActions, rightActionHtml, rightActions;
+
+      this.$el.addClass('action-view');
+      if (!this.events) {
+        this.events = {};
+      }
+      actions = options.actions || this.actions;
+      if (actions) {
+        leftActions = actions.left;
+        if (leftActions) {
+          leftActionHtml = this._processActions(leftActions, true);
+        }
+        rightActions = _.isArray(actions) ? actions : actions.right;
+        if (rightActions) {
+          rightActionHtml = this._processActions(rightActions, false);
+        }
+      }
+      _.defaults(this.options, {
+        leftActionHtml: leftActionHtml || '',
+        rightActionHtml: rightActionHtml || '',
+        text: ''
+      });
+      Backpack.View.prototype.initialize.apply(this, arguments);
+      this.delegateEvents(this.events);
+      if (options.itemView) {
+        this.itemView = options.itemView;
+      }
+      if (!this.itemView) {
+        this.itemView = new Backpack.View({
+          plugins: [Backpack.TemplatePlugin]
+        });
+      }
+      if (options.itemOptions) {
+        this.itemOptions = options.itemOptions;
+      }
+    },
+    _buttonTemplate: _.template('<<%- tagName %> class="<%- iconClass %>" title="<%- title %>"><%- text %></<%- tagName %>>'),
+    _processActions: function(actions, isLeft) {
+      var html,
+        _this = this;
+
+      html = '<span class="' + (isLeft ? 'left-cell' : 'right-cell') + '">';
+      _.each(actions, function(action) {
+        var iconClass, onClicked;
+
+        iconClass = action.iconClass;
+        onClicked = action.onClicked;
+        if (onClicked) {
+          if (_.isString(onClicked)) {
+            onClicked = _this[onClicked];
+          }
+          if (onClicked && _.isFunction(onClicked)) {
+            _this.events['click .' + iconClass] = _.bind(onClicked, _this);
+          }
+        }
+        action = _.defaults(action, {
+          tagName: onClicked ? 'button' : 'span',
+          iconClass: '',
+          title: '',
+          text: ''
+        });
+        html += _this._buttonTemplate(action);
+      });
+      return html += '</span>';
+    },
+    render: function() {
+      var options, view;
+
+      options = _.clone(this.itemOptions);
+      view = new this.itemView(_.extend(options, {
+        model: this.model
+      }));
+      view.render();
+      this.mainCell.append(view.$el);
+      return this;
+    },
+    destroy: function() {
+      if (this.itemView && this.itemView.destroy) {
+        this.itemView.destroy();
+      }
+      Backpack.View.prototype.destroy(this, arguments);
+    }
+  });
 
   /**
   * A view that stacks its children
@@ -1069,37 +1169,27 @@
 
   CLS_REMOVE_CONFIRM = 'remove-confirm';
 
-  EditableItemView = Backpack.View.extend({
-    template: '<div class="item-view"><span class="delete-cell"><button class="delete-icon"></button></span><span class="editable-container"></span><span class="item-actions"><span class="reorder-handle"></span><button class="delete-button">Delete</button></span></div>',
-    events: {
-      'click .delete-icon': 'onRemoveConfirmButtonClicked',
-      'click .delete-button': 'onRemoveButtonClicked'
+  EditableItemView = Backpack.ActionView.extend({
+    actions: {
+      left: [
+        {
+          iconClass: 'delete-icon',
+          title: 'Confirm delete',
+          onClicked: 'onRemoveConfirmButtonClicked'
+        }
+      ],
+      right: [
+        {
+          iconClass: 'reorder-handle',
+          title: 'Reorder'
+        }, {
+          iconClass: 'delete-button',
+          title: 'Delete',
+          text: 'Delete',
+          onClicked: 'onRemoveButtonClicked'
+        }
+      ]
     },
-    initialize: function(options) {
-      this.itemView = options.itemView;
-      this.itemOptions = options.itemOptions;
-      this.render();
-    },
-    render: function() {
-      var options, view;
-
-      this.$el.html(this.template);
-      options = _.clone(this.itemOptions);
-      options = _.extend(options, {
-        model: this.model
-      });
-      view = new this.itemView(options);
-      view.render();
-      this.$('.editable-container').append(view.$el);
-      return this;
-    },
-    /*
-    remove:->
-      @itemView.remove()
-      Backpack.View::remove @, arguments
-      return
-    */
-
     /**
     * Click event handler for remove confirm icon
     * switches to remove confirm mode
@@ -1138,6 +1228,7 @@
       handle: ".reorder-handle"
     },
     initialize: function(options) {
+      this.$el.addClass('editable-list-view');
       Backpack.ListView.prototype.initialize.apply(this, arguments);
       this.setEditable((options.editable === true) || false);
     },
@@ -1149,7 +1240,7 @@
 
     setEditable: function(isEdit) {
       this.setSortable(isEdit);
-      this.$el.toggleClass(CLS_LISTVIEW_EDIT, isEdit);
+      this.containerNode.toggleClass(CLS_LISTVIEW_EDIT, isEdit);
     },
     /**
     * Override ListView to use EditableItemView as direct child
