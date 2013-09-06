@@ -157,11 +157,14 @@ Backpack.View = Backbone.View.extend
 
     for own key of events
       methodName = events[key]
-      continue if !@[methodName] || !_.isFunction @[methodName]
+      continue if (!@[methodName] || !_.isFunction(@[methodName])) && !_.isFunction(methodName)
       match = key.match /^(\S+)\s*(.*)$/
       eventName = match[1]
       selector = match[2]
-      method = bindMethod methodName
+      if _.isFunction methodName
+        method = methodName
+      else
+        method = bindMethod methodName
       eventName += '.delegateEvents' + @cid
       if selector == ''
         @$el.on eventName, method

@@ -1,34 +1,25 @@
 CLS_LISTVIEW_EDIT = 'listview-edit'
 CLS_REMOVE_CONFIRM = 'remove-confirm'
 
-EditableItemView = Backpack.View.extend
-  template: '<div class="item-view"><span class="delete-cell"><button class="delete-icon"></button></span><span class="editable-container"></span><span class="item-actions"><span class="reorder-handle"></span><button class="delete-button">Delete</button></span></div>'
-
-  events:
-    'click .delete-icon': 'onRemoveConfirmButtonClicked'
-    'click .delete-button': 'onRemoveButtonClicked'
-
-  initialize:(options)->
-    @itemView = options.itemView
-    @itemOptions = options.itemOptions
-    @render()
-    return
-
-  render:->
-    @$el.html @template
-    options = _.clone @itemOptions
-    options = _.extend options, model: @model
-    view = new @itemView options
-    view.render()
-    @$('.editable-container').append view.$el
-    @
-
-  ###
-  remove:->
-    @itemView.remove()
-    Backpack.View::remove @, arguments
-    return
-  ###
+EditableItemView = Backpack.ActionView.extend
+  actions:
+    left:
+      [{
+        iconClass: 'delete-icon'
+        title: 'Confirm delete' # TODO : i18n
+        onClicked: 'onRemoveConfirmButtonClicked'
+      }]
+    right:
+      [{
+        iconClass: 'reorder-handle'
+        title: 'Reorder' # TODO : i18n
+      },
+      {
+        iconClass: 'delete-button'
+        title: 'Delete' # TODO : i18n
+        text: 'Delete' # TODO : i18n
+        onClicked: 'onRemoveButtonClicked'
+      }]
 
   ###*
   * Click event handler for remove confirm icon
@@ -62,6 +53,7 @@ Backpack.EditableListView = Backpack.ListView.extend
     handle: ".reorder-handle"
 
   initialize:(options)->
+    @$el.addClass 'editable-list-view'
     Backpack.ListView::initialize.apply @, arguments
 
     # pass editable=true option if you want initial state to be editable
@@ -76,7 +68,7 @@ Backpack.EditableListView = Backpack.ListView.extend
   ###
   setEditable:(isEdit)->
     @setSortable isEdit
-    @$el.toggleClass CLS_LISTVIEW_EDIT, isEdit
+    @containerNode.toggleClass CLS_LISTVIEW_EDIT, isEdit
     return
 
   ###*
@@ -85,5 +77,8 @@ Backpack.EditableListView = Backpack.ListView.extend
   * @return {Backbone.View}
   ###
   createChild:(model)->
-    view = new EditableItemView model: model, itemView: @itemView, itemOptions: @itemOptions || {}
+    view = new EditableItemView
+      model: model
+      itemView: @itemView
+      itemOptions: @itemOptions || {}
     view.render()

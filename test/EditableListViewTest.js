@@ -38,7 +38,7 @@
       itemView: ItemView
     });
     $('#testNode').append(this.listView.$el);
-    itemNodes = $('#testNode').find('.item-view');
+    itemNodes = $('#testNode').find('.action-view');
     equal(itemNodes.size(), data.length);
     itemNodes.each(function(index, node) {
       var itemNode;
@@ -67,7 +67,7 @@
       editable: true
     });
     $('#testNode').append(this.listView.$el);
-    itemNodes = $('#testNode').find('.item-view');
+    itemNodes = $('#testNode').find('.action-view');
     equal(itemNodes.size(), data.length);
     itemNodes.each(function(index, node) {
       var itemNode;
@@ -99,7 +99,7 @@
       collection.add(model);
       model.save();
     });
-    itemNodes = $('#testNode').find('.item-view');
+    itemNodes = $('#testNode').find('.action-view');
     equal(itemNodes.size(), data.length);
     itemNodes.each(function(index, node) {
       var itemNode;
@@ -177,7 +177,7 @@
     });
     data[1] = 'Peach';
     models[1].set('name', data[1]);
-    itemNodes = $('#testNode').find('.item-view');
+    itemNodes = $('#testNode').find('.action-view');
     equal(itemNodes.size(), data.length);
     itemNodes.each(function(index, node) {
       var itemNode;
@@ -206,7 +206,7 @@
     });
     $('#testNode').append(listView.$el);
     listView.setEditable(true);
-    itemNodes = $('#testNode').find('.item-view');
+    itemNodes = $('#testNode').find('.action-view');
     equal(itemNodes.size(), data.length);
     itemNodes.each(function(index, node) {
       var itemNode;
@@ -236,7 +236,7 @@
     });
     $('#testNode').append(listView.$el);
     listView.setEditable(false);
-    itemNodes = $('#testNode').find('.item-view');
+    itemNodes = $('#testNode').find('.action-view');
     equal(itemNodes.size(), data.length);
     itemNodes.each(function(index, node) {
       var itemNode;
@@ -265,7 +265,7 @@
     });
     $('#testNode').append(listView.$el);
     listView.setEditable(true);
-    itemNodes = $('#testNode').find('.item-view');
+    itemNodes = $('#testNode').find('.action-view');
     targetNode = itemNodes.slice(1, 2);
     deleteIcon = targetNode.find('.delete-icon');
     reorderHandle = targetNode.find('.reorder-handle');
@@ -297,7 +297,7 @@
     });
     $('#testNode').append(listView.$el);
     listView.setEditable(true);
-    itemNodes = $('#testNode').find('.item-view');
+    itemNodes = $('#testNode').find('.action-view');
     targetNode = itemNodes.slice(1, 2);
     deleteIcon = targetNode.find('.delete-icon');
     deleteIcon.click();
@@ -308,7 +308,7 @@
     handle = listView.attach('onChildRemoved', function(view) {
       var data_after;
 
-      itemNodes = $('#testNode').find('.item-view');
+      itemNodes = $('#testNode').find('.action-view');
       data_after = ['Orange', 'Grape'];
       equal(itemNodes.size(), data_after.length);
       itemNodes.each(function(index, node) {

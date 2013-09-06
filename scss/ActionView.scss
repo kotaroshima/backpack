@@ -1,0 +1,37 @@
+$padding-x: 5px;
+$padding-y: 3px;
+
+@mixin border-box-sizing {
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+}
+
+.action-view {
+  @include border-box-sizing;
+  display: table;
+  width: 100%;
+
+  > * {
+    display: table-cell;
+    vertical-align: middle;
+    padding-top: $padding-y;
+    padding-bottom: $padding-y;
+  }
+
+  .left-cell {
+    text-align: left;
+    width: 32px;
+    padding-left: $padding-x;
+    padding-right: $padding-x;
+    white-space: nowrap;
+  }
+
+  .right-cell {
+    text-align: right;
+    width: 32px;
+    padding-left: $padding-x;
+    padding-right: $padding-x;
+    white-space: nowrap;
+  }
+}

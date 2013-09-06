@@ -229,13 +229,17 @@
       for (key in events) {
         if (!__hasProp.call(events, key)) continue;
         methodName = events[key];
-        if (!this[methodName] || !_.isFunction(this[methodName])) {
+        if ((!this[methodName] || !_.isFunction(this[methodName])) && !_.isFunction(methodName)) {
           continue;
         }
         match = key.match(/^(\S+)\s*(.*)$/);
         eventName = match[1];
         selector = match[2];
-        method = bindMethod(methodName);
+        if (_.isFunction(methodName)) {
+          method = methodName;
+        } else {
+          method = bindMethod(methodName);
+        }
         eventName += '.delegateEvents' + this.cid;
         if (selector === '') {
           this.$el.on(eventName, method);
