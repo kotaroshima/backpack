@@ -26,10 +26,7 @@ Backpack.ActionView = Backpack.View.extend
     @delegateEvents @events
 
     @itemView = options.itemView if options.itemView
-    if !@itemView
-      @itemView = new Backpack.View plugins: [Backpack.TemplatePlugin]
     @itemOptions = options.itemOptions if options.itemOptions
-
     return
 
   _buttonTemplate: _.template '<<%- tagName %> class="<%- iconClass %>" title="<%- title %>"><%- text %></<%- tagName %>>'
@@ -54,14 +51,17 @@ Backpack.ActionView = Backpack.View.extend
       return
     html += '</span>'
 
-  render:->
-    options = _.clone @itemOptions
-    view = new @itemView _.extend options, model: @model
-    view.render()
-    @mainCell.append view.$el
+  render:(options)->
+    if @itemView
+      if !@child
+        view = @child = new @itemView @itemOptions
+        @mainCell.append view.$el
+      view.render()
+    else
+      @mainCell.text if options then options.text else ''
     @
 
   destroy:->
-    @itemView.destroy() if @itemView && @itemView.destroy
+    @child.destroy() if @itemView && @itemView.destroy
     Backpack.View::destroy @, arguments
     return

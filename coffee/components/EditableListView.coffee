@@ -36,7 +36,7 @@ EditableItemView = Backpack.ActionView.extend
   * removes this item from play list
   ###
   onRemoveButtonClicked:(e)->
-    @model.destroy()
+    @child.model.destroy()
     e.stopPropagation()
     return
 
@@ -77,8 +77,8 @@ Backpack.EditableListView = Backpack.ListView.extend
   * @return {Backbone.View}
   ###
   createChild:(model)->
+    itemOptions = @itemOptions || {}
     view = new EditableItemView
-      model: model
       itemView: @itemView
-      itemOptions: @itemOptions || {}
+      itemOptions: _.extend itemOptions, model: model
     view.render()

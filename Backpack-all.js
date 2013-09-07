@@ -753,20 +753,16 @@
   Backpack.defaultPlugins.push(Backpack.SubscribePlugin);
 
   /**
-  * A plugin to render HTML templates
+  * A plugin to render HTML templates for views
   */
 
 
   Backpack.TemplatePlugin = {
     setup: function() {
-      var key, template, val, _ref;
+      var key, val, _ref;
 
-      template = this.template;
-      if (_.isFunction(template)) {
-        template = template(this.options);
-      }
-      this.$el.html(template);
-      /* cache jQuery object for HTML nodes to be referenced later
+      this.renderTemplate();
+      /* cache jQuery objects of HTML nodes to be referenced later
       */
 
       if (this.templateNodes) {
@@ -777,6 +773,21 @@
           this[key] = this.$(val);
         }
       }
+    },
+    /**
+    * Renders template HTML
+    * If model is specified, interpolates model attributes.
+    * Otherwise, interpolates view options
+    */
+
+    renderTemplate: function() {
+      var template;
+
+      template = this.template;
+      if (_.isFunction(template)) {
+        template = template(this.model ? this.model.attributes : this.options);
+      }
+      this.$el.html(template);
     }
   };
 
@@ -819,11 +830,6 @@
       if (options.itemView) {
         this.itemView = options.itemView;
       }
-      if (!this.itemView) {
-        this.itemView = new Backpack.View({
-          plugins: [Backpack.TemplatePlugin]
-        });
-      }
       if (options.itemOptions) {
         this.itemOptions = options.itemOptions;
       }
@@ -857,20 +863,23 @@
       });
       return html += '</span>';
     },
-    render: function() {
-      var options, view;
+    render: function(options) {
+      var view;
 
-      options = _.clone(this.itemOptions);
-      view = new this.itemView(_.extend(options, {
-        model: this.model
-      }));
-      view.render();
-      this.mainCell.append(view.$el);
+      if (this.itemView) {
+        if (!this.child) {
+          view = this.child = new this.itemView(this.itemOptions);
+          this.mainCell.append(view.$el);
+        }
+        view.render();
+      } else {
+        this.mainCell.text(options ? options.text : '');
+      }
       return this;
     },
     destroy: function() {
       if (this.itemView && this.itemView.destroy) {
-        this.itemView.destroy();
+        this.child.destroy();
       }
       Backpack.View.prototype.destroy(this, arguments);
     }
@@ -1278,7 +1287,7 @@
     */
 
     onRemoveButtonClicked: function(e) {
-      this.model.destroy();
+      this.child.model.destroy();
       e.stopPropagation();
     }
   });
@@ -1319,12 +1328,14 @@
     */
 
     createChild: function(model) {
-      var view;
+      var itemOptions, view;
 
+      itemOptions = this.itemOptions || {};
       view = new EditableItemView({
-        model: model,
         itemView: this.itemView,
-        itemOptions: this.itemOptions || {}
+        itemOptions: _.extend(itemOptions, {
+          model: model
+        })
       });
       return view.render();
     }

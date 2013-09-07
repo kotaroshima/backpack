@@ -45,7 +45,7 @@
     */
 
     onRemoveButtonClicked: function(e) {
-      this.model.destroy();
+      this.child.model.destroy();
       e.stopPropagation();
     }
   });
@@ -86,12 +86,14 @@
     */
 
     createChild: function(model) {
-      var view;
+      var itemOptions, view;
 
+      itemOptions = this.itemOptions || {};
       view = new EditableItemView({
-        model: model,
         itemView: this.itemView,
-        itemOptions: this.itemOptions || {}
+        itemOptions: _.extend(itemOptions, {
+          model: model
+        })
       });
       return view.render();
     }

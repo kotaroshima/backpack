@@ -39,11 +39,6 @@
       if (options.itemView) {
         this.itemView = options.itemView;
       }
-      if (!this.itemView) {
-        this.itemView = new Backpack.View({
-          plugins: [Backpack.TemplatePlugin]
-        });
-      }
       if (options.itemOptions) {
         this.itemOptions = options.itemOptions;
       }
@@ -77,20 +72,23 @@
       });
       return html += '</span>';
     },
-    render: function() {
-      var options, view;
+    render: function(options) {
+      var view;
 
-      options = _.clone(this.itemOptions);
-      view = new this.itemView(_.extend(options, {
-        model: this.model
-      }));
-      view.render();
-      this.mainCell.append(view.$el);
+      if (this.itemView) {
+        if (!this.child) {
+          view = this.child = new this.itemView(this.itemOptions);
+          this.mainCell.append(view.$el);
+        }
+        view.render();
+      } else {
+        this.mainCell.text(options ? options.text : '');
+      }
       return this;
     },
     destroy: function() {
       if (this.itemView && this.itemView.destroy) {
-        this.itemView.destroy();
+        this.child.destroy();
       }
       Backpack.View.prototype.destroy(this, arguments);
     }
