@@ -19,13 +19,21 @@
     },
     itemView: Backpack.View,
     initialize: function(options) {
+      var collection,
+        _this = this;
+
+      this.$el.addClass('list-view');
       if (options.itemView) {
         this.itemView = options.itemView;
       }
       Backpack.View.prototype.initialize.apply(this, arguments);
       this.setLoading(false);
-      this.collection.on('add reset', this.render, this);
-      this.collection.on('remove', this.onRemoveModel, this);
+      collection = this.collection;
+      collection.on('reset', this.render, this);
+      collection._onAddModel = function() {
+        _this.renderModel(arguments[0], arguments[2]);
+      };
+      collection.on('add', collection._onAddModel);
       this.render();
     },
     render: function() {
@@ -34,10 +42,9 @@
       this.toggleContainerNode(this.collection.models.length > 0, this.messages.NO_ITEMS);
       this.clearChildren();
       _.each(this.collection.models, function(model) {
-        var child;
-
-        child = _this.createChild(model);
-        _this.addChild(child);
+        _this.renderModel(model, {
+          silent: true
+        });
       });
       return this;
     },
@@ -63,41 +70,71 @@
       }
     },
     /**
+    * Render model
+    * @param {Backbone.Model} model
+    * @param {Object} options optional parameters
+    * @param {integer} options.at index to insert at. If not specified, will be appended at th end.
+    * @return {Backbone.View}
+    */
+
+    renderModel: function(model, options) {
+      var child,
+        _this = this;
+
+      child = this.createChild(model);
+      model._onModelDestroy = function() {
+        _this.removeChild(child);
+        model.off('destroy');
+      };
+      model.on('destroy', model._onModelDestroy);
+      this.addChild(child, options);
+      if (!(options != null ? options.silent : void 0)) {
+        this.toggleContainerNode(this.collection.models.length > 0, this.messages.NO_ITEMS);
+      }
+      return child;
+    },
+    /**
     * Creates view to add to this list view as a child
     * @param {Backbone.Model} model
     * @return {Backbone.View}
     */
 
     createChild: function(model) {
-      var options, view;
+      var child, options;
 
-      options = _.clone(this.itemOptions || {});
-      options = _.extend(options, {
-        model: model
-      });
-      view = new this.itemView(_.extend(options, {
+      options = this.itemOptions || {};
+      child = new this.itemView(_.extend(options, {
         model: model
       }));
-      view.$el.addClass('item-view');
-      return view.render();
+      return child.render();
     },
-    onRemoveModel: function(model) {
-      var child, children, i, _i, _ref,
-        _this = this;
+    /**
+    * Override Backpack.ContainerPlugin to add animation
+    */
 
-      children = this.children;
-      for (i = _i = _ref = children.length - 1; _i >= 0; i = _i += -1) {
-        child = children[i];
-        if (child.model === model) {
-          child.$el.hide('slide', {
-            direction: 'left'
-          }, 'fast', function() {
-            _this.removeChild(child);
-            _this.toggleContainerNode(_this.collection.models.length > 0, _this.messages.NO_ITEMS);
-          });
-          break;
-        }
+    removeChild: function(child, options) {
+      var _this = this;
+
+      child = this.getChild(child);
+      if ((options != null ? options.silent : void 0) === true) {
+        Backpack.ContainerPlugin.removeChild.call(this, child);
+      } else {
+        child.$el.hide('slide', {
+          direction: 'left'
+        }, 'fast', function() {
+          Backpack.ContainerPlugin.removeChild.call(_this, child);
+          _this.toggleContainerNode(_this.collection.models.length > 0, _this.messages.NO_ITEMS);
+        });
       }
+      return child;
+    },
+    clearChildren: function() {
+      _.each(this.collection.models, function(model) {
+        if (model._onModelDestroy) {
+          model.off('destroy', model._onModelDestroy);
+        }
+      });
+      Backpack.ContainerPlugin.clearChildren.apply(this, arguments);
     },
     /**
     * Toggle show/hide loading node
@@ -113,10 +150,14 @@
         this.mainNode.show();
       }
     },
-    remove: function() {
-      this.collection.off('add reset', this.render);
-      this.collection.off('remove', this.onRemoveModel);
-      Backpack.View.prototype.remove.call(this);
+    destroy: function() {
+      var collection;
+
+      this.clearChildren();
+      collection = this.collection;
+      collection.off('reset', this.render);
+      collection.off('add', collection._onAddModel);
+      Backpack.View.prototype.destroy.apply(this, arguments);
     }
   });
 

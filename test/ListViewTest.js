@@ -79,6 +79,111 @@
     });
   });
 
+  test('insert model to a specific index', 9, function() {
+    var collection, data, index, itemNodes, model, models, name;
+
+    data = ['Orange', 'Apple', 'Grape'];
+    models = _.map(data, function(item) {
+      return {
+        name: item
+      };
+    });
+    collection = new Backbone.Collection(models);
+    this.listView = new Backpack.ListView({
+      collection: collection,
+      itemView: ItemView
+    });
+    $('#testNode').append(this.listView.$el);
+    name = 'Peach';
+    model = new Backpack.Model({
+      name: name
+    });
+    index = 1;
+    collection.add(model, {
+      at: index
+    });
+    data.splice(index, 0, name);
+    itemNodes = $('#testNode').find('.item-content');
+    equal(itemNodes.size(), data.length);
+    itemNodes.each(function(index, node) {
+      var itemNode;
+
+      itemNode = $(this);
+      ok(itemNode.is(':visible'));
+      equal(itemNode.text(), data[index]);
+    });
+  });
+
+  test('insert model at top', 9, function() {
+    var collection, data, index, itemNodes, model, models, name;
+
+    data = ['Orange', 'Apple', 'Grape'];
+    models = _.map(data, function(item) {
+      return {
+        name: item
+      };
+    });
+    collection = new Backbone.Collection(models);
+    this.listView = new Backpack.ListView({
+      collection: collection,
+      itemView: ItemView
+    });
+    $('#testNode').append(this.listView.$el);
+    name = 'Peach';
+    model = new Backpack.Model({
+      name: name
+    });
+    index = 0;
+    collection.add(model, {
+      at: index
+    });
+    data.splice(index, 0, name);
+    itemNodes = $('#testNode').find('.item-content');
+    equal(itemNodes.size(), data.length);
+    itemNodes.each(function(index, node) {
+      var itemNode;
+
+      itemNode = $(this);
+      ok(itemNode.is(':visible'));
+      equal(itemNode.text(), data[index]);
+    });
+  });
+
+  test('insert model at last', 9, function() {
+    var collection, data, index, itemNodes, model, models, name;
+
+    data = ['Orange', 'Apple', 'Grape'];
+    models = _.map(data, function(item) {
+      return {
+        name: item
+      };
+    });
+    collection = new Backbone.Collection(models);
+    this.listView = new Backpack.ListView({
+      collection: collection,
+      itemView: ItemView
+    });
+    $('#testNode').append(this.listView.$el);
+    name = 'Peach';
+    model = new Backpack.Model({
+      name: name
+    });
+    index = 3;
+    collection.add(model, {
+      at: index
+    });
+    data.splice(index, 0, name);
+    itemNodes = $('#testNode').find('.item-content');
+    equal(itemNodes.size(), data.length);
+    itemNodes.each(function(index, node) {
+      var itemNode;
+
+      itemNode = $(this);
+      ok(itemNode.is(':visible'));
+      equal(itemNode.text(), data[index]);
+    });
+  });
+
   asyncTest('remove model', 5, function() {
     var collection, data, handle, listView, models;
 

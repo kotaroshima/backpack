@@ -18,11 +18,16 @@ Backpack.ListView = Backpack.View.extend
   itemView: Backpack.View
 
   initialize:(options)->
+    @$el.addClass 'list-view'
     @itemView = options.itemView if options.itemView
     Backpack.View::initialize.apply @, arguments
     @setLoading false
-    @collection.on 'add reset', @render, @
-    @collection.on 'remove', @onRemoveModel, @
+    collection = @collection
+    collection.on 'reset', @render, @
+    collection._onAddModel = =>
+      @renderModel arguments[0], arguments[2]
+      return
+    collection.on 'add', collection._onAddModel
     @render()
     return
 
@@ -30,8 +35,7 @@ Backpack.ListView = Backpack.View.extend
     @toggleContainerNode (@collection.models.length > 0), @messages.NO_ITEMS
     @clearChildren()
     _.each @collection.models, (model)=>
-      child = @createChild model
-      @addChild child
+      @renderModel model, silent: true
       return
     @
 
@@ -54,27 +58,52 @@ Backpack.ListView = Backpack.View.extend
     return
 
   ###*
+  * Render model
+  * @param {Backbone.Model} model
+  * @param {Object} options optional parameters
+  * @param {integer} options.at index to insert at. If not specified, will be appended at th end.
+  * @return {Backbone.View}
+  ###
+  renderModel:(model, options)->
+    child = @createChild model
+    model._onModelDestroy = =>
+      @removeChild child
+      model.off 'destroy'
+      return
+    model.on 'destroy', model._onModelDestroy
+    @addChild child, options
+    @toggleContainerNode (@collection.models.length > 0), @messages.NO_ITEMS if !(options?.silent)
+    child
+
+  ###*
   * Creates view to add to this list view as a child
   * @param {Backbone.Model} model
   * @return {Backbone.View}
   ###
   createChild:(model)->
-    options = _.clone @itemOptions || {}
-    options = _.extend options, model: model
-    view = new @itemView _.extend options, model: model
-    view.$el.addClass 'item-view'
-    view.render()
+    options = @itemOptions || {}
+    child = new @itemView _.extend options, model: model
+    child.render()
 
-  onRemoveModel:(model)->
-    children = @children
-    for i in [children.length-1..0] by -1
-      child = children[i]
-      if child.model == model
-        child.$el.hide 'slide', { direction: 'left' }, 'fast', =>
-          @removeChild child
-          @toggleContainerNode (@collection.models.length > 0), @messages.NO_ITEMS
-          return
-        break
+  ###*
+  * Override Backpack.ContainerPlugin to add animation
+  ###
+  removeChild:(child, options)->
+    child = @getChild child
+    if options?.silent == true
+      Backpack.ContainerPlugin.removeChild.call @, child
+    else
+      child.$el.hide 'slide', { direction: 'left' }, 'fast', =>
+        Backpack.ContainerPlugin.removeChild.call @, child
+        @toggleContainerNode (@collection.models.length > 0), @messages.NO_ITEMS
+        return
+    child
+
+  clearChildren:->
+    _.each @collection.models, (model)->
+      model.off 'destroy', model._onModelDestroy if model._onModelDestroy
+      return
+    Backpack.ContainerPlugin.clearChildren.apply @, arguments
     return
 
   ###*
@@ -90,8 +119,10 @@ Backpack.ListView = Backpack.View.extend
       @mainNode.show()
     return
 
-  remove:->
-    @collection.off 'add reset', @render
-    @collection.off 'remove', @onRemoveModel
-    Backpack.View::remove.call @
+  destroy:->
+    @clearChildren()
+    collection = @collection
+    collection.off 'reset', @render
+    collection.off 'add', collection._onAddModel
+    Backpack.View::destroy.apply @, arguments
     return

@@ -368,28 +368,50 @@
     * Add view to container node
     * @param {Backbone.View} view A view to add
     * @param {Object} options optional parameters
+    * @param {integer} options.at index to insert at. If not specified, will be appended at the end.
+    * @return {Backbone.View} view that has been added
     */
 
     addView: function(view, options) {
-      this.containerNode.append(view.$el);
+      var childNodes, index;
+
+      index = options != null ? options.at : void 0;
+      childNodes = this.containerNode.find('>*');
+      if (0 <= index && index < childNodes.length) {
+        view.$el.insertBefore(childNodes.eq(index));
+      } else {
+        this.containerNode.append(view.$el);
+      }
+      return view;
     },
     /**
     * Add view as child
     * @param {Backbone.View} view A view to add
     * @param {Object} options optional parameters
+    * @param {integer} options.at index to insert at. If not specified, will be appended at th end.
+    * @return {Backbone.View} view that has been added
     */
 
     addChild: function(view, options) {
-      this.children.push(view);
-      this.addView(view, options);
+      var index;
+
+      index = options != null ? options.at : void 0;
+      if (0 <= index && index < this.children.length) {
+        this.children.splice(index, 0, view);
+      } else {
+        this.children.push(view);
+      }
+      return this.addView(view, options);
     },
     /**
     * Remove child view at specified index
     * @param {Backbone.View|Integer} view A view to remove or child index
+    * @param {Object} options optional parameters
+    * @param {boolean} options.silent If true, it will not animate
     * @return {Backbone.View} a removed view
     */
 
-    removeChild: function(view) {
+    removeChild: function(view, options) {
       var child, index;
 
       if (_.isNumber(view)) {
@@ -405,6 +427,11 @@
       }
       return child;
     },
+    /**
+    * A hook to notify that child view has been removed
+    * @param {Backbone.View|Integer} view A view which is removed
+    */
+
     onChildRemoved: function(view) {},
     /**
     * Clear all children
@@ -414,7 +441,9 @@
       var i, _i, _ref;
 
       for (i = _i = _ref = this.children.length - 1; _i >= 0; i = _i += -1) {
-        this.removeChild(i);
+        this.removeChild(i, {
+          silent: true
+        });
       }
     },
     filterChildren: function(options) {
@@ -1064,13 +1093,21 @@
     },
     itemView: Backpack.View,
     initialize: function(options) {
+      var collection,
+        _this = this;
+
+      this.$el.addClass('list-view');
       if (options.itemView) {
         this.itemView = options.itemView;
       }
       Backpack.View.prototype.initialize.apply(this, arguments);
       this.setLoading(false);
-      this.collection.on('add reset', this.render, this);
-      this.collection.on('remove', this.onRemoveModel, this);
+      collection = this.collection;
+      collection.on('reset', this.render, this);
+      collection._onAddModel = function() {
+        _this.renderModel(arguments[0], arguments[2]);
+      };
+      collection.on('add', collection._onAddModel);
       this.render();
     },
     render: function() {
@@ -1079,10 +1116,9 @@
       this.toggleContainerNode(this.collection.models.length > 0, this.messages.NO_ITEMS);
       this.clearChildren();
       _.each(this.collection.models, function(model) {
-        var child;
-
-        child = _this.createChild(model);
-        _this.addChild(child);
+        _this.renderModel(model, {
+          silent: true
+        });
       });
       return this;
     },
@@ -1108,41 +1144,71 @@
       }
     },
     /**
+    * Render model
+    * @param {Backbone.Model} model
+    * @param {Object} options optional parameters
+    * @param {integer} options.at index to insert at. If not specified, will be appended at th end.
+    * @return {Backbone.View}
+    */
+
+    renderModel: function(model, options) {
+      var child,
+        _this = this;
+
+      child = this.createChild(model);
+      model._onModelDestroy = function() {
+        _this.removeChild(child);
+        model.off('destroy');
+      };
+      model.on('destroy', model._onModelDestroy);
+      this.addChild(child, options);
+      if (!(options != null ? options.silent : void 0)) {
+        this.toggleContainerNode(this.collection.models.length > 0, this.messages.NO_ITEMS);
+      }
+      return child;
+    },
+    /**
     * Creates view to add to this list view as a child
     * @param {Backbone.Model} model
     * @return {Backbone.View}
     */
 
     createChild: function(model) {
-      var options, view;
+      var child, options;
 
-      options = _.clone(this.itemOptions || {});
-      options = _.extend(options, {
-        model: model
-      });
-      view = new this.itemView(_.extend(options, {
+      options = this.itemOptions || {};
+      child = new this.itemView(_.extend(options, {
         model: model
       }));
-      view.$el.addClass('item-view');
-      return view.render();
+      return child.render();
     },
-    onRemoveModel: function(model) {
-      var child, children, i, _i, _ref,
-        _this = this;
+    /**
+    * Override Backpack.ContainerPlugin to add animation
+    */
 
-      children = this.children;
-      for (i = _i = _ref = children.length - 1; _i >= 0; i = _i += -1) {
-        child = children[i];
-        if (child.model === model) {
-          child.$el.hide('slide', {
-            direction: 'left'
-          }, 'fast', function() {
-            _this.removeChild(child);
-            _this.toggleContainerNode(_this.collection.models.length > 0, _this.messages.NO_ITEMS);
-          });
-          break;
-        }
+    removeChild: function(child, options) {
+      var _this = this;
+
+      child = this.getChild(child);
+      if ((options != null ? options.silent : void 0) === true) {
+        Backpack.ContainerPlugin.removeChild.call(this, child);
+      } else {
+        child.$el.hide('slide', {
+          direction: 'left'
+        }, 'fast', function() {
+          Backpack.ContainerPlugin.removeChild.call(_this, child);
+          _this.toggleContainerNode(_this.collection.models.length > 0, _this.messages.NO_ITEMS);
+        });
       }
+      return child;
+    },
+    clearChildren: function() {
+      _.each(this.collection.models, function(model) {
+        if (model._onModelDestroy) {
+          model.off('destroy', model._onModelDestroy);
+        }
+      });
+      Backpack.ContainerPlugin.clearChildren.apply(this, arguments);
     },
     /**
     * Toggle show/hide loading node
@@ -1158,10 +1224,14 @@
         this.mainNode.show();
       }
     },
-    remove: function() {
-      this.collection.off('add reset', this.render);
-      this.collection.off('remove', this.onRemoveModel);
-      Backpack.View.prototype.remove.call(this);
+    destroy: function() {
+      var collection;
+
+      this.clearChildren();
+      collection = this.collection;
+      collection.off('reset', this.render);
+      collection.off('add', collection._onAddModel);
+      Backpack.View.prototype.destroy.apply(this, arguments);
     }
   });
 

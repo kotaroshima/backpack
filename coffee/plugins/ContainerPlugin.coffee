@@ -39,27 +39,41 @@ Backpack.ContainerPlugin =
   * Add view to container node
   * @param {Backbone.View} view A view to add
   * @param {Object} options optional parameters
+  * @param {integer} options.at index to insert at. If not specified, will be appended at the end.
+  * @return {Backbone.View} view that has been added
   ###
   addView:(view, options)->
-    @containerNode.append view.$el
-    return
+    index = options?.at
+    childNodes = @containerNode.find '>*'
+    if 0 <= index && index < childNodes.length
+      view.$el.insertBefore childNodes.eq(index)
+    else
+      @containerNode.append view.$el
+    view
 
   ###*
   * Add view as child
   * @param {Backbone.View} view A view to add
   * @param {Object} options optional parameters
+  * @param {integer} options.at index to insert at. If not specified, will be appended at th end.
+  * @return {Backbone.View} view that has been added
   ###
   addChild:(view, options)->
-    @children.push view
+    index = options?.at
+    if 0 <= index && index < @children.length
+      @children.splice index, 0, view
+    else
+      @children.push view
     @addView view, options
-    return
 
   ###*
   * Remove child view at specified index
   * @param {Backbone.View|Integer} view A view to remove or child index
+  * @param {Object} options optional parameters
+  * @param {boolean} options.silent If true, it will not animate
   * @return {Backbone.View} a removed view
   ###
-  removeChild:(view)->
+  removeChild:(view, options)->
     if _.isNumber view
       index = view
     else
@@ -71,6 +85,10 @@ Backpack.ContainerPlugin =
       @onChildRemoved child
     child
 
+  ###*
+  * A hook to notify that child view has been removed
+  * @param {Backbone.View|Integer} view A view which is removed
+  ###
   onChildRemoved:(view)->
 
   ###*
@@ -78,9 +96,10 @@ Backpack.ContainerPlugin =
   ###
   clearChildren:->
     for i in [@children.length-1..0] by -1
-      @removeChild i
+      @removeChild i, silent: true
     return
 
+  # TODO : move this to somewhere else
   filterChildren:(options)->
     _.filter @children, (view)->
       if view.model.filter options
