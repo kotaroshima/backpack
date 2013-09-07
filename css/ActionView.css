@@ -1,0 +1,27 @@
+.action-view {
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  display: table;
+  width: 100%;
+}
+.action-view > * {
+  display: table-cell;
+  vertical-align: middle;
+  padding-top: 3px;
+  padding-bottom: 3px;
+}
+.action-view .left-cell {
+  text-align: left;
+  width: 32px;
+  padding-left: 5px;
+  padding-right: 5px;
+  white-space: nowrap;
+}
+.action-view .right-cell {
+  text-align: right;
+  width: 32px;
+  padding-left: 5px;
+  padding-right: 5px;
+  white-space: nowrap;
+}

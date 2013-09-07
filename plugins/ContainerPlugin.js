@@ -16,8 +16,6 @@
       containerNode = this.containerNode;
       if (!containerNode) {
         this.containerNode = this.$el;
-      } else if (_.isString(containerNode)) {
-        this.containerNode = this.$(containerNode);
       }
       if (!this.children) {
         this.children = [];
@@ -57,28 +55,50 @@
     * Add view to container node
     * @param {Backbone.View} view A view to add
     * @param {Object} options optional parameters
+    * @param {integer} options.at index to insert at. If not specified, will be appended at the end.
+    * @return {Backbone.View} view that has been added
     */
 
     addView: function(view, options) {
-      this.containerNode.append(view.$el);
+      var childNodes, index;
+
+      index = options != null ? options.at : void 0;
+      childNodes = this.containerNode.find('>*');
+      if (0 <= index && index < childNodes.length) {
+        view.$el.insertBefore(childNodes.eq(index));
+      } else {
+        this.containerNode.append(view.$el);
+      }
+      return view;
     },
     /**
     * Add view as child
     * @param {Backbone.View} view A view to add
     * @param {Object} options optional parameters
+    * @param {integer} options.at index to insert at. If not specified, will be appended at th end.
+    * @return {Backbone.View} view that has been added
     */
 
     addChild: function(view, options) {
-      this.children.push(view);
-      this.addView(view, options);
+      var index;
+
+      index = options != null ? options.at : void 0;
+      if (0 <= index && index < this.children.length) {
+        this.children.splice(index, 0, view);
+      } else {
+        this.children.push(view);
+      }
+      return this.addView(view, options);
     },
     /**
     * Remove child view at specified index
     * @param {Backbone.View|Integer} view A view to remove or child index
+    * @param {Object} options optional parameters
+    * @param {boolean} options.silent If true, it will not animate
     * @return {Backbone.View} a removed view
     */
 
-    removeChild: function(view) {
+    removeChild: function(view, options) {
       var child, index;
 
       if (_.isNumber(view)) {
@@ -94,6 +114,11 @@
       }
       return child;
     },
+    /**
+    * A hook to notify that child view has been removed
+    * @param {Backbone.View|Integer} view A view which is removed
+    */
+
     onChildRemoved: function(view) {},
     /**
     * Clear all children
@@ -103,7 +128,9 @@
       var i, _i, _ref;
 
       for (i = _i = _ref = this.children.length - 1; _i >= 0; i = _i += -1) {
-        this.removeChild(i);
+        this.removeChild(i, {
+          silent: true
+        });
       }
     },
     filterChildren: function(options) {

@@ -229,13 +229,17 @@
       for (key in events) {
         if (!__hasProp.call(events, key)) continue;
         methodName = events[key];
-        if (!this[methodName] || !_.isFunction(this[methodName])) {
+        if ((!this[methodName] || !_.isFunction(this[methodName])) && !_.isFunction(methodName)) {
           continue;
         }
         match = key.match(/^(\S+)\s*(.*)$/);
         eventName = match[1];
         selector = match[2];
-        method = bindMethod(methodName);
+        if (_.isFunction(methodName)) {
+          method = methodName;
+        } else {
+          method = bindMethod(methodName);
+        }
         eventName += '.delegateEvents' + this.cid;
         if (selector === '') {
           this.$el.on(eventName, method);
@@ -325,8 +329,6 @@
       containerNode = this.containerNode;
       if (!containerNode) {
         this.containerNode = this.$el;
-      } else if (_.isString(containerNode)) {
-        this.containerNode = this.$(containerNode);
       }
       if (!this.children) {
         this.children = [];
@@ -366,28 +368,50 @@
     * Add view to container node
     * @param {Backbone.View} view A view to add
     * @param {Object} options optional parameters
+    * @param {integer} options.at index to insert at. If not specified, will be appended at the end.
+    * @return {Backbone.View} view that has been added
     */
 
     addView: function(view, options) {
-      this.containerNode.append(view.$el);
+      var childNodes, index;
+
+      index = options != null ? options.at : void 0;
+      childNodes = this.containerNode.find('>*');
+      if (0 <= index && index < childNodes.length) {
+        view.$el.insertBefore(childNodes.eq(index));
+      } else {
+        this.containerNode.append(view.$el);
+      }
+      return view;
     },
     /**
     * Add view as child
     * @param {Backbone.View} view A view to add
     * @param {Object} options optional parameters
+    * @param {integer} options.at index to insert at. If not specified, will be appended at th end.
+    * @return {Backbone.View} view that has been added
     */
 
     addChild: function(view, options) {
-      this.children.push(view);
-      this.addView(view, options);
+      var index;
+
+      index = options != null ? options.at : void 0;
+      if (0 <= index && index < this.children.length) {
+        this.children.splice(index, 0, view);
+      } else {
+        this.children.push(view);
+      }
+      return this.addView(view, options);
     },
     /**
     * Remove child view at specified index
     * @param {Backbone.View|Integer} view A view to remove or child index
+    * @param {Object} options optional parameters
+    * @param {boolean} options.silent If true, it will not animate
     * @return {Backbone.View} a removed view
     */
 
-    removeChild: function(view) {
+    removeChild: function(view, options) {
       var child, index;
 
       if (_.isNumber(view)) {
@@ -403,6 +427,11 @@
       }
       return child;
     },
+    /**
+    * A hook to notify that child view has been removed
+    * @param {Backbone.View|Integer} view A view which is removed
+    */
+
     onChildRemoved: function(view) {},
     /**
     * Clear all children
@@ -412,7 +441,9 @@
       var i, _i, _ref;
 
       for (i = _i = _ref = this.children.length - 1; _i >= 0; i = _i += -1) {
-        this.removeChild(i);
+        this.removeChild(i, {
+          silent: true
+        });
       }
     },
     filterChildren: function(options) {
@@ -721,11 +752,138 @@
 
   Backpack.defaultPlugins.push(Backpack.SubscribePlugin);
 
+  /**
+  * A plugin to render HTML templates for views
+  */
+
+
   Backpack.TemplatePlugin = {
     setup: function() {
-      this.$el.html(this.template, this.templateData);
+      var key, val, _ref;
+
+      this.renderTemplate();
+      /* cache jQuery objects of HTML nodes to be referenced later
+      */
+
+      if (this.templateNodes) {
+        _ref = this.templateNodes;
+        for (key in _ref) {
+          if (!__hasProp.call(_ref, key)) continue;
+          val = _ref[key];
+          this[key] = this.$(val);
+        }
+      }
+    },
+    /**
+    * Renders template HTML
+    * If model is specified, interpolates model attributes.
+    * Otherwise, interpolates view options
+    */
+
+    renderTemplate: function() {
+      var template;
+
+      template = this.template;
+      if (_.isFunction(template)) {
+        template = template(this.model ? this.model.attributes : this.options);
+      }
+      this.$el.html(template);
     }
   };
+
+  /**
+  * A view that has action buttons in the left/right
+  */
+
+
+  Backpack.ActionView = Backpack.View.extend({
+    plugins: [Backpack.TemplatePlugin],
+    template: _.template('<%= leftActionHtml %><span class="main-cell"><%= text %></span><%= rightActionHtml %>'),
+    templateNodes: {
+      mainCell: '.main-cell'
+    },
+    initialize: function(options) {
+      var actions, leftActionHtml, leftActions, rightActionHtml, rightActions;
+
+      this.$el.addClass('action-view');
+      if (!this.events) {
+        this.events = {};
+      }
+      actions = options.actions || this.actions;
+      if (actions) {
+        leftActions = actions.left;
+        if (leftActions) {
+          leftActionHtml = this._processActions(leftActions, true);
+        }
+        rightActions = _.isArray(actions) ? actions : actions.right;
+        if (rightActions) {
+          rightActionHtml = this._processActions(rightActions, false);
+        }
+      }
+      _.defaults(this.options, {
+        leftActionHtml: leftActionHtml || '',
+        rightActionHtml: rightActionHtml || '',
+        text: ''
+      });
+      Backpack.View.prototype.initialize.apply(this, arguments);
+      this.delegateEvents(this.events);
+      if (options.itemView) {
+        this.itemView = options.itemView;
+      }
+      if (options.itemOptions) {
+        this.itemOptions = options.itemOptions;
+      }
+    },
+    _buttonTemplate: _.template('<<%- tagName %> class="<%- iconClass %>" title="<%- title %>"><%- text %></<%- tagName %>>'),
+    _processActions: function(actions, isLeft) {
+      var html,
+        _this = this;
+
+      html = '<span class="' + (isLeft ? 'left-cell' : 'right-cell') + '">';
+      _.each(actions, function(action) {
+        var iconClass, onClicked;
+
+        iconClass = action.iconClass;
+        onClicked = action.onClicked;
+        if (onClicked) {
+          if (_.isString(onClicked)) {
+            onClicked = _this[onClicked];
+          }
+          if (onClicked && _.isFunction(onClicked)) {
+            _this.events['click .' + iconClass] = _.bind(onClicked, _this);
+          }
+        }
+        action = _.defaults(action, {
+          tagName: onClicked ? 'button' : 'span',
+          iconClass: '',
+          title: '',
+          text: ''
+        });
+        html += _this._buttonTemplate(action);
+      });
+      return html += '</span>';
+    },
+    render: function(options) {
+      var view;
+
+      if (this.itemView) {
+        if (!this.child) {
+          view = this.child = new this.itemView(this.itemOptions);
+          this.mainCell.append(view.$el);
+        }
+        view.render();
+      } else {
+        this.mainCell.text(options ? options.text : '');
+      }
+      return this;
+    },
+    destroy: function() {
+      if (this.itemView && this.itemView.destroy) {
+        this.child.destroy();
+      }
+      Backpack.View.prototype.destroy(this, arguments);
+    }
+  });
 
   /**
   * A view that stacks its children
@@ -931,25 +1089,34 @@
 
 
   Backpack.ListView = Backpack.View.extend({
-    plugins: [Backpack.ContainerPlugin],
+    plugins: [Backpack.TemplatePlugin, Backpack.ContainerPlugin],
     messages: {
       NO_ITEMS: 'No Items'
     },
     template: '<div class="main-node"><div class="container-node"></div><div class="message-node"></div></div><div class="loading-node">Loading...</div>',
+    templateNodes: {
+      containerNode: '.container-node',
+      messageNode: '.message-node',
+      mainNode: '.main-node',
+      loadingNode: '.loading-node'
+    },
     itemView: Backpack.View,
     initialize: function(options) {
+      var collection,
+        _this = this;
+
+      this.$el.addClass('list-view');
       if (options.itemView) {
         this.itemView = options.itemView;
       }
-      this.$el.html(this.template);
-      this.containerNode = this.$('.container-node');
-      this.messageNode = this.$('.message-node');
-      this.mainNode = this.$('.main-node');
-      this.loadingNode = this.$('.loading-node');
-      this.setLoading(false);
       Backpack.View.prototype.initialize.apply(this, arguments);
-      this.collection.on('add reset', this.render, this);
-      this.collection.on('remove', this.onRemoveModel, this);
+      this.setLoading(false);
+      collection = this.collection;
+      collection.on('reset', this.render, this);
+      collection._onAddModel = function() {
+        _this.renderModel(arguments[0], arguments[2]);
+      };
+      collection.on('add', collection._onAddModel);
       this.render();
     },
     render: function() {
@@ -958,10 +1125,9 @@
       this.toggleContainerNode(this.collection.models.length > 0, this.messages.NO_ITEMS);
       this.clearChildren();
       _.each(this.collection.models, function(model) {
-        var child;
-
-        child = _this.createChild(model);
-        _this.addChild(child);
+        _this.renderModel(model, {
+          silent: true
+        });
       });
       return this;
     },
@@ -987,41 +1153,71 @@
       }
     },
     /**
+    * Render model
+    * @param {Backbone.Model} model
+    * @param {Object} options optional parameters
+    * @param {integer} options.at index to insert at. If not specified, will be appended at th end.
+    * @return {Backbone.View}
+    */
+
+    renderModel: function(model, options) {
+      var child,
+        _this = this;
+
+      child = this.createChild(model);
+      model._onModelDestroy = function() {
+        _this.removeChild(child);
+        model.off('destroy');
+      };
+      model.on('destroy', model._onModelDestroy);
+      this.addChild(child, options);
+      if (!(options != null ? options.silent : void 0)) {
+        this.toggleContainerNode(this.collection.models.length > 0, this.messages.NO_ITEMS);
+      }
+      return child;
+    },
+    /**
     * Creates view to add to this list view as a child
     * @param {Backbone.Model} model
     * @return {Backbone.View}
     */
 
     createChild: function(model) {
-      var options, view;
+      var child, options;
 
-      options = _.clone(this.itemOptions || {});
-      options = _.extend(options, {
-        model: model
-      });
-      view = new this.itemView(_.extend(options, {
+      options = this.itemOptions || {};
+      child = new this.itemView(_.extend(options, {
         model: model
       }));
-      view.$el.addClass('item-view');
-      return view.render();
+      return child.render();
     },
-    onRemoveModel: function(model) {
-      var child, children, i, _i, _ref,
-        _this = this;
+    /**
+    * Override Backpack.ContainerPlugin to add animation
+    */
 
-      children = this.children;
-      for (i = _i = _ref = children.length - 1; _i >= 0; i = _i += -1) {
-        child = children[i];
-        if (child.model === model) {
-          child.$el.hide('slide', {
-            direction: 'left'
-          }, 'fast', function() {
-            _this.removeChild(child);
-            _this.toggleContainerNode(_this.collection.models.length > 0, _this.messages.NO_ITEMS);
-          });
-          break;
-        }
+    removeChild: function(child, options) {
+      var _this = this;
+
+      child = this.getChild(child);
+      if ((options != null ? options.silent : void 0) === true) {
+        Backpack.ContainerPlugin.removeChild.call(this, child);
+      } else {
+        child.$el.hide('slide', {
+          direction: 'left'
+        }, 'fast', function() {
+          Backpack.ContainerPlugin.removeChild.call(_this, child);
+          _this.toggleContainerNode(_this.collection.models.length > 0, _this.messages.NO_ITEMS);
+        });
       }
+      return child;
+    },
+    clearChildren: function() {
+      _.each(this.collection.models, function(model) {
+        if (model._onModelDestroy) {
+          model.off('destroy', model._onModelDestroy);
+        }
+      });
+      Backpack.ContainerPlugin.clearChildren.apply(this, arguments);
     },
     /**
     * Toggle show/hide loading node
@@ -1037,10 +1233,14 @@
         this.mainNode.show();
       }
     },
-    remove: function() {
-      this.collection.off('add reset', this.render);
-      this.collection.off('remove', this.onRemoveModel);
-      Backpack.View.prototype.remove.call(this);
+    destroy: function() {
+      var collection;
+
+      this.clearChildren();
+      collection = this.collection;
+      collection.off('reset', this.render);
+      collection.off('add', collection._onAddModel);
+      Backpack.View.prototype.destroy.apply(this, arguments);
     }
   });
 
@@ -1048,37 +1248,27 @@
 
   CLS_REMOVE_CONFIRM = 'remove-confirm';
 
-  EditableItemView = Backpack.View.extend({
-    template: '<div class="item-view"><span class="delete-cell"><button class="delete-icon"></button></span><span class="editable-container"></span><span class="item-actions"><span class="reorder-handle"></span><button class="delete-button">Delete</button></span></div>',
-    events: {
-      'click .delete-icon': 'onRemoveConfirmButtonClicked',
-      'click .delete-button': 'onRemoveButtonClicked'
+  EditableItemView = Backpack.ActionView.extend({
+    actions: {
+      left: [
+        {
+          iconClass: 'delete-icon',
+          title: 'Confirm delete',
+          onClicked: 'onRemoveConfirmButtonClicked'
+        }
+      ],
+      right: [
+        {
+          iconClass: 'reorder-handle',
+          title: 'Reorder'
+        }, {
+          iconClass: 'delete-button',
+          title: 'Delete',
+          text: 'Delete',
+          onClicked: 'onRemoveButtonClicked'
+        }
+      ]
     },
-    initialize: function(options) {
-      this.itemView = options.itemView;
-      this.itemOptions = options.itemOptions;
-      this.render();
-    },
-    render: function() {
-      var options, view;
-
-      this.$el.html(this.template);
-      options = _.clone(this.itemOptions);
-      options = _.extend(options, {
-        model: this.model
-      });
-      view = new this.itemView(options);
-      view.render();
-      this.$('.editable-container').append(view.$el);
-      return this;
-    },
-    /*
-    remove:->
-      @itemView.remove()
-      Backpack.View::remove @, arguments
-      return
-    */
-
     /**
     * Click event handler for remove confirm icon
     * switches to remove confirm mode
@@ -1097,7 +1287,7 @@
     */
 
     onRemoveButtonClicked: function(e) {
-      this.model.destroy();
+      this.child.model.destroy();
       e.stopPropagation();
     }
   });
@@ -1112,11 +1302,12 @@
 
 
   Backpack.EditableListView = Backpack.ListView.extend({
-    plugins: [Backpack.ContainerPlugin, Backpack.SortablePlugin],
+    plugins: [Backpack.TemplatePlugin, Backpack.ContainerPlugin, Backpack.SortablePlugin],
     sortableOptions: {
       handle: ".reorder-handle"
     },
     initialize: function(options) {
+      this.$el.addClass('editable-list-view');
       Backpack.ListView.prototype.initialize.apply(this, arguments);
       this.setEditable((options.editable === true) || false);
     },
@@ -1128,7 +1319,7 @@
 
     setEditable: function(isEdit) {
       this.setSortable(isEdit);
-      this.$el.toggleClass(CLS_LISTVIEW_EDIT, isEdit);
+      this.containerNode.toggleClass(CLS_LISTVIEW_EDIT, isEdit);
     },
     /**
     * Override ListView to use EditableItemView as direct child
@@ -1137,12 +1328,14 @@
     */
 
     createChild: function(model) {
-      var view;
+      var itemOptions, view;
 
+      itemOptions = this.itemOptions || {};
       view = new EditableItemView({
-        model: model,
         itemView: this.itemView,
-        itemOptions: this.itemOptions || {}
+        itemOptions: _.extend(itemOptions, {
+          model: model
+        })
       });
       return view.render();
     }
@@ -1164,21 +1357,10 @@
       href: '#',
       "class": 'tab-button'
     },
+    plugins: [Backpack.TemplatePlugin],
     template: _.template('<%- title %>'),
     events: {
       'click': 'onClicked'
-    },
-    initialize: function(options) {
-      Backpack.View.prototype.initialize.apply(this, arguments);
-      this.render();
-    },
-    /*
-    * Renders template HTML
-    */
-
-    render: function() {
-      this.$el.html(this.template(this.options));
-      return this;
     },
     onClicked: function(e) {}
   });
@@ -1191,7 +1373,9 @@
   Backpack.TabView = Backpack.StackView.extend({
     plugins: [Backpack.TemplatePlugin, Backpack.ContainerPlugin],
     template: '<div class="tab-button-container"></div><div class="tab-content-container"></div>',
-    containerNode: '.tab-content-container',
+    templateNodes: {
+      containerNode: '.tab-content-container'
+    },
     autoRender: false,
     render: function() {
       /* setup tab buttons

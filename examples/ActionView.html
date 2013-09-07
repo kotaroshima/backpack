@@ -1,0 +1,82 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Backpack.ActionView Example</title>
+<link rel="stylesheet" type="text/css" href="../css/ActionView.css"></link>
+<script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/jquery/1.9.1/jquery.js"></script>
+<script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.10.2/jquery-ui.js"></script>
+<script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.4.4/underscore.js"></script>
+<script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/backbone.js/1.0.0/backbone.js"></script>
+<script type="text/javascript" src="../Backpack-all.js"></script>
+<style type="text/css">
+.icon1 {
+  background: url('../images/delete_control.jpg') transparent center center no-repeat;
+  width: 34px;
+  height: 33px;
+  border: none;
+  padding: 0;
+}
+.icon2 {
+  background: url("../images/row_reorder.jpg") transparent 8px center no-repeat;
+  width: 32px;
+  height: 32px;
+  border: none;
+  cursor: move;
+}
+</style>
+<script type="text/javascript">
+$(function(){
+  var container = $('#text-container');
+  var view1 = new Backpack.ActionView({
+    el: '#action-view1',
+    text: 'Hello',
+    actions: [
+      {
+        iconClass: 'icon1',
+        onClicked: function(e){
+          container.append('<p>action1 clicked</p>');
+        }
+      },
+      {
+        iconClass: 'icon2',
+        onClicked: function(e){
+          container.append('<p>action2 clicked</p>');
+        }
+      }
+    ]
+  });
+
+  var view2 = new Backpack.ActionView({
+    el: '#action-view2',
+    text: 'Goodbye',
+    actions: {
+      left: [
+         {
+           iconClass: 'icon1',
+           onClicked: function(e){
+             container.append('<p>action1 clicked</p>');
+           }
+         }
+      ],
+      right: [
+         {
+           iconClass: 'icon2',
+           onClicked: function(e){
+             container.append('<p>action2 clicked</p>');
+           }
+         }
+      ]
+    }
+  });
+
+});
+</script>
+</head>
+<body>
+<h1>Backpack.ActionView Example</h1>
+<div id="action-view1"></div>
+<div id="action-view2"></div>
+<div id="text-container"></div>
+</body>
+</html>

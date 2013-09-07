@@ -6,37 +6,27 @@
 
   CLS_REMOVE_CONFIRM = 'remove-confirm';
 
-  EditableItemView = Backpack.View.extend({
-    template: '<div class="item-view"><span class="delete-cell"><button class="delete-icon"></button></span><span class="editable-container"></span><span class="item-actions"><span class="reorder-handle"></span><button class="delete-button">Delete</button></span></div>',
-    events: {
-      'click .delete-icon': 'onRemoveConfirmButtonClicked',
-      'click .delete-button': 'onRemoveButtonClicked'
+  EditableItemView = Backpack.ActionView.extend({
+    actions: {
+      left: [
+        {
+          iconClass: 'delete-icon',
+          title: 'Confirm delete',
+          onClicked: 'onRemoveConfirmButtonClicked'
+        }
+      ],
+      right: [
+        {
+          iconClass: 'reorder-handle',
+          title: 'Reorder'
+        }, {
+          iconClass: 'delete-button',
+          title: 'Delete',
+          text: 'Delete',
+          onClicked: 'onRemoveButtonClicked'
+        }
+      ]
     },
-    initialize: function(options) {
-      this.itemView = options.itemView;
-      this.itemOptions = options.itemOptions;
-      this.render();
-    },
-    render: function() {
-      var options, view;
-
-      this.$el.html(this.template);
-      options = _.clone(this.itemOptions);
-      options = _.extend(options, {
-        model: this.model
-      });
-      view = new this.itemView(options);
-      view.render();
-      this.$('.editable-container').append(view.$el);
-      return this;
-    },
-    /*
-    remove:->
-      @itemView.remove()
-      Backpack.View::remove @, arguments
-      return
-    */
-
     /**
     * Click event handler for remove confirm icon
     * switches to remove confirm mode
@@ -55,7 +45,7 @@
     */
 
     onRemoveButtonClicked: function(e) {
-      this.model.destroy();
+      this.child.model.destroy();
       e.stopPropagation();
     }
   });
@@ -70,11 +60,12 @@
 
 
   Backpack.EditableListView = Backpack.ListView.extend({
-    plugins: [Backpack.ContainerPlugin, Backpack.SortablePlugin],
+    plugins: [Backpack.TemplatePlugin, Backpack.ContainerPlugin, Backpack.SortablePlugin],
     sortableOptions: {
       handle: ".reorder-handle"
     },
     initialize: function(options) {
+      this.$el.addClass('editable-list-view');
       Backpack.ListView.prototype.initialize.apply(this, arguments);
       this.setEditable((options.editable === true) || false);
     },
@@ -86,7 +77,7 @@
 
     setEditable: function(isEdit) {
       this.setSortable(isEdit);
-      this.$el.toggleClass(CLS_LISTVIEW_EDIT, isEdit);
+      this.containerNode.toggleClass(CLS_LISTVIEW_EDIT, isEdit);
     },
     /**
     * Override ListView to use EditableItemView as direct child
@@ -95,12 +86,14 @@
     */
 
     createChild: function(model) {
-      var view;
+      var itemOptions, view;
 
+      itemOptions = this.itemOptions || {};
       view = new EditableItemView({
-        model: model,
         itemView: this.itemView,
-        itemOptions: this.itemOptions || {}
+        itemOptions: _.extend(itemOptions, {
+          model: model
+        })
       });
       return view.render();
     }

@@ -38,7 +38,7 @@
       itemView: ItemView
     });
     $('#testNode').append(this.listView.$el);
-    itemNodes = $('#testNode').find('.item-view');
+    itemNodes = $('#testNode').find('.action-view');
     equal(itemNodes.size(), data.length);
     itemNodes.each(function(index, node) {
       var itemNode;
@@ -67,7 +67,7 @@
       editable: true
     });
     $('#testNode').append(this.listView.$el);
-    itemNodes = $('#testNode').find('.item-view');
+    itemNodes = $('#testNode').find('.action-view');
     equal(itemNodes.size(), data.length);
     itemNodes.each(function(index, node) {
       var itemNode;
@@ -99,7 +99,7 @@
       collection.add(model);
       model.save();
     });
-    itemNodes = $('#testNode').find('.item-view');
+    itemNodes = $('#testNode').find('.action-view');
     equal(itemNodes.size(), data.length);
     itemNodes.each(function(index, node) {
       var itemNode;
@@ -109,6 +109,111 @@
       equal(itemNode.find('.item-content').text(), data[index]);
       ok(itemNode.find('.delete-icon').is(':hidden'));
       ok(itemNode.find('.reorder-handle').is(':hidden'));
+    });
+  });
+
+  test('insert model to a specific index', 9, function() {
+    var collection, data, index, itemNodes, model, models, name;
+
+    data = ['Orange', 'Apple', 'Grape'];
+    models = _.map(data, function(item) {
+      return {
+        name: item
+      };
+    });
+    collection = new Backbone.Collection(models);
+    this.listView = new Backpack.EditableListView({
+      collection: collection,
+      itemView: ItemView
+    });
+    $('#testNode').append(this.listView.$el);
+    name = 'Peach';
+    model = new Backpack.Model({
+      name: name
+    });
+    index = 1;
+    collection.add(model, {
+      at: index
+    });
+    data.splice(index, 0, name);
+    itemNodes = $('#testNode').find('.item-content');
+    equal(itemNodes.size(), data.length);
+    itemNodes.each(function(index, node) {
+      var itemNode;
+
+      itemNode = $(this);
+      ok(itemNode.is(':visible'));
+      equal(itemNode.text(), data[index]);
+    });
+  });
+
+  test('insert model at top', 9, function() {
+    var collection, data, index, itemNodes, model, models, name;
+
+    data = ['Orange', 'Apple', 'Grape'];
+    models = _.map(data, function(item) {
+      return {
+        name: item
+      };
+    });
+    collection = new Backbone.Collection(models);
+    this.listView = new Backpack.EditableListView({
+      collection: collection,
+      itemView: ItemView
+    });
+    $('#testNode').append(this.listView.$el);
+    name = 'Peach';
+    model = new Backpack.Model({
+      name: name
+    });
+    index = 0;
+    collection.add(model, {
+      at: index
+    });
+    data.splice(index, 0, name);
+    itemNodes = $('#testNode').find('.item-content');
+    equal(itemNodes.size(), data.length);
+    itemNodes.each(function(index, node) {
+      var itemNode;
+
+      itemNode = $(this);
+      ok(itemNode.is(':visible'));
+      equal(itemNode.text(), data[index]);
+    });
+  });
+
+  test('insert model at last', 9, function() {
+    var collection, data, index, itemNodes, model, models, name;
+
+    data = ['Orange', 'Apple', 'Grape'];
+    models = _.map(data, function(item) {
+      return {
+        name: item
+      };
+    });
+    collection = new Backbone.Collection(models);
+    this.listView = new Backpack.EditableListView({
+      collection: collection,
+      itemView: ItemView
+    });
+    $('#testNode').append(this.listView.$el);
+    name = 'Peach';
+    model = new Backpack.Model({
+      name: name
+    });
+    index = 3;
+    collection.add(model, {
+      at: index
+    });
+    data.splice(index, 0, name);
+    itemNodes = $('#testNode').find('.item-content');
+    equal(itemNodes.size(), data.length);
+    itemNodes.each(function(index, node) {
+      var itemNode;
+
+      itemNode = $(this);
+      ok(itemNode.is(':visible'));
+      equal(itemNode.text(), data[index]);
     });
   });
 
@@ -177,7 +282,7 @@
     });
     data[1] = 'Peach';
     models[1].set('name', data[1]);
-    itemNodes = $('#testNode').find('.item-view');
+    itemNodes = $('#testNode').find('.action-view');
     equal(itemNodes.size(), data.length);
     itemNodes.each(function(index, node) {
       var itemNode;
@@ -206,7 +311,7 @@
     });
     $('#testNode').append(listView.$el);
     listView.setEditable(true);
-    itemNodes = $('#testNode').find('.item-view');
+    itemNodes = $('#testNode').find('.action-view');
     equal(itemNodes.size(), data.length);
     itemNodes.each(function(index, node) {
       var itemNode;
@@ -236,7 +341,7 @@
     });
     $('#testNode').append(listView.$el);
     listView.setEditable(false);
-    itemNodes = $('#testNode').find('.item-view');
+    itemNodes = $('#testNode').find('.action-view');
     equal(itemNodes.size(), data.length);
     itemNodes.each(function(index, node) {
       var itemNode;
@@ -265,7 +370,7 @@
     });
     $('#testNode').append(listView.$el);
     listView.setEditable(true);
-    itemNodes = $('#testNode').find('.item-view');
+    itemNodes = $('#testNode').find('.action-view');
     targetNode = itemNodes.slice(1, 2);
     deleteIcon = targetNode.find('.delete-icon');
     reorderHandle = targetNode.find('.reorder-handle');
@@ -297,7 +402,7 @@
     });
     $('#testNode').append(listView.$el);
     listView.setEditable(true);
-    itemNodes = $('#testNode').find('.item-view');
+    itemNodes = $('#testNode').find('.action-view');
     targetNode = itemNodes.slice(1, 2);
     deleteIcon = targetNode.find('.delete-icon');
     deleteIcon.click();
@@ -308,7 +413,7 @@
     handle = listView.attach('onChildRemoved', function(view) {
       var data_after;
 
-      itemNodes = $('#testNode').find('.item-view');
+      itemNodes = $('#testNode').find('.action-view');
       data_after = ['Orange', 'Grape'];
       equal(itemNodes.size(), data_after.length);
       itemNodes.each(function(index, node) {

@@ -10,22 +10,13 @@ Backpack.TabButtonView = Backpack.View.extend
   attributes:
     href: '#'
     class: 'tab-button'
+
+  plugins: [Backpack.TemplatePlugin]
+
   template: _.template '<%- title %>'
 
   events:
     'click': 'onClicked'
-
-  initialize:(options)->
-    Backpack.View::initialize.apply @, arguments
-    @render()
-    return
- 
-  ###
-  * Renders template HTML
-  ###
-  render:->
-    @$el.html @template @options
-    @
 
   onClicked:(e)->
 
@@ -35,7 +26,8 @@ Backpack.TabButtonView = Backpack.View.extend
 Backpack.TabView = Backpack.StackView.extend
   plugins: [Backpack.TemplatePlugin, Backpack.ContainerPlugin]
   template: '<div class="tab-button-container"></div><div class="tab-content-container"></div>'
-  containerNode: '.tab-content-container'
+  templateNodes:
+    containerNode: '.tab-content-container'
   autoRender: false
 
   render:->

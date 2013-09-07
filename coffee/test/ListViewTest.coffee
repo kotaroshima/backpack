@@ -52,6 +52,78 @@ test 'add models after initialize', 7, ->
     return
   return
 
+test 'insert model to a specific index', 9, ->
+  data = ['Orange', 'Apple', 'Grape']
+  models = _.map data, (item)-> name: item
+  collection = new Backbone.Collection models
+  @listView = new Backpack.ListView
+    collection: collection
+    itemView: ItemView
+  $('#testNode').append @listView.$el
+
+  name = 'Peach'
+  model = new Backpack.Model name:name
+  index = 1
+  collection.add model, at:index
+  data.splice index, 0, name
+
+  itemNodes = $('#testNode').find '.item-content'
+  equal itemNodes.size(), data.length
+  itemNodes.each (index, node)->
+    itemNode = $ @
+    ok itemNode.is ':visible'
+    equal itemNode.text(), data[index]
+    return
+  return
+
+test 'insert model at top', 9, ->
+  data = ['Orange', 'Apple', 'Grape']
+  models = _.map data, (item)-> name: item
+  collection = new Backbone.Collection models
+  @listView = new Backpack.ListView
+    collection: collection
+    itemView: ItemView
+  $('#testNode').append @listView.$el
+
+  name = 'Peach'
+  model = new Backpack.Model name:name
+  index = 0
+  collection.add model, at:index
+  data.splice index, 0, name
+
+  itemNodes = $('#testNode').find '.item-content'
+  equal itemNodes.size(), data.length
+  itemNodes.each (index, node)->
+    itemNode = $ @
+    ok itemNode.is ':visible'
+    equal itemNode.text(), data[index]
+    return
+  return
+
+test 'insert model at last', 9, ->
+  data = ['Orange', 'Apple', 'Grape']
+  models = _.map data, (item)-> name: item
+  collection = new Backbone.Collection models
+  @listView = new Backpack.ListView
+    collection: collection
+    itemView: ItemView
+  $('#testNode').append @listView.$el
+
+  name = 'Peach'
+  model = new Backpack.Model name:name
+  index = 3
+  collection.add model, at:index
+  data.splice index, 0, name
+
+  itemNodes = $('#testNode').find '.item-content'
+  equal itemNodes.size(), data.length
+  itemNodes.each (index, node)->
+    itemNode = $ @
+    ok itemNode.is ':visible'
+    equal itemNode.text(), data[index]
+    return
+  return
+
 asyncTest 'remove model', 5, ->
   data = ['Orange', 'Apple', 'Grape']
   collection = new Backbone.Collection
