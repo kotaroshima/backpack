@@ -3,6 +3,7 @@
 ###
 Backpack.TemplatePlugin =
   setup:->
+    @model.on 'change', @renderTemplate, @ if @model
     @renderTemplate()
 
     ### cache jQuery objects of HTML nodes to be referenced later ###
@@ -21,4 +22,8 @@ Backpack.TemplatePlugin =
     if _.isFunction template
       template = template if @model then @model.attributes else @options
     @$el.html template
+    return
+
+  cleanup:->
+    @model.off 'change', @renderTemplate if @model
     return

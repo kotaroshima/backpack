@@ -761,6 +761,9 @@
     setup: function() {
       var key, val, _ref;
 
+      if (this.model) {
+        this.model.on('change', this.renderTemplate, this);
+      }
       this.renderTemplate();
       /* cache jQuery objects of HTML nodes to be referenced later
       */
@@ -788,6 +791,11 @@
         template = template(this.model ? this.model.attributes : this.options);
       }
       this.$el.html(template);
+    },
+    cleanup: function() {
+      if (this.model) {
+        this.model.off('change', this.renderTemplate);
+      }
     }
   };
 
