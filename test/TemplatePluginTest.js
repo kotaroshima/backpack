@@ -98,6 +98,26 @@
     equal(view.$el.text(), text, 'view is rendered with template HTML');
   });
 
+  test('update model attributes', 2, function() {
+    var model, text, view;
+
+    model = new Backpack.Model({
+      text: 'hoge'
+    });
+    view = this.view = new Backpack.View({
+      plugins: [Backpack.TemplatePlugin],
+      template: _.template('<%= text %>'),
+      model: model
+    });
+    this.testNode.append(view.$el);
+    text = 'foo';
+    model.set('text', text);
+    equal(view.$el.text(), text, 'view is updated with model attribute');
+    view.destroy();
+    model.set('text', 'bar');
+    equal(view.$el.text(), text, 'view is not updated after view is destroyed');
+  });
+
   test('extend with templateNodes', 2, function() {
     var TestView, text1, text2, view;
 

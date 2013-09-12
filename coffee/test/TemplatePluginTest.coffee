@@ -66,6 +66,21 @@ test 'interpolate with model attributes', 1, ->
   equal view.$el.text(), text, 'view is rendered with template HTML'
   return
 
+test 'update model attributes', 2, ->
+  model = new Backpack.Model text: 'hoge'
+  view = @view = new Backpack.View
+    plugins: [Backpack.TemplatePlugin]
+    template: _.template '<%= text %>'
+    model: model
+  @testNode.append view.$el
+  text = 'foo'
+  model.set 'text', text
+  equal view.$el.text(), text, 'view is updated with model attribute'
+  view.destroy()
+  model.set 'text', 'bar'
+  equal view.$el.text(), text, 'view is not updated after view is destroyed'
+  return
+
 test 'extend with templateNodes', 2, ->
   text1 = 'Text 1'
   text2 = 'Text 2'
