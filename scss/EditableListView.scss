@@ -5,6 +5,13 @@
   border-radius: $r;
 }
 
+@mixin linear-gradient($color1, $color2) {
+  background-color: $color2;
+  background-image: -moz-linear-gradient($color1, $color2);
+  background-image: -webkit-linear-gradient($color1, $color2);
+  background-image: linear-gradient($color1, $color2);
+}
+
 .delete-icon {
   background: url('../images/delete_control.jpg') transparent center center no-repeat;
   width: 34px;
@@ -23,10 +30,10 @@
 
 .delete-button {
   height: 32px;
-  @include round-corner(6px);
-  background-color: red;
+  @include round-corner(8px);
   color: white;
-  border: 0;
+  border: 1px solid #d5d5d5;
+  @include linear-gradient(#d3676a, #b71512);
 }
 
 .editable-list-view {

@@ -17,11 +17,14 @@
 
 .delete-button {
   height: 32px;
-  -moz-border-radius: 6px;
-  border-radius: 6px;
-  background-color: red;
+  -moz-border-radius: 8px;
+  border-radius: 8px;
   color: white;
-  border: 0;
+  border: 1px solid #d5d5d5;
+  background-color: #b71512;
+  background-image: -moz-linear-gradient(#d3676a, #b71512);
+  background-image: -webkit-linear-gradient(#d3676a, #b71512);
+  background-image: linear-gradient(#d3676a, #b71512);
 }
 
 .editable-list-view .left-cell {
