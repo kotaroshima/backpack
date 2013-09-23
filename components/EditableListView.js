@@ -60,7 +60,7 @@
 
 
   Backpack.EditableListView = Backpack.ListView.extend({
-    plugins: [Backpack.TemplatePlugin, Backpack.ContainerPlugin, Backpack.SortablePlugin],
+    plugins: [Backpack.SortablePlugin],
     sortableOptions: {
       handle: ".reorder-handle"
     },

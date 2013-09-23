@@ -42,8 +42,13 @@ Backpack.defaultPlugins = []
 applyOptions =(self, options={})->
   # use initialization options plugins if specified
   # otherwise use plugins specified in extend
-  self.plugins = options.plugins || self.plugins
-  plugins = _.clone(Backpack.defaultPlugins).concat self.plugins || []
+  if options.allPlugins
+    plugins = options.allPlugins
+  else
+    plugins = self.allPlugins || []
+    if options.plugins
+      plugins = plugins.concat options.plugins
+  plugins = _.clone(Backpack.defaultPlugins).concat plugins
 
   self.setups = []
   self.cleanups = []
@@ -84,12 +89,20 @@ extend =(protoProps, staticProps)->
   child = Backbone.Model.extend.call @, protoProps, staticProps
 
   if protoProps
-    plugins = protoProps.plugins
+    plugins = protoProps.allPlugins
     if plugins
       ### Override superclass plugins with subclass plugins ###
-      child::plugins = plugins
+      child::allPlugins = plugins
+    else
+      plugins = protoProps.plugins
+      if plugins
+        if child::allPlugins
+          child::allPlugins = child::allPlugins.concat plugins
+        else
+          child::allPlugins = plugins
 
-      ### apply static props ###
+    ### apply static props ###
+    if plugins
       _.each plugins, (pi)->
         _.extend child, pi.staticProps if pi.staticProps
         return

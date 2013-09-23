@@ -30,7 +30,7 @@
 
 
   Backpack.TabView = Backpack.StackView.extend({
-    plugins: [Backpack.TemplatePlugin, Backpack.ContainerPlugin],
+    allPlugins: [Backpack.TemplatePlugin, Backpack.ContainerPlugin],
     template: '<div class="tab-button-container"></div><div class="tab-content-container"></div>',
     templateNodes: {
       containerNode: '.tab-content-container'

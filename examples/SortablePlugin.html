@@ -38,7 +38,7 @@ $(function(){
     el: '#listView',
     collection: collection,
     itemView: ItemView,
-    plugins: [Backpack.TemplatePlugin, Backpack.ContainerPlugin, Backpack.SortablePlugin]
+    plugins: [Backpack.SortablePlugin]
   });
 
   _.each(['Orange', 'Apple', 'Grape'], function(name) {

@@ -68,139 +68,120 @@ test 'attach multiple events', 8, ->
   equal obj.counter2, 5, 'counter2 should be incremented five times.'
   return
 
+TestPlugin1 =
+  setup:->
+    @prop1 = 'hello'
+    return
+  hello:->
+    @prop = 'plugin1'
+    return
+  cleanup:->
+    @prop1 = 'bye'
+    return
+TestPlugin2 =
+  setup:->
+    @prop2 = 'konichiwa'
+    return
+  hello:->
+    @prop = 'plugin2'
+    return
+  cleanup:->
+    @prop2 = 'sayonara'
+    return
+
 _.each Backpack.testDefs, (def)->
 
   module def.name
 
-  test 'extend with plugins', 4, ->
-    testPlugin1 =
-      setup:->
-        @prop1 = 'hello'
-        return
-      cleanup:->
-        @prop1 = 'bye'
-        return
-    testPlugin2 =
-      setup:->
-        @prop2 = 'konichiwa'
-        return
-      cleanup:->
-        @prop2 = 'sayonara'
-        return
-    TestClass = def.class.extend
-      plugins: [testPlugin1, testPlugin2]
+  test 'extend with plugins', 5, ->
+    TestClass = def.class.extend plugins: [TestPlugin1, TestPlugin2]
     instance = new TestClass()
     equal instance.prop1, 'hello', 'setup called for first plugin'
     equal instance.prop2, 'konichiwa', 'setup called for second plugin'
+    instance.hello()
+    equal instance.prop, 'plugin2', 'later plugins should override previous plugins'
     instance.destroy()
     equal instance.prop1, 'bye', 'cleanup called for first plugin'
     equal instance.prop2, 'sayonara', 'cleanup called for second plugin'
     return
 
-  test 'initialize with plugins', 4, ->
-    testPlugin1 =
-      setup:->
-        @prop1 = 'hello'
-        return
-      cleanup:->
-        @prop1 = 'bye'
-        return
-    testPlugin2 =
-      setup:->
-        @prop2 = 'konichiwa'
-        return
-      cleanup:->
-        @prop2 = 'sayonara'
-        return
-    instance = def.createInstance plugins: [testPlugin1, testPlugin2]
+  test 'initialize with plugins', 5, ->
+    instance = def.createInstance plugins: [TestPlugin1, TestPlugin2]
     equal instance.prop1, 'hello', 'setup called for first plugin'
     equal instance.prop2, 'konichiwa', 'setup called for second plugin'
+    instance.hello()
+    equal instance.prop, 'plugin2', 'later plugins should override previous plugins'
     instance.destroy()
     equal instance.prop1, 'bye', 'cleanup called for first plugin'
     equal instance.prop2, 'sayonara', 'cleanup called for second plugin'
     return
 
-  test 'override extend plugins with initialize plugins', 4, ->
-    testPlugin1 =
-      setup:->
-        @prop1 = 'hello'
-        return
-      cleanup:->
-        @prop1 = 'bye'
-        return
-    testPlugin2 =
-      setup:->
-        @prop2 = 'konichiwa'
-        return
-      cleanup:->
-        @prop2 = 'sayonara'
-        return
-    TestClass = def.class.extend
-      plugins: [testPlugin1]
-    instance = def.createInstance plugins: [testPlugin2]
+  test 'extend subclass with plugins', 5, ->
+    TestSubClass = def.class.extend plugins: [TestPlugin1]
+    TestSubSubClass = TestSubClass.extend plugins: [TestPlugin2]
+    instance = new TestSubSubClass()
+    equal instance.prop1, 'hello', 'setup called for first plugin'
+    equal instance.prop2, 'konichiwa', 'setup called for second plugin'
+    instance.hello()
+    equal instance.prop, 'plugin2', 'later plugins should override previous plugins'
+    instance.destroy()
+    equal instance.prop1, 'bye', 'cleanup called for first plugin'
+    equal instance.prop2, 'sayonara', 'cleanup called for second plugin'
+    return
+
+  test 'both extend plugins and initialize plugins', 5, ->
+    TestClass = def.class.extend plugins: [TestPlugin1]
+    instance = def.createInstance { plugins: [TestPlugin2] }, TestClass
+    equal instance.prop1, 'hello', 'setup called for extend plugin'
+    equal instance.prop2, 'konichiwa', 'setup called for initialize plugin'
+    instance.hello()
+    equal instance.prop, 'plugin2', 'later plugins should override previous plugins'
+    instance.destroy()
+    equal instance.prop1, 'bye', 'cleanup called for extend plugin'
+    equal instance.prop2, 'sayonara', 'cleanup called for initialize plugin'
+    return
+
+  test 'superclass plugins enabled when subclassed without plugins', 2, ->
+    TestSubClass = def.class.extend plugins: [TestPlugin1]
+    TestSubSubClass = TestSubClass.extend()
+    instance = new TestSubSubClass()
+    equal instance.prop1, 'hello', 'setup called for plugin'
+    instance.destroy()
+    equal instance.prop1, 'bye', 'cleanup called for plugin'
+    return
+
+  test 'allPlugins should override superclass plugins', 5, ->
+    TestSubClass = def.class.extend allPlugins: [TestPlugin1]
+    TestSubSubClass = TestSubClass.extend allPlugins: [TestPlugin2]
+    instance = new TestSubSubClass()
+    notEqual instance.prop1, 'hello', 'setup not called for first plugin'
+    equal instance.prop2, 'konichiwa', 'setup called for second plugin'
+    instance.hello()
+    equal instance.prop, 'plugin2', 'later plugins should override previous plugins'
+    instance.destroy()
+    notEqual instance.prop1, 'bye', 'cleanup not called for first plugin'
+    equal instance.prop2, 'sayonara', 'cleanup called for second plugin'
+    return
+
+  test 'both extend allPlugins and initialize allPlugins', 5, ->
+    TestClass = def.class.extend allPlugins: [TestPlugin1]
+    instance = def.createInstance { allPlugins: [TestPlugin2] }, TestClass
     notEqual instance.prop1, 'hello', 'setup not called for extend plugin'
     equal instance.prop2, 'konichiwa', 'setup called for initialize plugin'
+    instance.hello()
+    equal instance.prop, 'plugin2', 'later plugins should override previous plugins'
     instance.destroy()
     notEqual instance.prop1, 'bye', 'cleanup not called for extend plugin'
     equal instance.prop2, 'sayonara', 'cleanup called for initialize plugin'
     return
 
-  test 'later plugins should override previous plugins', 1, ->
-    testPlugin1 =
-      hello:->
-        @prop = 'plugin1'
-    testPlugin2 =
-      hello:->
-        @prop = 'plugin2'
-    TestClass = def.class.extend
-      plugins: [testPlugin1, testPlugin2]
-    instance = new TestClass()
-    instance.hello()
-    equal instance.prop, 'plugin2', 'override method called for later plugin'
-    return
-
-  test 'extend subclass with plugins', 4, ->
-    testPlugin1 =
-      setup:->
-        @prop1 = 'hello'
-        return
-      cleanup:->
-        @prop1 = 'bye'
-        return
-    testPlugin2 =
-      setup:->
-        @prop2 = 'konichiwa'
-        return
-      cleanup:->
-        @prop2 = 'sayonara'
-        return
-    TestSubClass = def.class.extend
-      plugins: [testPlugin1]
-    TestSubSubClass = TestSubClass.extend
-      plugins: [testPlugin2]
-    instance = new TestSubSubClass()
-    ok !instance.prop1, 'setup not called for first plugin'
-    equal instance.prop2, 'konichiwa', 'setup called for second plugin'
-    instance.destroy()
-    ok !instance.prop1, 'cleanup not called for first plugin'
-    equal instance.prop2, 'sayonara', 'cleanup called for second plugin'
-    return
-
-  test 'superclass plugins enabled when subclassed without plugins', 2, ->
-    testPlugin =
-      setup:->
-        @prop = 'hello'
-        return
-      cleanup:->
-        @prop = 'bye'
-        return
-    TestSubClass = def.class.extend
-      plugins: [testPlugin]
+  test 'superclass allPlugins enabled when subclassed without plugins', 2, ->
+    TestSubClass = def.class.extend allPlugins: [TestPlugin1]
     TestSubSubClass = TestSubClass.extend()
     instance = new TestSubSubClass()
-    equal instance.prop, 'hello', 'setup called for plugin'
+    equal instance.prop1, 'hello', 'setup called for plugin'
     instance.destroy()
-    equal instance.prop, 'bye', 'cleanup called for plugin'
+    equal instance.prop1, 'bye', 'cleanup called for plugin'
     return
 
   return

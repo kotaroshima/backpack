@@ -66,8 +66,15 @@
     if (options == null) {
       options = {};
     }
-    self.plugins = options.plugins || self.plugins;
-    plugins = _.clone(Backpack.defaultPlugins).concat(self.plugins || []);
+    if (options.allPlugins) {
+      plugins = options.allPlugins;
+    } else {
+      plugins = self.allPlugins || [];
+      if (options.plugins) {
+        plugins = plugins.concat(options.plugins);
+      }
+    }
+    plugins = _.clone(Backpack.defaultPlugins).concat(plugins);
     self.setups = [];
     self.cleanups = [];
     mixins = {};
@@ -121,15 +128,26 @@
 
     child = Backbone.Model.extend.call(this, protoProps, staticProps);
     if (protoProps) {
-      plugins = protoProps.plugins;
+      plugins = protoProps.allPlugins;
       if (plugins) {
         /* Override superclass plugins with subclass plugins
         */
 
-        child.prototype.plugins = plugins;
-        /* apply static props
-        */
+        child.prototype.allPlugins = plugins;
+      } else {
+        plugins = protoProps.plugins;
+        if (plugins) {
+          if (child.prototype.allPlugins) {
+            child.prototype.allPlugins = child.prototype.allPlugins.concat(plugins);
+          } else {
+            child.prototype.allPlugins = plugins;
+          }
+        }
+      }
+      /* apply static props
+      */
 
+      if (plugins) {
         _.each(plugins, function(pi) {
           if (pi.staticProps) {
             _.extend(child, pi.staticProps);
@@ -1310,7 +1328,7 @@
 
 
   Backpack.EditableListView = Backpack.ListView.extend({
-    plugins: [Backpack.TemplatePlugin, Backpack.ContainerPlugin, Backpack.SortablePlugin],
+    plugins: [Backpack.SortablePlugin],
     sortableOptions: {
       handle: ".reorder-handle"
     },
@@ -1379,7 +1397,7 @@
 
 
   Backpack.TabView = Backpack.StackView.extend({
-    plugins: [Backpack.TemplatePlugin, Backpack.ContainerPlugin],
+    allPlugins: [Backpack.TemplatePlugin, Backpack.ContainerPlugin],
     template: '<div class="tab-button-container"></div><div class="tab-content-container"></div>',
     templateNodes: {
       containerNode: '.tab-content-container'
