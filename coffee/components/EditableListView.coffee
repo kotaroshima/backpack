@@ -7,7 +7,7 @@ EditableItemView = Backpack.ActionView.extend
       [{
         iconClass: 'delete-icon'
         title: 'Confirm delete' # TODO : i18n
-        onClicked: 'onRemoveConfirmButtonClicked'
+        onClick: 'onRemoveConfirmButtonClick'
       }]
     right:
       [{
@@ -18,14 +18,14 @@ EditableItemView = Backpack.ActionView.extend
         iconClass: 'delete-button'
         title: 'Delete' # TODO : i18n
         text: 'Delete' # TODO : i18n
-        onClicked: 'onRemoveButtonClicked'
+        onClick: 'onRemoveButtonClick'
       }]
 
   ###*
   * Click event handler for remove confirm icon
   * switches to remove confirm mode
   ###
-  onRemoveConfirmButtonClicked:(e)->
+  onRemoveConfirmButtonClick:(e)->
     isRemoveConfirm = @$el.hasClass CLS_REMOVE_CONFIRM
     @$el.toggleClass CLS_REMOVE_CONFIRM, !isRemoveConfirm
     e.stopPropagation()
@@ -35,7 +35,7 @@ EditableItemView = Backpack.ActionView.extend
   * Click event handler for [Remove] button
   * removes this item from play list
   ###
-  onRemoveButtonClicked:(e)->
+  onRemoveButtonClick:(e)->
     @child.model.destroy()
     e.stopPropagation()
     return

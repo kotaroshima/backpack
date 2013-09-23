@@ -50,20 +50,20 @@
 
       html = '<span class="' + (isLeft ? 'left-cell' : 'right-cell') + '">';
       _.each(actions, function(action) {
-        var iconClass, onClicked;
+        var iconClass, onClick;
 
         iconClass = action.iconClass;
-        onClicked = action.onClicked;
-        if (onClicked) {
-          if (_.isString(onClicked)) {
-            onClicked = _this[onClicked];
+        onClick = action.onClick;
+        if (onClick) {
+          if (_.isString(onClick)) {
+            onClick = _this[onClick];
           }
-          if (onClicked && _.isFunction(onClicked)) {
-            _this.events['click .' + iconClass] = _.bind(onClicked, _this);
+          if (onClick && _.isFunction(onClick)) {
+            _this.events['click .' + iconClass] = _.bind(onClick, _this);
           }
         }
         action = _.defaults(action, {
-          tagName: onClicked ? 'button' : 'span',
+          tagName: onClick ? 'button' : 'span',
           iconClass: '',
           title: '',
           text: ''

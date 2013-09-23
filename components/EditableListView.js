@@ -12,7 +12,7 @@
         {
           iconClass: 'delete-icon',
           title: 'Confirm delete',
-          onClicked: 'onRemoveConfirmButtonClicked'
+          onClick: 'onRemoveConfirmButtonClick'
         }
       ],
       right: [
@@ -23,7 +23,7 @@
           iconClass: 'delete-button',
           title: 'Delete',
           text: 'Delete',
-          onClicked: 'onRemoveButtonClicked'
+          onClick: 'onRemoveButtonClick'
         }
       ]
     },
@@ -32,7 +32,7 @@
     * switches to remove confirm mode
     */
 
-    onRemoveConfirmButtonClicked: function(e) {
+    onRemoveConfirmButtonClick: function(e) {
       var isRemoveConfirm;
 
       isRemoveConfirm = this.$el.hasClass(CLS_REMOVE_CONFIRM);
@@ -44,7 +44,7 @@
     * removes this item from play list
     */
 
-    onRemoveButtonClicked: function(e) {
+    onRemoveButtonClick: function(e) {
       this.child.model.destroy();
       e.stopPropagation();
     }

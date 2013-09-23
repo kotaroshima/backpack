@@ -849,20 +849,20 @@
 
       html = '<span class="' + (isLeft ? 'left-cell' : 'right-cell') + '">';
       _.each(actions, function(action) {
-        var iconClass, onClicked;
+        var iconClass, onClick;
 
         iconClass = action.iconClass;
-        onClicked = action.onClicked;
-        if (onClicked) {
-          if (_.isString(onClicked)) {
-            onClicked = _this[onClicked];
+        onClick = action.onClick;
+        if (onClick) {
+          if (_.isString(onClick)) {
+            onClick = _this[onClick];
           }
-          if (onClicked && _.isFunction(onClicked)) {
-            _this.events['click .' + iconClass] = _.bind(onClicked, _this);
+          if (onClick && _.isFunction(onClick)) {
+            _this.events['click .' + iconClass] = _.bind(onClick, _this);
           }
         }
         action = _.defaults(action, {
-          tagName: onClicked ? 'button' : 'span',
+          tagName: onClick ? 'button' : 'span',
           iconClass: '',
           title: '',
           text: ''
@@ -1262,7 +1262,7 @@
         {
           iconClass: 'delete-icon',
           title: 'Confirm delete',
-          onClicked: 'onRemoveConfirmButtonClicked'
+          onClick: 'onRemoveConfirmButtonClick'
         }
       ],
       right: [
@@ -1273,7 +1273,7 @@
           iconClass: 'delete-button',
           title: 'Delete',
           text: 'Delete',
-          onClicked: 'onRemoveButtonClicked'
+          onClick: 'onRemoveButtonClick'
         }
       ]
     },
@@ -1282,7 +1282,7 @@
     * switches to remove confirm mode
     */
 
-    onRemoveConfirmButtonClicked: function(e) {
+    onRemoveConfirmButtonClick: function(e) {
       var isRemoveConfirm;
 
       isRemoveConfirm = this.$el.hasClass(CLS_REMOVE_CONFIRM);
@@ -1294,7 +1294,7 @@
     * removes this item from play list
     */
 
-    onRemoveButtonClicked: function(e) {
+    onRemoveButtonClick: function(e) {
       this.child.model.destroy();
       e.stopPropagation();
     }
@@ -1368,9 +1368,9 @@
     plugins: [Backpack.TemplatePlugin],
     template: _.template('<%- title %>'),
     events: {
-      'click': 'onClicked'
+      'click': 'onClick'
     },
-    onClicked: function(e) {}
+    onClick: function(e) {}
   });
 
   /*
@@ -1413,7 +1413,7 @@
       tabView = this;
       tabButtonView = new Backpack.TabButtonView({
         title: view.title || view.name,
-        onClicked: function(e) {
+        onClick: function(e) {
           /*
           * If tab button view is clicked, show corresponding content view
           * `this` points to a TabButtonView instance in this scope

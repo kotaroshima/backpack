@@ -16,9 +16,9 @@ Backpack.TabButtonView = Backpack.View.extend
   template: _.template '<%- title %>'
 
   events:
-    'click': 'onClicked'
+    'click': 'onClick'
 
-  onClicked:(e)->
+  onClick:(e)->
 
 ###
 * A tab panel view that contains tab button view and tab content view
@@ -54,7 +54,7 @@ Backpack.TabView = Backpack.StackView.extend
     tabView = @
     tabButtonView = new Backpack.TabButtonView
       title: view.title || view.name
-      onClicked:(e)->
+      onClick:(e)->
         ###
         * If tab button view is clicked, show corresponding content view
         * `this` points to a TabButtonView instance in this scope

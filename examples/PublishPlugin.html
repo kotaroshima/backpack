@@ -22,7 +22,7 @@ $(function(){
     template: _.template('<button>Click Me!</button>'),
 
     events: {
-      "click BUTTON": "onMyButtonClicked",
+      "click BUTTON": "onMyButtonClick",
     },
 
     publishers: {
@@ -34,7 +34,7 @@ $(function(){
       return this;
     },
 
-    onMyButtonClicked: function(e) {
+    onMyButtonClick: function(e) {
       this.sayHello('Michael', 'Jackson');
     },
 

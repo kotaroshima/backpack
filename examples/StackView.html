@@ -59,53 +59,53 @@ $(function(){
     name: 'view1',
     template: '<div class="header"><span class="header-left"></span><h2>View1</h2><span class="header-right"><button id="view2Button">View2</button><button id="view3Button">View3</button></span></div><div class="content content1">Content of view 1</div>',
     events: {
-      'click #view2Button': 'onView2Clicked',
-      'click #view3Button': 'onView3Clicked'
+      'click #view2Button': 'onView2Click',
+      'click #view3Button': 'onView3Click'
     },
     initialize: function(options){
       this.$el.html(this.template);
     },
-    onView2Clicked: function(e){},
-    onView3Clicked: function(e){}
+    onView2Click: function(e){},
+    onView3Click: function(e){}
   });
   var view2 = new Backpack.View({
     name: 'view2',
     template: '<div class="header"><span class="header-left"><button id="view1Button">View1</button></span><h2>View2</h2><span class="header-right"><button id="view3Button">View3</button></span></div><div class="content content2">Content of view 2</div>',
     events: {
-      'click #view1Button': 'onView1Clicked',
-      'click #view3Button': 'onView3Clicked'
+      'click #view1Button': 'onView1Click',
+      'click #view3Button': 'onView3Click'
     },
     initialize: function(options){
       this.$el.html(this.template);
     },
-    onView1Clicked: function(e){},
-    onView3Clicked: function(e){}
+    onView1Click: function(e){},
+    onView3Click: function(e){}
   });
   var view3 = new Backpack.View({
     name: 'view3',
     template: '<div class="header"><span class="header-left"><button id="backButton">Back</button></span><h2>View3</h2><span class="header-right"></span></div><div class="content content3">Content of view 3</div>',
     events: {
-      'click #backButton': 'onBackClicked'
+      'click #backButton': 'onBackClick'
     },
     initialize: function(options){
       this.$el.html(this.template);
     },
-    onBackClicked: function(e){}
+    onBackClick: function(e){}
   });
   var stackView = new Backpack.StackView({
     el: '#stackView',
     children: [view1, view2, view3],
     navigationEvents: {
       view1: [
-        { event: 'onView2Clicked', target: 'view2' },
-        { event: 'onView3Clicked', target: 'view3' }
+        { event: 'onView2Click', target: 'view2' },
+        { event: 'onView3Click', target: 'view3' }
       ],
       view2: [
-        { event: 'onView1Clicked', target: 'view1' },
-        { event: 'onView3Clicked', target: 'view3' }
+        { event: 'onView1Click', target: 'view1' },
+        { event: 'onView3Click', target: 'view3' }
       ],
       view3: {
-        event: 'onBackClicked',
+        event: 'onBackClick',
         back: true
       }
     }

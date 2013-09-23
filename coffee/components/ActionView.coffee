@@ -34,16 +34,16 @@ Backpack.ActionView = Backpack.View.extend
     html = '<span class="'+(if isLeft then 'left-cell' else 'right-cell')+'">'
     _.each actions, (action)=>
       iconClass = action.iconClass
-      onClicked = action.onClicked
+      onClick = action.onClick
 
-      if onClicked
-        if _.isString onClicked
-          onClicked = @[onClicked]
-        if onClicked && _.isFunction onClicked
-          @events['click .'+iconClass] = _.bind onClicked, @
+      if onClick
+        if _.isString onClick
+          onClick = @[onClick]
+        if onClick && _.isFunction onClick
+          @events['click .'+iconClass] = _.bind onClick, @
 
       action = _.defaults action,
-        tagName: if onClicked then 'button' else 'span'
+        tagName: if onClick then 'button' else 'span'
         iconClass: ''
         title: ''
         text: ''

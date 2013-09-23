@@ -19,9 +19,9 @@
     plugins: [Backpack.TemplatePlugin],
     template: _.template('<%- title %>'),
     events: {
-      'click': 'onClicked'
+      'click': 'onClick'
     },
-    onClicked: function(e) {}
+    onClick: function(e) {}
   });
 
   /*
@@ -64,7 +64,7 @@
       tabView = this;
       tabButtonView = new Backpack.TabButtonView({
         title: view.title || view.name,
-        onClicked: function(e) {
+        onClick: function(e) {
           /*
           * If tab button view is clicked, show corresponding content view
           * `this` points to a TabButtonView instance in this scope

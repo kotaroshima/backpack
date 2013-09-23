@@ -11,7 +11,7 @@ assertSelectedView = (tabView, visibleIndex)->
     return
   return
 
-assertTabButtonClicked = (tabView, tabIndex)->
+assertTabButtonClick = (tabView, tabIndex)->
   tabButton = tabView._buttonMap[tabView.getChild(tabIndex).cid].$el
   handler = ->
     assertSelectedView tabView, tabIndex
@@ -118,10 +118,10 @@ test 'display corresponding view by clicking tab button', 30, ->
   $('#testNode').append tabView.$el
   assertSelectedView tabView, 0
 
-  assertTabButtonClicked tabView, 2
-  assertTabButtonClicked tabView, 0
-  assertTabButtonClicked tabView, 1
-  assertTabButtonClicked tabView, 0
+  assertTabButtonClick tabView, 2
+  assertTabButtonClick tabView, 0
+  assertTabButtonClick tabView, 1
+  assertTabButtonClick tabView, 0
   return
 
 test 'add child and click added tab', 23, ->
@@ -146,8 +146,8 @@ test 'add child and click added tab', 23, ->
   equal tabView.children.length, 3
   assertSelectedView tabView, 0
 
-  assertTabButtonClicked tabView, 2
-  assertTabButtonClicked tabView, 1
+  assertTabButtonClick tabView, 2
+  assertTabButtonClick tabView, 1
   return
 
 test 'remove view', 11, ->
@@ -227,8 +227,8 @@ test 'remove single remaining view and then add new views', 21, ->
   equal tabView.children.length, 2
   assertSelectedView tabView, 0
 
-  assertTabButtonClicked tabView, 1
-  assertTabButtonClicked tabView, 0
+  assertTabButtonClick tabView, 1
+  assertTabButtonClick tabView, 0
   return
 
 asyncTest 'attach navigation event', 8, ->
