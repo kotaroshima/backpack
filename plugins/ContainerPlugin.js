@@ -49,6 +49,8 @@
         return _.find(this.children, function(view) {
           return view.name === child;
         });
+      } else {
+        return null;
       }
     },
     /**
@@ -116,7 +118,7 @@
     },
     /**
     * A hook to notify that child view has been removed
-    * @param {Backbone.View|Integer} view A view which is removed
+    * @param {Backbone.View} view A view which is removed
     */
 
     onChildRemoved: function(view) {},

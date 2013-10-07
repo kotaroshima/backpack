@@ -117,17 +117,21 @@
     */
 
     removeChild: function(view) {
-      var index;
+      var child, index;
 
       view = this.getChild(view);
       if (view === this._currentView) {
         index = _.indexOf(this.children, view);
-        if (index > 0) {
-          this.showChild(this.getChild(index - 1), true);
+        if (this.children.length > 1) {
+          if (index > 0) {
+            child = this.getChild(index - 1, true);
+          } else if (index === 0) {
+            child = this.getChild(1, true);
+          }
         } else {
-          this._currentView = null;
-          this._previousView = null;
+          child = null;
         }
+        this.showChild(child, true);
       }
       return Backpack.ContainerPlugin.removeChild.apply(this, arguments);
     },
@@ -179,11 +183,13 @@
         }
         this._currentView.$el.hide.apply(this._currentView.$el, hideEffect);
       }
-      showKey = bBack ? 'SHOW_BACKWARD' : 'SHOW_FORWARD';
-      if (!bNoAnimation) {
-        showEffect = this.effects[showKey];
+      if (child) {
+        showKey = bBack ? 'SHOW_BACKWARD' : 'SHOW_FORWARD';
+        if (!bNoAnimation) {
+          showEffect = this.effects[showKey];
+        }
+        child.$el.show.apply(child.$el, showEffect);
       }
-      child.$el.show.apply(child.$el, showEffect);
       this._previousView = this._currentView;
       return this._currentView = child;
     },

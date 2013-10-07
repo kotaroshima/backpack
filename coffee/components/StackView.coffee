@@ -82,11 +82,14 @@ Backpack.StackView = Backpack.View.extend
     view = @getChild view
     if view == @_currentView
       index = _.indexOf @children, view
-      if index > 0
-        @showChild @getChild(index-1), true
+      if @children.length > 1
+        if index > 0
+          child = @getChild index-1, true
+        else if index == 0
+          child = @getChild 1, true
       else
-        @_currentView = null
-        @_previousView = null
+        child = null
+      @showChild child, true
     Backpack.ContainerPlugin.removeChild.apply @, arguments
 
   ###*
@@ -127,9 +130,10 @@ Backpack.StackView = Backpack.View.extend
       hideKey = if bBack then 'HIDE_BACKWARD' else 'HIDE_FORWARD'
       hideEffect = @effects[hideKey] if !bNoAnimation
       @_currentView.$el.hide.apply @_currentView.$el, hideEffect
-    showKey = if bBack then 'SHOW_BACKWARD' else 'SHOW_FORWARD'
-    showEffect = @effects[showKey] if !bNoAnimation
-    child.$el.show.apply child.$el, showEffect
+    if child
+      showKey = if bBack then 'SHOW_BACKWARD' else 'SHOW_FORWARD'
+      showEffect = @effects[showKey] if !bNoAnimation
+      child.$el.show.apply child.$el, showEffect
     @_previousView = @_currentView
     @_currentView = child
 

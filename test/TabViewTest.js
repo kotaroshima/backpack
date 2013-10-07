@@ -12,11 +12,13 @@
 
   assertSelectedView = function(tabView, visibleIndex) {
     _.each(tabView.children, function(view, index) {
-      var isSelected;
+      var buttonAssertMsg, contentAssertMsg, isSelected;
 
       isSelected = visibleIndex === index;
-      equal(view.$el.is(':hidden'), !isSelected);
-      equal(tabView._buttonMap[view.cid].$el.hasClass('selected'), isSelected);
+      contentAssertMsg = isSelected ? 'content view should be visible' : 'content view should be hidden';
+      equal(view.$el.is(':hidden'), !isSelected, contentAssertMsg + ' (' + index + ')');
+      buttonAssertMsg = isSelected ? 'tab button view should be visible' : 'tab button view should be hidden';
+      equal(tabView._buttonMap[view.cid].$el.hasClass('selected'), isSelected, buttonAssertMsg + ' (' + index + ')');
     });
   };
 
@@ -25,7 +27,7 @@
 
     tabButton = tabView._buttonMap[tabView.getChild(tabIndex).cid].$el;
     handler = function() {
-      assertSelectedView(tabView, tabIndex);
+      assertSelectedView(tabView, tabIndex, 'tab button should be clicked');
     };
     tabButton.click(handler);
     tabButton.click();
@@ -56,7 +58,7 @@
     testNode.append(tabView.$el);
     assertSelectedView(tabView, 0);
     testNode.find('.tab-button').each(function(index, tabButton) {
-      equal($(this).text(), tabLabels[index]);
+      equal($(this).text(), tabLabels[index], 'tab label is correctly displayed');
     });
   });
 
@@ -86,7 +88,7 @@
     testNode.append(tabView.$el);
     assertSelectedView(tabView, 0);
     testNode.find('.tab-button').each(function(index, tabButton) {
-      equal($(this).text(), tabLabels[index]);
+      equal($(this).text(), tabLabels[index], 'tab label is correctly displayed');
     });
   });
 
@@ -184,7 +186,7 @@
       }
     });
     tabView.addChild(view3);
-    equal(tabView.children.length, 3);
+    equal(tabView.children.length, 3, 'number of children should be 3');
     assertSelectedView(tabView, 0);
     assertTabButtonClick(tabView, 2);
     assertTabButtonClick(tabView, 1);
@@ -214,7 +216,7 @@
     $('#testNode').append(tabView.$el);
     assertSelectedView(tabView, 0);
     tabView.removeChild(view2);
-    equal(tabView.children.length, 2);
+    equal(tabView.children.length, 2, 'number of children should be 2');
     assertSelectedView(tabView, 0);
   });
 
@@ -243,11 +245,40 @@
     $('#testNode').append(tabView.$el);
     assertSelectedView(tabView, 2);
     tabView.removeChild(view3);
-    equal(tabView.children.length, 2);
+    equal(tabView.children.length, 2, 'number of children should be 2');
     assertSelectedView(tabView, 1);
   });
 
-  test('remove single remaining view and then add new views', 21, function() {
+  test('remove selected first view', 11, function() {
+    var tabView, view1, view2, view3;
+
+    view1 = new Backpack.View({
+      initialize: function(options) {
+        this.$el.html('<div>View1</div>');
+      }
+    });
+    view2 = new Backpack.View({
+      initialize: function(options) {
+        this.$el.html('<div>View2</div>');
+      }
+    });
+    view3 = new Backpack.View({
+      initialize: function(options) {
+        this.$el.html('<div>View3</div>');
+      }
+    });
+    tabView = this.tabView = new Backpack.TabView({
+      children: [view1, view2, view3],
+      showIndex: 0
+    });
+    $('#testNode').append(tabView.$el);
+    assertSelectedView(tabView, 0);
+    tabView.removeChild(view1);
+    equal(tabView.children.length, 2, 'number of children should be 2');
+    assertSelectedView(tabView, 0);
+  });
+
+  test('remove single remaining view and then add new views', 20, function() {
     var tabView, view1, view2, view3;
 
     view1 = new Backpack.View({
@@ -261,16 +292,15 @@
     $('#testNode').append(tabView.$el);
     assertSelectedView(tabView, 0);
     tabView.removeChild(view1);
-    equal(tabView.children.length, 0);
-    equal(tabView._previousView, null);
-    equal(tabView._currentView, null);
+    equal(tabView.children.length, 0, 'number of children should be 0');
+    equal(tabView._currentView, null, 'current view should be null');
     view2 = new Backpack.View({
       initialize: function(options) {
         this.$el.html('<div>View2</div>');
       }
     });
     tabView.addChild(view2);
-    equal(tabView.children.length, 1);
+    equal(tabView.children.length, 1, 'number of children should be 1');
     assertSelectedView(tabView, 0);
     view3 = new Backpack.View({
       initialize: function(options) {
@@ -278,7 +308,7 @@
       }
     });
     tabView.addChild(view3);
-    equal(tabView.children.length, 2);
+    equal(tabView.children.length, 2, 'number of children should be 2');
     assertSelectedView(tabView, 0);
     assertTabButtonClick(tabView, 1);
     assertTabButtonClick(tabView, 0);

@@ -4,7 +4,10 @@
 
   assertVisibleView = function(stackView, visibleIndex) {
     _.each(stackView.children, function(view, index) {
-      equal(view.$el.is(':hidden'), visibleIndex !== index);
+      var contentAssertMsg;
+
+      contentAssertMsg = visibleIndex === index ? 'content view should be visible' : 'content view should be hidden';
+      equal(view.$el.is(':hidden'), visibleIndex !== index, contentAssertMsg + ' (' + index + ')');
     });
   };
 
@@ -76,6 +79,126 @@
     });
     $('#testNode').append(stackView.$el);
     assertVisibleView(stackView, 1);
+  });
+
+  test('remove view', 6, function() {
+    var stackView, view1, view2, view3;
+
+    view1 = new Backpack.View({
+      initialize: function(options) {
+        this.$el.html('<div>View1</div>');
+      }
+    });
+    view2 = new Backpack.View({
+      initialize: function(options) {
+        this.$el.html('<div>View2</div>');
+      }
+    });
+    view3 = new Backpack.View({
+      initialize: function(options) {
+        this.$el.html('<div>View3</div>');
+      }
+    });
+    stackView = this.stackViewView = new Backpack.StackView({
+      children: [view1, view2, view3]
+    });
+    $('#testNode').append(stackView.$el);
+    assertVisibleView(stackView, 0);
+    stackView.removeChild(view2);
+    equal(stackView.children.length, 2, 'number of children should be 2');
+    assertVisibleView(stackView, 0);
+  });
+
+  test('remove visible last view', 6, function() {
+    var stackView, view1, view2, view3;
+
+    view1 = new Backpack.View({
+      initialize: function(options) {
+        this.$el.html('<div>View1</div>');
+      }
+    });
+    view2 = new Backpack.View({
+      initialize: function(options) {
+        this.$el.html('<div>View2</div>');
+      }
+    });
+    view3 = new Backpack.View({
+      initialize: function(options) {
+        this.$el.html('<div>View3</div>');
+      }
+    });
+    stackView = this.stackView = new Backpack.StackView({
+      children: [view1, view2, view3],
+      showIndex: 2
+    });
+    $('#testNode').append(stackView.$el);
+    assertVisibleView(stackView, 2);
+    stackView.removeChild(view3);
+    equal(stackView.children.length, 2, 'number of children should be 2');
+    assertVisibleView(stackView, 1);
+  });
+
+  test('remove visible first view', 6, function() {
+    var stackView, view1, view2, view3;
+
+    view1 = new Backpack.View({
+      initialize: function(options) {
+        this.$el.html('<div>View1</div>');
+      }
+    });
+    view2 = new Backpack.View({
+      initialize: function(options) {
+        this.$el.html('<div>View2</div>');
+      }
+    });
+    view3 = new Backpack.View({
+      initialize: function(options) {
+        this.$el.html('<div>View3</div>');
+      }
+    });
+    stackView = this.stackView = new Backpack.StackView({
+      children: [view1, view2, view3],
+      showIndex: 0
+    });
+    $('#testNode').append(stackView.$el);
+    assertVisibleView(stackView, 0);
+    stackView.removeChild(view1);
+    equal(stackView.children.length, 2, 'number of children should be 2');
+    assertVisibleView(stackView, 0);
+  });
+
+  test('remove single remaining view and then add new views', 8, function() {
+    var stackView, view1, view2, view3;
+
+    view1 = new Backpack.View({
+      initialize: function(options) {
+        this.$el.html('<div>View1</div>');
+      }
+    });
+    stackView = this.stackView = new Backpack.StackView({
+      children: [view1]
+    });
+    $('#testNode').append(stackView.$el);
+    assertVisibleView(stackView, 0);
+    stackView.removeChild(view1);
+    equal(stackView.children.length, 0, 'number of children should be 0');
+    equal(stackView._currentView, null, 'current view should be null');
+    view2 = new Backpack.View({
+      initialize: function(options) {
+        this.$el.html('<div>View2</div>');
+      }
+    });
+    stackView.addChild(view2);
+    equal(stackView.children.length, 1, 'number of children should be 1');
+    assertVisibleView(stackView, 0);
+    view3 = new Backpack.View({
+      initialize: function(options) {
+        this.$el.html('<div>View3</div>');
+      }
+    });
+    stackView.addChild(view3);
+    equal(stackView.children.length, 2, 'number of children should be 2');
+    assertVisibleView(stackView, 0);
   });
 
   asyncTest('attach navigation event', 4, function() {

@@ -17,11 +17,7 @@
       "class": 'tab-button'
     },
     plugins: [Backpack.TemplatePlugin],
-    template: _.template('<%- title %>'),
-    events: {
-      'click': 'onClick'
-    },
-    onClick: function(e) {}
+    template: _.template('<%- text %>')
   });
 
   /*
@@ -53,30 +49,37 @@
       Backpack.StackView.prototype.render.apply(this, arguments);
       return this;
     },
-    /*
+    /**
     * Override Backpack.ContainerPlugin to add tab button
     */
 
     addView: function(view, options) {
-      var tabButtonView, tabView;
+      var clazz, tabButtonView;
 
       Backpack.StackView.prototype.addView.apply(this, arguments);
-      tabView = this;
-      tabButtonView = new Backpack.TabButtonView({
-        title: view.title || view.name,
-        onClick: function(e) {
-          /*
+      options = {
+        text: view.title || view.name,
+        tabView: this,
+        onClick: function() {
+          /**
           * If tab button view is clicked, show corresponding content view
           * `this` points to a TabButtonView instance in this scope
           */
-          tabView.showChild(this._tabContentView);
+          this.tabView.showChild(this._tabContentView);
         }
-      });
+      };
+      _.extend(options, this.tabButtonOptions);
+      if (!options.events) {
+        options.events = {};
+      }
+      options.events.click = 'onClick';
+      clazz = this.tabButtonView || Backpack.TabButtonView;
+      tabButtonView = new clazz(options);
       this.buttonContainer.addChild(tabButtonView);
       this._buttonMap[view.cid] = tabButtonView;
       tabButtonView._tabContentView = view;
     },
-    /*
+    /**
     * Override Backpack.StackView to remove/destroy tab button
     */
 
@@ -87,7 +90,6 @@
       if (child) {
         tabButtonView = this._buttonMap[child.cid];
         this.buttonContainer.removeChild(tabButtonView);
-        tabButtonView.destroy();
         delete this._buttonMap[child.cid];
       }
       return child;
@@ -109,7 +111,38 @@
         map[child.cid].$el.addClass(CLS_SELECTED);
       }
       return child;
+    },
+    /**
+    * Get tab content view for a tab button view
+    */
+
+    getTabContent: function(tabButtonView) {
+      return tabButtonView._tabContentView;
     }
   });
+
+  Backpack.CloseTabButtonPlugin = {
+    tabButtonView: Backpack.ActionView,
+    tabButtonOptions: {
+      attributes: {
+        "class": 'tab-button'
+      },
+      actions: [
+        {
+          iconClass: 'tab-close',
+          onClick: function(e) {
+            var contentView;
+
+            contentView = this.tabView.getTabContent(this);
+            this.tabView.removeChild(contentView);
+            /* stopPropagation so that it doesn't try to select removed tab
+            */
+
+            e.stopPropagation();
+          }
+        }
+      ]
+    }
+  };
 
 }).call(this);

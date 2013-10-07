@@ -6,15 +6,17 @@ module 'Backpack.TabView',
 assertSelectedView = (tabView, visibleIndex)->
   _.each tabView.children, (view, index)->
     isSelected = (visibleIndex == index)
-    equal view.$el.is(':hidden'), !isSelected
-    equal tabView._buttonMap[view.cid].$el.hasClass('selected'), isSelected
+    contentAssertMsg = if isSelected then 'content view should be visible' else 'content view should be hidden'
+    equal view.$el.is(':hidden'), !isSelected, contentAssertMsg+' ('+index+')'
+    buttonAssertMsg = if isSelected then 'tab button view should be visible' else 'tab button view should be hidden'
+    equal tabView._buttonMap[view.cid].$el.hasClass('selected'), isSelected, buttonAssertMsg+' ('+index+')'
     return
   return
 
 assertTabButtonClick = (tabView, tabIndex)->
   tabButton = tabView._buttonMap[tabView.getChild(tabIndex).cid].$el
   handler = ->
-    assertSelectedView tabView, tabIndex
+    assertSelectedView tabView, tabIndex, 'tab button should be clicked'
     return
   tabButton.click handler
   tabButton.click()
@@ -40,7 +42,7 @@ test 'initialize by passing children', 4, ->
   testNode.append tabView.$el
   assertSelectedView tabView, 0
   testNode.find('.tab-button').each (index, tabButton)->
-    equal $(@).text(), tabLabels[index]
+    equal $(@).text(), tabLabels[index], 'tab label is correctly displayed'
     return
   return
 
@@ -65,7 +67,7 @@ test 'title shown in tab button', 4, ->
   testNode.append tabView.$el
   assertSelectedView tabView, 0
   testNode.find('.tab-button').each (index, tabButton)->
-    equal $(@).text(), tabLabels[index]
+    equal $(@).text(), tabLabels[index], 'tab label is correctly displayed'
     return
   return
 
@@ -143,7 +145,7 @@ test 'add child and click added tab', 23, ->
       @$el.html '<div>View3</div>'
       return
   tabView.addChild view3
-  equal tabView.children.length, 3
+  equal tabView.children.length, 3, 'number of children should be 3'
   assertSelectedView tabView, 0
 
   assertTabButtonClick tabView, 2
@@ -169,7 +171,7 @@ test 'remove view', 11, ->
   assertSelectedView tabView, 0
 
   tabView.removeChild view2
-  equal tabView.children.length, 2
+  equal tabView.children.length, 2, 'number of children should be 2'
   assertSelectedView tabView, 0
   return
 
@@ -193,11 +195,35 @@ test 'remove selected last view', 11, ->
   assertSelectedView tabView, 2
 
   tabView.removeChild view3
-  equal tabView.children.length, 2
+  equal tabView.children.length, 2, 'number of children should be 2'
   assertSelectedView tabView, 1
   return
 
-test 'remove single remaining view and then add new views', 21, ->
+test 'remove selected first view', 11, ->
+  view1 = new Backpack.View
+    initialize:(options)->
+      @$el.html '<div>View1</div>'
+      return
+  view2 = new Backpack.View
+    initialize:(options)->
+      @$el.html '<div>View2</div>'
+      return
+  view3 = new Backpack.View
+    initialize:(options)->
+      @$el.html '<div>View3</div>'
+      return
+  tabView = @tabView = new Backpack.TabView
+    children: [view1, view2, view3]
+    showIndex: 0
+  $('#testNode').append tabView.$el
+  assertSelectedView tabView, 0
+
+  tabView.removeChild view1
+  equal tabView.children.length, 2, 'number of children should be 2'
+  assertSelectedView tabView, 0
+  return
+
+test 'remove single remaining view and then add new views', 20, ->
   view1 = new Backpack.View
     initialize:(options)->
       @$el.html '<div>View1</div>'
@@ -207,16 +233,15 @@ test 'remove single remaining view and then add new views', 21, ->
   $('#testNode').append tabView.$el
   assertSelectedView tabView, 0
   tabView.removeChild view1
-  equal tabView.children.length, 0
-  equal tabView._previousView, null
-  equal tabView._currentView, null
+  equal tabView.children.length, 0, 'number of children should be 0'
+  equal tabView._currentView, null, 'current view should be null'
 
   view2 = new Backpack.View
     initialize:(options)->
       @$el.html '<div>View2</div>'
       return
   tabView.addChild view2
-  equal tabView.children.length, 1
+  equal tabView.children.length, 1, 'number of children should be 1'
   assertSelectedView tabView, 0
 
   view3 = new Backpack.View
@@ -224,7 +249,7 @@ test 'remove single remaining view and then add new views', 21, ->
       @$el.html '<div>View3</div>'
       return
   tabView.addChild view3
-  equal tabView.children.length, 2
+  equal tabView.children.length, 2, 'number of children should be 2'
   assertSelectedView tabView, 0
 
   assertTabButtonClick tabView, 1

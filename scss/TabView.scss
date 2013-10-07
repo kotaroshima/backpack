@@ -30,4 +30,17 @@ $border-color: #D5D5D5;
       cursor: auto;
     }
   }
+
+  .action-view {
+    display: inline-block;
+    width: auto;
+  }
+}
+
+.tab-close {
+  background: url('../images/delete_control.jpg') transparent center center no-repeat;
+  width: 34px;
+  height: 33px;
+  border: none;
+  padding: 0;
 }

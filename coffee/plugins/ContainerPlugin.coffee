@@ -34,6 +34,8 @@ Backpack.ContainerPlugin =
     else if _.isString child
       _.find @children, (view)->
         view.name == child
+    else
+      null
 
   ###*
   * Add view to container node
@@ -87,7 +89,7 @@ Backpack.ContainerPlugin =
 
   ###*
   * A hook to notify that child view has been removed
-  * @param {Backbone.View|Integer} view A view which is removed
+  * @param {Backbone.View} view A view which is removed
   ###
   onChildRemoved:(view)->
 
