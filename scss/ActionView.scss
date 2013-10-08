@@ -1,10 +1,27 @@
-$padding-x: 5px;
+$padding-x: 3px;
 $padding-y: 3px;
 
 @mixin border-box-sizing {
   box-sizing: border-box;
   -moz-box-sizing: border-box;
   -webkit-box-sizing: border-box;
+}
+
+@mixin opacity($o) {
+  opacity: $o;
+  filter: alpha(opacity=100*$o);
+  -moz-opacity: $o;
+  -ms-filter: "alpha(opacity="+100*$o+")";
+}
+
+@mixin action-cell {
+  width: 32px;
+  padding: $padding-y $padding-x;
+  white-space: nowrap;
+
+  &:hover {
+    @include opacity(0.5);
+  }
 }
 
 .action-view {
@@ -15,23 +32,15 @@ $padding-y: 3px;
   > * {
     display: table-cell;
     vertical-align: middle;
-    padding-top: $padding-y;
-    padding-bottom: $padding-y;
   }
 
   .left-cell {
     text-align: left;
-    width: 32px;
-    padding-left: $padding-x;
-    padding-right: $padding-x;
-    white-space: nowrap;
+    @include action-cell;
   }
 
   .right-cell {
     text-align: right;
-    width: 32px;
-    padding-left: $padding-x;
-    padding-right: $padding-x;
-    white-space: nowrap;
+    @include action-cell;
   }
 }

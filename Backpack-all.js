@@ -960,8 +960,7 @@
       }
       Backpack.View.prototype.initialize.apply(this, arguments);
       this.$el.css({
-        position: "relative",
-        width: "100%"
+        position: "relative"
       });
       this.attach('addView', function(view, options) {
         if ((options != null ? options.showOnAdd : void 0) === true) {

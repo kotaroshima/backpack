@@ -11,6 +11,7 @@ $border-color: #D5D5D5;
   text-decoration: none;
   color: black;
   @include tab-button-default;
+  cursor: pointer;
   
   &:hover {
     text-decoration: underline;
@@ -24,6 +25,7 @@ $border-color: #D5D5D5;
     border-width: 1px 1px 0 1px;
     border-style: solid;
     border-color: $border-color;
+    cursor: default;
 
     &:hover {
       @include tab-button-default;
@@ -34,11 +36,12 @@ $border-color: #D5D5D5;
   .action-view {
     display: inline-block;
     width: auto;
+    padding: 5px 0 5px 10px;
   }
 }
 
 .tab-close {
-  background: url('../images/delete_control.jpg') transparent center center no-repeat;
+  background: url('../images/close.png') transparent center center no-repeat;
   width: 34px;
   height: 33px;
   border: none;

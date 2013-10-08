@@ -5,6 +5,7 @@
   color: black;
   background-color: white;
   text-decoration: none;
+  cursor: pointer;
 }
 .tab-button:hover {
   text-decoration: underline;
@@ -16,6 +17,7 @@
   border-width: 1px 1px 0 1px;
   border-style: solid;
   border-color: #d5d5d5;
+  cursor: default;
 }
 .tab-button-container .selected:hover {
   background-color: white;
@@ -25,10 +27,11 @@
 .tab-button-container .action-view {
   display: inline-block;
   width: auto;
+  padding: 5px 0 5px 10px;
 }
 
 .tab-close {
-  background: url("../images/delete_control.jpg") transparent center center no-repeat;
+  background: url("../images/close.png") transparent center center no-repeat;
   width: 34px;
   height: 33px;
   border: none;

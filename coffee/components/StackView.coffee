@@ -21,7 +21,7 @@ Backpack.StackView = Backpack.View.extend
   initialize:(options={})->
     Backpack.View::initialize.apply @, arguments
 
-    @$el.css position: "relative", width: "100%"
+    @$el.css position: "relative"
 
     @attach 'addView', (view, options)=>
       @showChild view, true if options?.showOnAdd == true
