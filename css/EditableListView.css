@@ -4,16 +4,14 @@
   width: 34px;
   height: 33px;
   border: none;
-  padding: 0;
-}
+  padding: 0; }
 
 .reorder-handle {
   background: url("../images/row_reorder.jpg") transparent 8px center no-repeat;
   width: 32px;
   height: 32px;
   cursor: move;
-  display: inline-block;
-}
+  display: inline-block; }
 
 .delete-button {
   height: 32px;
@@ -24,31 +22,22 @@
   background-color: #b71512;
   background-image: -moz-linear-gradient(#d3676a, #b71512);
   background-image: -webkit-linear-gradient(#d3676a, #b71512);
-  background-image: linear-gradient(#d3676a, #b71512);
-}
+  background-image: linear-gradient(#d3676a, #b71512); }
 
 .editable-list-view .left-cell {
-  display: none;
-}
+  display: none; }
 .editable-list-view .right-cell {
-  display: none;
-}
+  display: none; }
 .editable-list-view .delete-button {
-  display: none;
-}
+  display: none; }
 .editable-list-view .listview-edit .left-cell {
-  display: table-cell;
-}
+  display: table-cell; }
 .editable-list-view .listview-edit .right-cell {
-  display: table-cell;
-}
+  display: table-cell; }
 .editable-list-view .listview-edit .remove-confirm .delete-icon {
   -webkit-transform: rotate(90deg);
-  -moz-transform: rotate(90deg);
-}
+  -moz-transform: rotate(90deg); }
 .editable-list-view .listview-edit .remove-confirm .reorder-handle {
-  display: none;
-}
+  display: none; }
 .editable-list-view .listview-edit .remove-confirm .delete-button {
-  display: inline-block;
-}
+  display: inline-block; }

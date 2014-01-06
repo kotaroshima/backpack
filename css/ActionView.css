@@ -3,33 +3,27 @@
   -moz-box-sizing: border-box;
   -webkit-box-sizing: border-box;
   display: table;
-  width: 100%;
-}
-.action-view > * {
-  display: table-cell;
-  vertical-align: middle;
-}
-.action-view .left-cell {
-  text-align: left;
-  width: 32px;
-  padding: 3px 3px;
-  white-space: nowrap;
-}
-.action-view .left-cell:hover {
-  opacity: 0.5;
-  filter: alpha(opacity=50);
-  -moz-opacity: 0.5;
-  -ms-filter: "alpha(opacity=50)";
-}
-.action-view .right-cell {
-  text-align: right;
-  width: 32px;
-  padding: 3px 3px;
-  white-space: nowrap;
-}
-.action-view .right-cell:hover {
-  opacity: 0.5;
-  filter: alpha(opacity=50);
-  -moz-opacity: 0.5;
-  -ms-filter: "alpha(opacity=50)";
-}
+  width: 100%; }
+  .action-view > * {
+    display: table-cell;
+    vertical-align: middle; }
+  .action-view .left-cell {
+    text-align: left;
+    width: 32px;
+    padding: 3px 3px;
+    white-space: nowrap; }
+    .action-view .left-cell:hover {
+      opacity: 0.5;
+      filter: alpha(opacity=50);
+      -moz-opacity: 0.5;
+      -ms-filter: "alpha(opacity=50)"; }
+  .action-view .right-cell {
+    text-align: right;
+    width: 32px;
+    padding: 3px 3px;
+    white-space: nowrap; }
+    .action-view .right-cell:hover {
+      opacity: 0.5;
+      filter: alpha(opacity=50);
+      -moz-opacity: 0.5;
+      -ms-filter: "alpha(opacity=50)"; }

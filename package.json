@@ -1,0 +1,13 @@
+{
+  "name": "geo-location",
+  "version": "0.1.0",
+  "devDependencies": {
+    "grunt": "~0.4.2",
+    "grunt-contrib-watch": "0.5.3",
+    "grunt-contrib-coffee": "0.8.0",
+    "grunt-contrib-sass": "0.6.0",
+    "grunt-contrib-concat": "0.1.2",
+    "grunt-contrib-uglify": "0.2.6",
+    "load-grunt-tasks": "0.2.1"
+  }
+}

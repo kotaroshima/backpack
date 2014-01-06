@@ -50,17 +50,21 @@ Examples
 
 Development
 ------
-* For compiling CoffeeScript files, you need CoffeeScript installed:
+* To install Grunt client, do:
 ```
-npm install -g coffee-script
+npm install -g grunt-cli
 ```
-* To build JS files from `.coffee` files, run:
+* To install Grunt plugins, do:
 ```
-cake build
+npm install
 ```
-* To build CSS files from `.scss` files, run:
+* To build all JS or CSS files, do:
 ```
-cake build-css
+grunt
+```
+* Or to watch for file changes instead, do:
+```
+grunt watch
 ```
 
 Test
