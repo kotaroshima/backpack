@@ -28,6 +28,7 @@
     allPlugins: [Backpack.TemplatePlugin, Backpack.ContainerPlugin],
     template: '<div class="tab-button-container"></div><div class="tab-content-container"></div>',
     templateNodes: {
+      buttonContainerNode: '.tab-button-container',
       containerNode: '.tab-content-container'
     },
     autoRender: false,
@@ -36,9 +37,9 @@
 
       this._buttonMap = {};
       this.buttonContainer = new Backpack.View({
-        el: '.tab-button-container',
         plugins: [Backpack.ContainerPlugin]
       });
+      this.buttonContainerNode.append(this.buttonContainer.$el);
       /*
       * When autoRender=false, need to explicitly call renderContainer
       * This needs to be after tab buttons have been setup

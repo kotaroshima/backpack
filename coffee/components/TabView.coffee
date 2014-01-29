@@ -22,6 +22,7 @@ Backpack.TabView = Backpack.StackView.extend
   allPlugins: [Backpack.TemplatePlugin, Backpack.ContainerPlugin]
   template: '<div class="tab-button-container"></div><div class="tab-content-container"></div>'
   templateNodes:
+    buttonContainerNode: '.tab-button-container'
     containerNode: '.tab-content-container'
   autoRender: false
 
@@ -29,8 +30,8 @@ Backpack.TabView = Backpack.StackView.extend
     ### setup tab buttons ###
     @_buttonMap = {} # a map of content view cid to TabButtonView
     @buttonContainer = new Backpack.View
-      el: '.tab-button-container'
       plugins: [Backpack.ContainerPlugin]
+    @buttonContainerNode.append @buttonContainer.$el
 
     ###
     * When autoRender=false, need to explicitly call renderContainer
