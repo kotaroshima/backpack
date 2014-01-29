@@ -31,7 +31,7 @@
     tabButton.off('click', handler);
   };
 
-  test('initialize by passing children', 4, function() {
+  test('initialize by passing children', 6, function() {
     var tabLabels, tabView, testNode, view1, view2;
     tabLabels = ['view1', 'view2'];
     view1 = new Backpack.View({
@@ -58,7 +58,7 @@
     });
   });
 
-  test('title shown in tab button', 4, function() {
+  test('title shown in tab button', 6, function() {
     var tabLabels, tabView, testNode, view1, view2;
     tabLabels = ['View 1', 'View 2'];
     view1 = new Backpack.View({

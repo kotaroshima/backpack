@@ -23,7 +23,7 @@ assertTabButtonClick = (tabView, tabIndex)->
   tabButton.off 'click', handler
   return
 
-test 'initialize by passing children', 4, ->
+test 'initialize by passing children', 6, ->
   tabLabels = ['view1', 'view2']
   view1 = new Backpack.View
     name: tabLabels[0]
@@ -46,7 +46,7 @@ test 'initialize by passing children', 4, ->
     return
   return
 
-test 'title shown in tab button', 4, ->
+test 'title shown in tab button', 6, ->
   tabLabels = ['View 1', 'View 2']
   view1 = new Backpack.View
     name: 'view1'
