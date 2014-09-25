@@ -143,6 +143,10 @@ Backpack.Collection = Backbone.Collection.extend
     setup @
     options.initialize.apply @, arguments if options?.initialize
     return
+  reset:->
+    Backbone.Collection::reset.apply @, arguments
+    @trigger "Backpack.Collection:reset"
+    return
   destroy:->
     cleanup @
     return

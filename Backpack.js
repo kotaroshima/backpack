@@ -199,6 +199,10 @@
         options.initialize.apply(this, arguments);
       }
     },
+    reset: function() {
+      Backbone.Collection.prototype.reset.apply(this, arguments);
+      this.trigger("Backpack.Collection:reset");
+    },
     destroy: function() {
       cleanup(this);
     }
